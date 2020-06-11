@@ -1,4 +1,5 @@
 import 'package:cosmocannons/UI/globalUIElements.dart';
+import 'package:cosmocannons/globals.dart' as globals;
 import 'package:cosmocannons/UI/Multiplayer/Local/multiplayerlocal.dart';
 import 'package:cosmocannons/UI/Multiplayer/LAN/multiplayerclient.dart';
 import 'package:cosmocannons/UI/Multiplayer/LAN/multiplayerhost.dart';
@@ -42,13 +43,13 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
       backgroundNo: 2,
       children: [
         UI.topTitle(
-            titleText: Strings.multiplayer, context: context, root: false),
+            titleText: globals.multiplayer, context: context, root: false),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             UI.largeButton(
-                height: UI.getHalfHeight(context) * Strings.heightMultiplier,
-                text: Strings.localMulti,
+                height: UI.getHalfHeight(context) * globals.heightMultiplier,
+                text: globals.localMulti,
                 onTap: () => localMutli(),
                 context: context),
             Column(
@@ -56,17 +57,17 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
               children: [
                 UI.largeButton(
                     height: UI.getHalfHeight(context) *
-                        Strings.halfButton *
-                        Strings.heightMultiplier,
-                    text: Strings.hostMulti,
+                        globals.halfButton *
+                        globals.heightMultiplier,
+                    text: globals.hostMulti,
                     onTap: () => hostMutli(),
                     context: context),
-                Container(height: UI.getPaddingSize(context: context)),
+                Container(height: UI.getPaddingSize(context)),
                 UI.largeButton(
                     height: UI.getHalfHeight(context) *
-                        Strings.halfButton *
-                        Strings.heightMultiplier,
-                    text: Strings.clientMulti,
+                        globals.halfButton *
+                        globals.heightMultiplier,
+                    text: globals.clientMulti,
                     onTap: () => clientMulti(),
                     context: context),
               ],

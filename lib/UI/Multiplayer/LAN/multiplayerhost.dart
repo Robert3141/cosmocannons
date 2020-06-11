@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
+import 'package:cosmocannons/globals.dart' as globals;
 
 class HostMultiPage extends StatefulWidget {
   //constructor of class
@@ -15,14 +16,21 @@ class HostMultiPage extends StatefulWidget {
 class _LocalMultiPageState extends State<HostMultiPage> {
   //locals
   bool readyForPlay = false;
+  bool firstBuild = true;
+  List<int> playerTeams = globals.playerTeams;
 
   //functions
+  void changePlayerTeam(int playerNo, int newTeam) {
+    setState(() {
+      playerTeams[playerNo - 1] = newTeam;
+    });
+  }
 
   //build UI
   @override
   Widget build(BuildContext context) {
     Scaffold page = UI.scaffoldWithBackground(children: [
-      UI.topTitle(titleText: Strings.hostMulti, context: context),
+      UI.topTitle(titleText: globals.hostMulti, context: context),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -33,106 +41,45 @@ class _LocalMultiPageState extends State<HostMultiPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   UI.largeButton(
-                      width: UI.getHalfWidth(context) * Strings.halfButton,
+                      width: UI.getHalfWidth(context) * globals.halfButton,
                       height: UI.getHalfHeight(context) *
-                          Strings.halfButton *
-                          Strings.heightMultiplier,
-                      text: Strings.hostName,
+                          globals.halfButton *
+                          globals.heightMultiplier,
+                      text: globals.hostName,
                       onTap: null,
                       context: context),
                   Container(
-                    width: UI.getPaddingSize(context: context),
+                    width: UI.getPaddingSize(context),
                   ),
                   UI.largeButton(
-                      width: UI.getHalfWidth(context) * Strings.halfButton,
+                      width: UI.getHalfWidth(context) * globals.halfButton,
                       height: UI.getHalfHeight(context) *
-                          Strings.halfButton *
-                          Strings.heightMultiplier,
-                      text: Strings.hostStartServer,
+                          globals.halfButton *
+                          globals.heightMultiplier,
+                      text: globals.hostStartServer,
                       onTap: null,
                       context: context)
                 ],
               ),
               Container(
-                height: UI.getPaddingSize(context: context),
+                height: UI.getPaddingSize(context),
               ),
               UI.largeButton(
                   width: UI.getHalfWidth(context),
                   height: UI.getHalfHeight(context) *
-                      Strings.halfButton *
-                      Strings.heightMultiplier,
-                  text: readyForPlay ? Strings.readyForPlay : Strings.readyUp,
+                      globals.halfButton *
+                      globals.heightMultiplier,
+                  text: readyForPlay ? globals.readyForPlay : globals.readyUp,
                   onTap: null,
                   context: context)
             ],
           ),
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                  width: Strings.buttonBorderSize, color: Strings.buttonBorder),
-              borderRadius: BorderRadius.circular(Strings.buttonClipSize),
-            ),
-            width: UI.getHalfWidth(context) * UI.screenWidth(context),
-            child: ListView.builder(
-              shrinkWrap: true,
-              scrollDirection: Axis.vertical,
-              itemCount: Strings.maxLANPlayers + 1,
-              itemBuilder: (BuildContext context, int y) {
-                return Container(
-                  height: UI.getHalfHeight(context) *
-                      0.2 *
-                      Strings.heightMultiplier *
-                      UI.screenHeight(context),
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: Strings.maxLANPlayers + 1,
-                      itemBuilder: (BuildContext context, int x) {
-                        if (x == 0 && y == 0) {
-                          return Container(
-                            alignment: Alignment.center,
-                            width: UI.getHalfWidth(context) *
-                                0.2 *
-                                UI.screenWidth(context),
-                          );
-                        } else if (x == 0) {
-                          return Container(
-                            alignment: Alignment.center,
-                            width: UI.getHalfWidth(context) *
-                                0.2 *
-                                UI.screenWidth(context),
-                            child: Text(
-                              y == 1 ? Strings.host : Strings.client,
-                              style: UI.defaultText(titleText: false),
-                            ),
-                          );
-                        } else if (y == 0) {
-                          return Container(
-                            alignment: Alignment.center,
-                            width: UI.getHalfWidth(context) *
-                                0.2 *
-                                UI.screenWidth(context),
-                            child: Text(
-                              Strings.teamNames[x - 1],
-                              style: UI.defaultText(titleText: false),
-                            ),
-                          );
-                        } else {
-                          return Container(
-                            alignment: Alignment.center,
-                            width: UI.getHalfWidth(context) *
-                                0.2 *
-                                UI.screenWidth(context),
-                          );
-                        }
-                      }),
-                );
-              },
-            ),
-          ),
+          UI.playerTeamsTable(context: context, playerNames: globals.playerNames, playerTeams: globals.playerTeams, changePlayerTeam: changePlayerTeam),
         ],
       ),
     ], context: context, backgroundNo: 3);
+
+    firstBuild = false;
 
     return page;
   }

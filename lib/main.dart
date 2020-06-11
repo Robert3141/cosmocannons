@@ -1,4 +1,4 @@
-import 'package:cosmocannons/UI/globalUIElements.dart';
+import 'package:cosmocannons/globals.dart' as globals;
 import 'package:cosmocannons/UI/launcher.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -21,12 +21,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: Strings.gameTitle,
+      title: globals.gameTitle,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: LauncherPage(title: Strings.gameTitle),
+      home: LauncherPage(title: globals.gameTitle),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
+import 'package:cosmocannons/globals.dart' as globals;
 
 class SingleplayerPage extends StatefulWidget {
   //constructor of class
@@ -21,7 +22,7 @@ class _SingleplayerPageState extends State<SingleplayerPage> {
   @override
   Widget build(BuildContext context) {
     Scaffold page = UI.scaffoldWithBackground(children: [
-      UI.topTitle(titleText: Strings.singleplayer, context: context),
+      UI.topTitle(titleText: globals.singleplayer, context: context),
       Row(),
     ], context: context, backgroundNo: 2);
 

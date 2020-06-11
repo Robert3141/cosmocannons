@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
+import 'package:cosmocannons/globals.dart' as globals;
 
 class LocalMultiPage extends StatefulWidget {
   //constructor of class
@@ -21,7 +22,7 @@ class _LocalMultiPageState extends State<LocalMultiPage> {
   @override
   Widget build(BuildContext context) {
     Scaffold page = UI.scaffoldWithBackground(children: [
-      UI.topTitle(titleText: Strings.localMulti, context: context),
+      UI.topTitle(titleText: globals.localMulti, context: context),
       Row(),
     ], context: context, backgroundNo: 3);
 

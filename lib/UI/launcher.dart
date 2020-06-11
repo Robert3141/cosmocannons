@@ -1,5 +1,6 @@
 import 'package:cosmocannons/UI/Multiplayer/multiplayer.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
+import 'package:cosmocannons/globals.dart' as globals;
 import 'package:cosmocannons/UI/Achievements/achievements.dart';
 import 'package:cosmocannons/UI/Settings/settings.dart';
 import 'package:cosmocannons/UI/Singleplayer/singleplayer.dart';
@@ -68,16 +69,16 @@ class _LauncherPageState extends State<LauncherPage> {
   @override
   Widget build(BuildContext context) {
     Scaffold page = UI.scaffoldWithBackground(context: context, children: [
-      UI.topTitle(titleText: Strings.gameTitle, context: context, root: true),
+      UI.topTitle(titleText: globals.gameTitle, context: context, root: true),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           UI.largeButton(
-              text: Strings.singleplayer,
+              text: globals.singleplayer,
               onTap: () => singlePlayer(),
               context: context),
           UI.largeButton(
-              text: Strings.multiplayer,
+              text: globals.multiplayer,
               onTap: () => multiplayer(),
               context: context),
         ],
@@ -86,15 +87,15 @@ class _LauncherPageState extends State<LauncherPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           UI.smallButton(
-              text: Strings.settings,
+              text: globals.settings,
               onTap: () => settings(),
               context: context),
           Text(
             _versionString,
-            style: UI.defaultText(titleText: false),
+            style: UI.defaultText(false),
           ),
           UI.smallButton(
-              text: Strings.achievements,
+              text: globals.achievements,
               onTap: () => achievements(),
               context: context),
         ],

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
+import 'package:cosmocannons/globals.dart' as globals;
 
 class SettingsPage extends StatefulWidget {
   //constructor of class
@@ -21,7 +22,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     Scaffold page = UI.scaffoldWithBackground(children: [
-      UI.topTitle(titleText: Strings.settings, context: context),
+      UI.topTitle(titleText: globals.settings, context: context),
       Row(),
     ], context: context, backgroundNo: 2);
 
