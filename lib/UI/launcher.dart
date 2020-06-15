@@ -21,8 +21,11 @@ class LauncherPage extends StatefulWidget {
 
 class _LauncherPageState extends State<LauncherPage> {
   //locals
+  bool firstBuild = true;  
+  String _versionString = "Loading . . .";
 
   //functions
+
   void singlePlayer() {
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => SingleplayerPage()));
@@ -43,8 +46,6 @@ class _LauncherPageState extends State<LauncherPage> {
         .push(MaterialPageRoute(builder: (context) => AchievementsPage()));
   }
 
-  bool firstBuild = true;
-  String _versionString = "Loading . . .";
   Future getVersionString() async {
     if (firstBuild) {
       firstBuild = false;

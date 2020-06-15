@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
 class UI {
+  // simplified methods to get the screen details
   static Size screenSize(context) => MediaQuery.of(context).size;
   static double screenWidth(context) => screenSize(context).width;
   static double screenHeight(context) => screenSize(context).height;
 
+  // The standard text style used throughou the app
   static TextStyle defaultText(bool titleText) => TextStyle(
         fontFamily: globals.fontName,
         color: globals.textColor,
@@ -15,17 +17,20 @@ class UI {
         fontSize: titleText ? globals.largeTextSize : globals.smallTextSize,
       );
 
+  // This returns an appropriate padding size so that the UI scale looks clean
   static double getPaddingSize(BuildContext context) {
     double h = UI.screenHeight(context);
     double w = UI.screenWidth(context);
     return h > w ? w * globals.paddingSize : h * globals.paddingSize;
   }
 
+  // This and getHalfHeight calculate the width of a widget in order to fit two plus padding on one screen
   static double getHalfWidth(BuildContext context) {
     return ((UI.screenWidth(context) - (3 * getPaddingSize(context))) * 0.5) /
         screenWidth(context);
   }
 
+  // This does the same but for height instead.
   static double getHalfHeight(BuildContext context) {
     return (((UI.screenHeight(context) /*- globals.largeTextSize */ -
                 (2 * getPaddingSize(context))) *
@@ -33,6 +38,7 @@ class UI {
         UI.screenHeight(context));
   }
 
+  // This provides a basis for the app UI with the background
   static Scaffold scaffoldWithBackground(
           {@required List<Widget> children,
           @required BuildContext context,
@@ -57,6 +63,7 @@ class UI {
         ),
       );
 
+// This is a widget which provide the top part of the UI consisting of the page title plus the optional help and back buttons
   static Widget topTitle(
           {@required String titleText,
           @required BuildContext context,
@@ -88,6 +95,7 @@ class UI {
         ),
       );
 
+  // This is the widget for the standard button used within the app.
   static Widget largeButton(
           {@required String text,
           @required Function onTap,
@@ -113,6 +121,7 @@ class UI {
         ),
       );
 
+  // This is a unique widget for the small buttons used for the home page, back button and the about page button
   static Widget smallButton(
           {@required String text,
           @required Function onTap,
@@ -124,6 +133,7 @@ class UI {
           width: globals.smallWidth,
           height: globals.smallHeight);
 
+  // This is a widget to provide a table like UI. This is primarily for the team selection interface.
   static Widget tableCell(BuildContext context,
           {String text = "",
           Color textColor = globals.textColor,
@@ -150,6 +160,7 @@ class UI {
         ),
       );
 
+  // This is the widget for the team selection table. It is adaptive based on the size of the arrays
   static Widget playerTeamsTable(
           {@required BuildContext context,
           @required List<String> playerNames,
@@ -166,7 +177,7 @@ class UI {
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
           physics: NeverScrollableScrollPhysics(),
-          itemCount: globals.maxLANPlayers + 1,
+          itemCount: playerNames.length + 1,
           itemBuilder: (BuildContext context, int y) {
             return Container(
               height: UI.getHalfHeight(context) *
@@ -177,23 +188,27 @@ class UI {
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
                   physics: NeverScrollableScrollPhysics(),
-                  itemCount: globals.maxLANPlayers + 1,
+                  itemCount: playerTeams.length + 1,
                   itemBuilder: (BuildContext context, int x) {
                     if (x == 0 && y == 0) {
+                      // Top Left Cell
                       return tableCell(context);
                     } else if (x == 0) {
+                      // Left Column Cells
                       return tableCell(
                         context,
                         text: playerNames[y - 1],
                         textColor: globals.teamColors[playerTeams[y - 1] - 1],
                       );
                     } else if (y == 0) {
+                      // Top Row Cells
                       return tableCell(
                         context,
                         text: globals.defaultTeamNames[x - 1],
                         textColor: globals.teamColors[x - 1],
                       );
                     } else {
+                      // Other Cells
                       return tableCell(context, onTap: () => changePlayerTeam(y, x),
                           ticked: playerTeams[y - 1] == x,
                           textColor: globals.teamColors[x - 1]);
