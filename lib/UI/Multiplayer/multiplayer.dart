@@ -21,18 +21,15 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
 
   //functions
   void localMutli() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => LocalMultiPage()));
+    UI.gotoNewPage(context, LocalMultiPage());
   }
 
   void hostMutli() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => HostMultiPage()));
+    UI.gotoNewPage(context, HostMultiPage());
   }
 
   void clientMulti() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => ClientMultiPage()));
+    UI.gotoNewPage(context, ClientMultiPage());
   }
 
   //build UI

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:page_transition/page_transition.dart';
 
 class UI {
   // simplified methods to get the screen details
@@ -10,9 +11,10 @@ class UI {
   static double screenHeight(context) => screenSize(context).height;
 
   // The standard text style used throughou the app
-  static TextStyle defaultText(bool titleText) => TextStyle(
+  static TextStyle defaultText(bool titleText, {bool enabled = true}) =>
+      TextStyle(
         fontFamily: globals.fontName,
-        color: globals.textColor,
+        color: enabled ? globals.textColor : globals.disabledText,
         fontWeight: FontWeight.bold,
         fontSize: titleText ? globals.largeTextSize : globals.smallTextSize,
       );
@@ -101,22 +103,26 @@ class UI {
           @required Function onTap,
           double width,
           double height,
+          Color buttonFill = globals.buttonFill,
+          bool enabled = true,
           @required BuildContext context}) =>
       GestureDetector(
-        onTap: onTap,
+        onTap: enabled ? onTap : () {},
         child: Container(
           width: screenWidth(context) * (width ?? getHalfWidth(context)),
           height: screenHeight(context) * (height ?? getHalfHeight(context)),
           decoration: BoxDecoration(
               border: Border.all(
-                  width: globals.buttonBorderSize, color: globals.buttonBorder),
+                  width: globals.buttonBorderSize,
+                  color:
+                      enabled ? globals.buttonBorder : globals.disabledBorder),
               borderRadius: BorderRadius.circular(globals.buttonClipSize),
-              color: globals.buttonFill),
+              color: enabled ? buttonFill : globals.buttonFill),
           alignment: Alignment.center,
           child: Text(
             text,
             textAlign: TextAlign.center,
-            style: defaultText(false),
+            style: defaultText(false, enabled: enabled),
           ),
         ),
       );
@@ -163,7 +169,7 @@ class UI {
   // This is the widget for the team selection table. It is adaptive based on the size of the arrays
   static Widget playerTeamsTable(
           {@required BuildContext context,
-          @required List<String> playerNames,
+          List<String> playerNames,
           @required List<int> playerTeams,
           @required void changePlayerTeam(int playerNo, int newTeam)}) =>
       Container(
@@ -209,7 +215,8 @@ class UI {
                       );
                     } else {
                       // Other Cells
-                      return tableCell(context, onTap: () => changePlayerTeam(y, x),
+                      return tableCell(context,
+                          onTap: () => changePlayerTeam(y, x),
                           ticked: playerTeams[y - 1] == x,
                           textColor: globals.teamColors[x - 1]);
                     }
@@ -218,4 +225,12 @@ class UI {
           },
         ),
       );
+
+  //support animations for page transition
+  static void gotoNewPage(BuildContext context, StatefulWidget newPage,
+          {Alignment alignment = Alignment.topLeft}) =>
+      Navigator.of(context).push(PageTransition(
+          type: PageTransitionType.scale,
+          child: newPage,
+          alignment: alignment));
 }

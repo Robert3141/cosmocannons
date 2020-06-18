@@ -15,8 +15,10 @@ const String help = "Help";
 const String localMulti = "On local device";
 const String hostMulti = "LAN Host";
 const String clientMulti = "LAN Client";
-const String hostName = "Host Name";
+const String hostName = "Pick Host Name";
+const String clientName = "Pick Client Name";
 const String hostStartServer = "Start Server";
+const String clientConnectServer = "Connect To Server";
 const String readyUp = "Ready Up";
 const String readyForPlay = "Ready";
 const String client = "Client";
@@ -49,7 +51,11 @@ const int maxLANPlayers = 4;
 
 const Color buttonFill = Colors.black54;
 const Color buttonBorder = Colors.white38;
+const Color disabledBorder = Colors.white10;
 const Color textColor = Colors.white70;
+const Color disabledText = Colors.white12;
+final Color buttonReady = Colors.green.shade900;
+final Color buttonNotReady = Colors.red.shade900;
 
 const List<Color> teamColors = [
   Colors.red,

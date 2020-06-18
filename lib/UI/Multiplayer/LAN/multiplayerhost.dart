@@ -16,13 +16,19 @@ class HostMultiPage extends StatefulWidget {
 class _LocalMultiPageState extends State<HostMultiPage> {
   //locals
   bool readyForPlay = false;
-  bool firstBuild = true;
+  bool hostingServer = false;
   List<int> playerTeams = globals.playerTeams;
 
   //functions
   void changePlayerTeam(int playerNo, int newTeam) {
     setState(() {
       playerTeams[playerNo - 1] = newTeam;
+    });
+  }
+
+  void toggleReady() {
+    setState(() {
+      readyForPlay = !readyForPlay;
     });
   }
 
@@ -65,21 +71,27 @@ class _LocalMultiPageState extends State<HostMultiPage> {
                 height: UI.getPaddingSize(context),
               ),
               UI.largeButton(
-                  width: UI.getHalfWidth(context),
-                  height: UI.getHalfHeight(context) *
-                      globals.halfButton *
-                      globals.heightMultiplier,
-                  text: readyForPlay ? globals.readyForPlay : globals.readyUp,
-                  onTap: null,
-                  context: context)
+                width: UI.getHalfWidth(context),
+                height: UI.getHalfHeight(context) *
+                    globals.halfButton *
+                    globals.heightMultiplier,
+                text: readyForPlay ? globals.readyForPlay : globals.readyUp,
+                onTap: () => toggleReady(),
+                enabled: hostingServer,
+                buttonFill:
+                    readyForPlay ? globals.buttonReady : globals.buttonNotReady,
+                context: context,
+              )
             ],
           ),
-          UI.playerTeamsTable(context: context, playerNames: globals.playerNames, playerTeams: globals.playerTeams, changePlayerTeam: changePlayerTeam),
+          UI.playerTeamsTable(
+              context: context,
+              playerNames: globals.playerNames,
+              playerTeams: globals.playerTeams,
+              changePlayerTeam: changePlayerTeam),
         ],
       ),
     ], context: context, backgroundNo: 3);
-
-    firstBuild = false;
 
     return page;
   }

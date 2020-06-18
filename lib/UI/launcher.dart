@@ -27,23 +27,19 @@ class _LauncherPageState extends State<LauncherPage> {
   //functions
 
   void singlePlayer() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => SingleplayerPage()));
+    UI.gotoNewPage(context, SingleplayerPage());
   }
 
   void multiplayer() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => MultiplayerPage()));
+    UI.gotoNewPage(context, MultiplayerPage());
   }
 
   void settings() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => SettingsPage()));
+    UI.gotoNewPage(context, SettingsPage());
   }
 
   void achievements() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => AchievementsPage()));
+    UI.gotoNewPage(context, AchievementsPage());
   }
 
   Future getVersionString() async {

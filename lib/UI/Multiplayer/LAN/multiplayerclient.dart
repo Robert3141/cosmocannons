@@ -15,15 +15,76 @@ class ClientMultiPage extends StatefulWidget {
 
 class _ClientMultiPageState extends State<ClientMultiPage> {
   //locals
+  bool readyForPlay = false;
+  bool connectedToServer = false;
+  List<int> playerTeams = globals.playerTeams;
 
   //functions
+  void toggleReady() {
+    setState(() {
+      readyForPlay = !readyForPlay;
+    });
+  }
 
   //build UI
   @override
   Widget build(BuildContext context) {
     Scaffold page = UI.scaffoldWithBackground(children: [
       UI.topTitle(titleText: globals.clientMulti, context: context),
-      Row(),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  UI.largeButton(
+                      width: UI.getHalfWidth(context) * globals.halfButton,
+                      height: UI.getHalfHeight(context) *
+                          globals.halfButton *
+                          globals.heightMultiplier,
+                      text: globals.clientName,
+                      onTap: null,
+                      context: context),
+                  Container(
+                    width: UI.getPaddingSize(context),
+                  ),
+                  UI.largeButton(
+                      width: UI.getHalfWidth(context) * globals.halfButton,
+                      height: UI.getHalfHeight(context) *
+                          globals.halfButton *
+                          globals.heightMultiplier,
+                      text: globals.clientConnectServer,
+                      onTap: null,
+                      context: context),
+                ],
+              ),
+              Container(
+                height: UI.getPaddingSize(context),
+              ),
+              UI.largeButton(
+                  width: UI.getHalfWidth(context),
+                  height: UI.getHalfHeight(context) *
+                      globals.halfButton *
+                      globals.heightMultiplier,
+                  text: readyForPlay ? globals.readyForPlay : globals.readyUp,
+                  onTap: () => toggleReady(),
+                  enabled: connectedToServer,
+                  buttonFill: readyForPlay
+                      ? globals.buttonReady
+                      : globals.buttonNotReady,
+                  context: context),
+            ],
+          ),
+          UI.playerTeamsTable(
+              context: context,
+              playerNames: globals.playerNames,
+              playerTeams: globals.playerTeams,
+              changePlayerTeam: null)
+        ],
+      ),
     ], context: context, backgroundNo: 3);
 
     return page;
