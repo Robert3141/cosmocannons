@@ -23,7 +23,37 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     Scaffold page = UI.scaffoldWithBackground(children: [
       UI.topTitle(titleText: globals.settings, context: context),
-      Row(),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Container(
+            height: globals.halfButton *
+                globals.heightMultiplier *
+                UI.screenHeight(context),
+            width: UI.screenWidth(context) - 2 * UI.getPaddingSize(context),
+            child: ListView(
+              children: [
+                Container(
+                  height: UI.getHalfHeight(context) * globals.halfButton * UI.screenHeight(context),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Test",
+                        style: UI.defaultText(),
+                      ),
+                      UI.optionToggle(
+                          items: ["yes", "no","maybe"],
+                          onTap: (int i) {},
+                          context: context,)
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     ], context: context, backgroundNo: 2);
 
     return page;

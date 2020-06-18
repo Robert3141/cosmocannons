@@ -11,7 +11,7 @@ class UI {
   static double screenHeight(context) => screenSize(context).height;
 
   // The standard text style used throughou the app
-  static TextStyle defaultText(bool titleText, {bool enabled = true}) =>
+  static TextStyle defaultText([bool titleText = false, bool enabled = true]) =>
       TextStyle(
         fontFamily: globals.fontName,
         color: enabled ? globals.textColor : globals.disabledText,
@@ -66,7 +66,7 @@ class UI {
       );
 
 // This is a widget which provide the top part of the UI consisting of the page title plus the optional help and back buttons
-  static Widget topTitle(
+  static Container topTitle(
           {@required String titleText,
           @required BuildContext context,
           bool root = false}) =>
@@ -98,14 +98,14 @@ class UI {
       );
 
   // This is the widget for the standard button used within the app.
-  static Widget largeButton(
+  static GestureDetector largeButton(
           {@required String text,
           @required Function onTap,
+          @required BuildContext context,
           double width,
           double height,
           Color buttonFill = globals.buttonFill,
-          bool enabled = true,
-          @required BuildContext context}) =>
+          bool enabled = true}) =>
       GestureDetector(
         onTap: enabled ? onTap : () {},
         child: Container(
@@ -122,13 +122,13 @@ class UI {
           child: Text(
             text,
             textAlign: TextAlign.center,
-            style: defaultText(false, enabled: enabled),
+            style: defaultText(false, enabled),
           ),
         ),
       );
 
   // This is a unique widget for the small buttons used for the home page, back button and the about page button
-  static Widget smallButton(
+  static GestureDetector smallButton(
           {@required String text,
           @required Function onTap,
           @required BuildContext context}) =>
@@ -140,7 +140,7 @@ class UI {
           height: globals.smallHeight);
 
   // This is a widget to provide a table like UI. This is primarily for the team selection interface.
-  static Widget tableCell(BuildContext context,
+  static InkWell tableCell(BuildContext context,
           {String text = "",
           Color textColor = globals.textColor,
           bool ticked = false,
@@ -167,7 +167,7 @@ class UI {
       );
 
   // This is the widget for the team selection table. It is adaptive based on the size of the arrays
-  static Widget playerTeamsTable(
+  static Container playerTeamsTable(
           {@required BuildContext context,
           List<String> playerNames,
           @required List<int> playerTeams,
@@ -233,4 +233,58 @@ class UI {
           type: PageTransitionType.scale,
           child: newPage,
           alignment: alignment));
+
+  static Container optionToggle({
+    @required List<String> items,
+    @required Function(int) onTap,
+    @required BuildContext context,
+    double width,
+    double height,
+    Color selectedItemFill = globals.optionToggleColor,
+    Color defaultFill = globals.buttonFill,
+    bool enabled = true,
+    int selectedInt = 0,
+    bool selectedBool = false,
+  }) =>
+      Container(
+        width: screenWidth(context) * (width ?? getHalfWidth(context)),
+        height: screenHeight(context) * (height ?? getHalfHeight(context)),
+        decoration: BoxDecoration(
+            border: Border.all(
+              width: globals.buttonBorderSize,
+              color: enabled ? globals.buttonBorder : globals.disabledBorder,
+            ),
+            borderRadius: BorderRadius.circular(globals.buttonClipSize)),
+        child: ListView.builder(
+            itemCount: items.length,
+            scrollDirection: Axis.horizontal,
+            physics: NeverScrollableScrollPhysics(),
+            itemBuilder: (BuildContext context, int selectedItem) {
+              return GestureDetector(
+                onTap: onTap(selectedItem),
+                child: Container(
+                  width: screenWidth(context) *
+                      (width ?? getHalfWidth(context)) /
+                      items.length,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: enabled
+                          ? items.length == 2
+                              //choose boolean input
+                              ? selectedBool && selectedItem == 1
+                                  ? selectedItemFill
+                                  : defaultFill
+                              //choose integer input
+                              : selectedItem == selectedInt
+                                  ? selectedItemFill
+                                  : defaultFill
+                          : globals.buttonFill),
+                  child: Text(
+                    items[selectedItem],
+                    style: defaultText(),
+                  ),
+                ),
+              );
+            }),
+      );
 }

@@ -54,6 +54,8 @@ const Color buttonBorder = Colors.white38;
 const Color disabledBorder = Colors.white10;
 const Color textColor = Colors.white70;
 const Color disabledText = Colors.white12;
+const Color optionToggleColor = Colors.green;
+
 final Color buttonReady = Colors.green.shade900;
 final Color buttonNotReady = Colors.red.shade900;
 
