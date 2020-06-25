@@ -3,6 +3,7 @@ import 'package:cosmocannons/globals.dart' as globals;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class UI {
   // simplified methods to get the screen details
@@ -52,7 +53,6 @@ class UI {
             color: Colors.black,
             image: DecorationImage(
               image: globals.backgrounds[backgroundNo - 1],
-              fit: BoxFit.cover,
             ),
           ),
           child: Container(
@@ -71,6 +71,7 @@ class UI {
           @required BuildContext context,
           bool root = false}) =>
       Container(
+        width: screenWidth(context),
         height: screenHeight(context) * globals.tableElement,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -84,10 +85,16 @@ class UI {
                     },
                     context: context,
                   ),
-            Text(
-              titleText,
-              textAlign: TextAlign.center,
-              style: defaultText(true),
+            Container(
+              width: screenWidth(context) / 2,
+              child: AutoSizeText(
+                titleText,
+                maxFontSize: globals.largeTextSize,
+                minFontSize: globals.smallTextSize,
+                maxLines: 1,
+                textAlign: TextAlign.center,
+                style: defaultText(true),
+              ),
             ),
             root
                 ? Container()
@@ -119,8 +126,10 @@ class UI {
               borderRadius: BorderRadius.circular(globals.buttonClipSize),
               color: enabled ? buttonFill : globals.buttonFill),
           alignment: Alignment.center,
-          child: Text(
+          child: AutoSizeText(
             text,
+            group: globals.buttonTextGroup,
+            maxLines: 1,
             textAlign: TextAlign.center,
             style: defaultText(false, enabled),
           ),
@@ -159,8 +168,10 @@ class UI {
                   Icons.done,
                   color: textColor,
                 )
-              : Text(
+              : AutoSizeText(
                   text,
+                  maxLines: 1,
+                  group: globals.standardTextGroup,
                   style: defaultText(false).merge(TextStyle(color: textColor)),
                 ),
         ),
@@ -279,12 +290,18 @@ class UI {
                                   ? selectedItemFill
                                   : defaultFill
                           : globals.buttonFill),
-                  child: Text(
-                    items[selectedItem],
-                    style: defaultText(),
-                  ),
+                  child: textWidget(items[selectedItem]),
                 ),
               );
             }),
+      );
+
+  static Widget textWidget(String text) => AutoSizeText(
+        text,
+        style: defaultText(),
+        maxFontSize: globals.smallTextSize,
+        minFontSize: 6,
+        maxLines: 1,
+        group: globals.standardTextGroup,
       );
 }

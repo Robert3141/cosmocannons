@@ -87,10 +87,7 @@ class _LauncherPageState extends State<LauncherPage> {
               text: globals.settings,
               onTap: () => settings(),
               context: context),
-          Text(
-            _versionString,
-            style: UI.defaultText(false),
-          ),
+          UI.textWidget(_versionString),
           UI.smallButton(
               text: globals.achievements,
               onTap: () => achievements(),

@@ -1,5 +1,6 @@
 library cosmocannons.globals;
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 /// CONSTANTS
@@ -27,13 +28,13 @@ const String notConnected = "Not Connected";
 
 const List<String> defaultTeamNames = ["R", "G", "B", "Y"];
 
-const List<AssetImage> backgrounds = [
-  AssetImage("images/1.png"),
-  AssetImage("images/2.png"),
-  AssetImage("images/3.png"),
-  AssetImage("images/4.png"),
-  AssetImage("images/5.png"),
-  AssetImage("images/6.png"),
+List<AssetImage> backgrounds = [
+  AssetImage("assets/images/1.png"),
+  AssetImage("assets/images/2.png"),
+  AssetImage("assets/images/3.png"),
+  AssetImage("assets/images/4.png"),
+  AssetImage("assets/images/5.png"),
+  AssetImage("assets/images/6.png"),
 ];
 
 const double smallWidth = 0.2;
@@ -71,3 +72,6 @@ const List<Color> teamColors = [
 List<String> playerNames = [host, client, client, client];
 
 List<int> playerTeams = [1, 2, 3, 4];
+
+AutoSizeGroup standardTextGroup = AutoSizeGroup();
+AutoSizeGroup buttonTextGroup = AutoSizeGroup();

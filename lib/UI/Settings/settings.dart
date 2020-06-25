@@ -38,10 +38,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "Test",
-                        style: UI.defaultText(),
-                      ),
+                      UI.textWidget("test"),
                       UI.optionToggle(
                           items: ["yes", "no","maybe"],
                           onTap: (int i) {},

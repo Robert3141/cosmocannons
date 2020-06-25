@@ -8,11 +8,13 @@ Future main() async {
   if (kIsWeb) {
     runApp(MyApp());
   } else {
+    runApp(MyApp());
+    /*WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setPreferredOrientations(
             [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])
         .then((_) {
       runApp(new MyApp());
-    });
+    });*/
   }
 }
 
