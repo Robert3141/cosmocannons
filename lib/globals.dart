@@ -39,7 +39,7 @@ List<AssetImage> backgrounds = [
 
 const double smallWidth = 0.2;
 const double smallHeight = 0.2;
-const double tableElement = 0.2;
+const double tableElement = 0.18;
 const double paddingSize = 0.03;
 const double buttonBorderSize = 4.0;
 const double buttonClipSize = 8.0;
