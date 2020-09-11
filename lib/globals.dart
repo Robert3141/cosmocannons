@@ -54,8 +54,8 @@ const double terrainMidToTop = 0.5;
 const double terrainOpacity = 1.0;
 
 const int maxLANPlayers = 4;
-const int terrainRowsToRender = 20;
-const int terrainColumnsToRender = 20;
+const int terrainRowsToRender = 40;
+const int terrainColumnsToRender = 40;
 
 const Color buttonFill = Colors.black54;
 const Color buttonBorder = Colors.white38;

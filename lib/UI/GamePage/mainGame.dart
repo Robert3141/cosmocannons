@@ -41,12 +41,16 @@ class GamePainter extends CustomPainter {
   Offset relativePos(double x, double y) {
     //takes x & y between 0 and 100
     //returns size based on screen
-    double newX = (x / 100) * canvasSize.width;
-    double newY = (y / 100) * canvasSize.height;
+    double newX = x * canvasSize.width;
+    double newY = y * canvasSize.height;
     return Offset(newX, newY);
   }
 
-  void generateTerrain(List<double> terrainHeights) {
+  Offset relPos(Offset pos) {
+    return Offset(pos.dx * canvasSize.width, pos.dy * canvasSize.height);
+  }
+
+  Canvas generateTerrain(List<double> terrainHeights, Canvas canvas) {
     int xAmount = globals.terrainRowsToRender;
     int yAmount = globals.terrainColumnsToRender;
     int nearestIndex;
@@ -64,18 +68,23 @@ class GamePainter extends CustomPainter {
     Offset posTR;
     Offset posTL;
 
+    //canvas.drawColor(Colors.cyan, BlendMode.color);
+
     //loop through columns
     for (int x = 1; x < xAmount; x++) {
       //loop through rows
       for (int y = 1; y < yAmount; y++) {
         nearestIndex = ((x / xAmount) * terrainHeights.length).round();
+        nearestIndex = nearestIndex == terrainHeights.length
+            ? terrainHeights.length - 1
+            : nearestIndex;
         heightPos = y / yAmount;
         if (terrainHeights[nearestIndex] > heightPos) {
           //square vertex positions
           posBL = Offset((x - 1) / xAmount, (y - 1) / yAmount);
-          posBR = Offset((x) / xAmount, (y - 1) / yAmount);
-          posTL = Offset((x) / xAmount, (y) / yAmount);
-          posTR = Offset((x - 1) / xAmount, (y) / yAmount);
+          //posBR = Offset((x) / xAmount, (y - 1) / yAmount);
+          //posTL = Offset((x) / xAmount, (y) / yAmount);
+          posTR = Offset((x) / xAmount, (y) / yAmount);
 
           //choose colour
           fractionThere = heightPos * colors.length;
@@ -89,9 +98,16 @@ class GamePainter extends CustomPainter {
           blue = (fractionThere * (colorAbove.blue - colorBelow.blue)).round() +
               colorBelow.blue;
           blockColor = Color.fromRGBO(red, green, blue, globals.terrainOpacity);
+
+          final paint = Paint()
+            ..color = blockColor
+            ..strokeWidth = 4
+            ..strokeCap = StrokeCap.round;
+          canvas.drawRect(Rect.fromPoints(relPos(posBL), relPos(posTR)), paint);
         }
       }
     }
+    return canvas;
   }
 
   @override
@@ -99,18 +115,22 @@ class GamePainter extends CustomPainter {
     canvasSize = size;
     final pointMode = PointMode.polygon;
     final points = [
-      relativePos(50, 50),
-      relativePos(25, 25),
-      relativePos(75, 25),
-      relativePos(50, 50)
+      relativePos(0.50, 0.50),
+      relativePos(0.25, 0.25),
+      relativePos(0.75, 0.25),
+      relativePos(0.50, 0.50)
     ];
     final paint = Paint()
-      ..color = Colors.white
+      ..color = Colors.green
       ..strokeWidth = 4
       ..strokeCap = StrokeCap.round;
 
     //render point
-    canvas.drawPoints(pointMode, points, paint);
+    //canvas.drawPoints(pointMode, points, paint);
+
+    //canvas.drawRect(Rect.fromPoints(points[0], points[1]), paint);
+    canvas =
+        generateTerrain([0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69], canvas);
   }
 
   @override
