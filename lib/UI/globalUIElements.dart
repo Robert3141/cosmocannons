@@ -52,8 +52,8 @@ class UI {
           decoration: BoxDecoration(
             color: Colors.black,
             image: DecorationImage(
-              image: globals.backgrounds[backgroundNo - 1],
-            ),
+                image: globals.backgrounds[backgroundNo - 1],
+                fit: BoxFit.cover),
           ),
           child: Container(
             padding: EdgeInsets.all(getPaddingSize(context)),

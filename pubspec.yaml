@@ -31,6 +31,7 @@ dependencies:
   package_info: ^0.4.0+13
   page_transition: ^1.1.5
   auto_size_text: ^2.1.0
+  device_info: ^0.4.2+7
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,7 @@
 library cosmocannons.globals;
 
+import 'dart:ui';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
@@ -47,8 +49,13 @@ const double largeTextSize = 45.0;
 const double smallTextSize = 12.0;
 const double heightMultiplier = 1.5;
 const double halfButton = 0.48;
+const double terrainBottomToMid = 0.5;
+const double terrainMidToTop = 0.5;
+const double terrainOpacity = 1.0;
 
 const int maxLANPlayers = 4;
+const int terrainRowsToRender = 20;
+const int terrainColumnsToRender = 20;
 
 const Color buttonFill = Colors.black54;
 const Color buttonBorder = Colors.white38;
@@ -65,6 +72,11 @@ const List<Color> teamColors = [
   Colors.green,
   Colors.blue,
   Colors.yellow
+];
+const List<Color> terrainColors = [
+  Color.fromRGBO(220, 105, 30, terrainOpacity),
+  Color.fromRGBO(211, 211, 211, terrainOpacity),
+  Color.fromRGBO(0, 128, 0, terrainOpacity)
 ];
 
 /// VARIABLES
