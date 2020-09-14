@@ -54,8 +54,8 @@ const double terrainMidToTop = 0.5;
 const double terrainOpacity = 1.0;
 
 const int maxLANPlayers = 4;
-const int terrainRowsToRender = 40;
-const int terrainColumnsToRender = 40;
+const int terrainRowsToRender = 50;
+const int terrainColumnsToRender = 50;
 
 const Color buttonFill = Colors.black54;
 const Color buttonBorder = Colors.white38;
@@ -74,9 +74,9 @@ const List<Color> teamColors = [
   Colors.yellow
 ];
 const List<Color> terrainColors = [
-  Color.fromRGBO(220, 105, 30, terrainOpacity),
-  Color.fromRGBO(211, 211, 211, terrainOpacity),
-  Color.fromRGBO(0, 128, 0, terrainOpacity)
+  Color.fromRGBO(33, 33, 33, terrainOpacity),
+  Color.fromRGBO(101, 67, 33, terrainOpacity),
+  Colors.green //Color.fromRGBO(0, 128, 0, terrainOpacity)
 ];
 
 /// VARIABLES

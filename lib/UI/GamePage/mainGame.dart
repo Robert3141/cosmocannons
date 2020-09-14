@@ -25,11 +25,10 @@ class _MainGamePageState extends State<MainGamePage> {
   Widget build(BuildContext context) {
     Scaffold page = UI.scaffoldWithBackground(children: [
       CustomPaint(
-        size: Size(UI.screenWidth(context),
-            UI.screenHeight(context) - (2 * UI.getPaddingSize(context))),
+        size: Size(UI.screenWidth(context), UI.screenHeight(context)),
         painter: GamePainter(),
       ),
-    ], context: context);
+    ], context: context, padding: false);
     return page;
   }
 }
@@ -81,15 +80,16 @@ class GamePainter extends CustomPainter {
         heightPos = y / yAmount;
         if (terrainHeights[nearestIndex] > heightPos) {
           //square vertex positions
-          posBL = Offset((x - 1) / xAmount, (y - 1) / yAmount);
+          posBL = Offset((x - 1) / xAmount, 1 - ((y - 1) / yAmount));
           //posBR = Offset((x) / xAmount, (y - 1) / yAmount);
           //posTL = Offset((x) / xAmount, (y) / yAmount);
-          posTR = Offset((x) / xAmount, (y) / yAmount);
+          posTR = Offset((x) / xAmount, 1 - (y / yAmount));
 
           //choose colour
           fractionThere = heightPos * colors.length;
-          colorBelow = colors[0];
-          colorAbove = colors[1];
+          colorBelow = colors[fractionThere.floor()];
+          colorAbove =
+              colors[fractionThere.ceil() == 3 ? 2 : fractionThere.ceil()];
           red = (fractionThere * (colorAbove.red - colorBelow.red)).round() +
               colorBelow.red;
           green =
@@ -113,22 +113,8 @@ class GamePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     canvasSize = size;
-    final pointMode = PointMode.polygon;
-    final points = [
-      relativePos(0.50, 0.50),
-      relativePos(0.25, 0.25),
-      relativePos(0.75, 0.25),
-      relativePos(0.50, 0.50)
-    ];
-    final paint = Paint()
-      ..color = Colors.green
-      ..strokeWidth = 4
-      ..strokeCap = StrokeCap.round;
 
-    //render point
-    //canvas.drawPoints(pointMode, points, paint);
-
-    //canvas.drawRect(Rect.fromPoints(points[0], points[1]), paint);
+    //render terrain
     canvas =
         generateTerrain([0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69], canvas);
   }

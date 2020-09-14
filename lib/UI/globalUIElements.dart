@@ -45,7 +45,8 @@ class UI {
   static Scaffold scaffoldWithBackground(
           {@required List<Widget> children,
           @required BuildContext context,
-          int backgroundNo = 1}) =>
+          int backgroundNo = 1,
+          bool padding = true}) =>
       Scaffold(
         body: DecoratedBox(
           position: DecorationPosition.background,
@@ -56,7 +57,9 @@ class UI {
                 fit: BoxFit.cover),
           ),
           child: Container(
-            padding: EdgeInsets.all(getPaddingSize(context)),
+            padding: padding
+                ? EdgeInsets.all(getPaddingSize(context))
+                : EdgeInsets.zero,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: children,
