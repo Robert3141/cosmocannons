@@ -76,7 +76,7 @@ const List<Color> teamColors = [
 const List<Color> terrainColors = [
   Color.fromRGBO(33, 33, 33, terrainOpacity),
   Color.fromRGBO(101, 67, 33, terrainOpacity),
-  Colors.green //Color.fromRGBO(0, 128, 0, terrainOpacity)
+  Color.fromRGBO(0, 128, 0, terrainOpacity)
 ];
 
 /// VARIABLES

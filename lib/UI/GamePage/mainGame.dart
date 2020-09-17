@@ -28,6 +28,13 @@ class _MainGamePageState extends State<MainGamePage> {
         size: Size(UI.screenWidth(context), UI.screenHeight(context)),
         painter: GamePainter(),
       ),
+      /*RaisedButton(
+        onPressed: () {
+          setState(() {
+            print("Redrawn");
+          });
+        },
+      ),*/
     ], context: context, padding: false);
     return page;
   }
@@ -56,6 +63,7 @@ class GamePainter extends CustomPainter {
     int red;
     int blue;
     int green;
+    int minFractionFloor;
     List<Color> colors = globals.terrainColors;
     Color blockColor;
     Color colorAbove;
@@ -86,16 +94,24 @@ class GamePainter extends CustomPainter {
           posTR = Offset((x) / xAmount, 1 - (y / yAmount));
 
           //choose colour
-          fractionThere = heightPos * colors.length;
-          colorBelow = colors[fractionThere.floor()];
-          colorAbove =
-              colors[fractionThere.ceil() == 3 ? 2 : fractionThere.ceil()];
-          red = (fractionThere * (colorAbove.red - colorBelow.red)).round() +
+          fractionThere =
+              (heightPos / terrainHeights[nearestIndex]) * (colors.length - 1);
+          minFractionFloor = fractionThere.floor() == colors.length - 1
+              ? colors.length - 2
+              : fractionThere.floor();
+          colorBelow = colors[minFractionFloor];
+          colorAbove = colors[minFractionFloor + 1];
+          red = ((fractionThere - fractionThere.floor()) *
+                      (colorAbove.red - colorBelow.red))
+                  .round() +
               colorBelow.red;
-          green =
-              (fractionThere * (colorAbove.green - colorBelow.green)).round() +
-                  colorBelow.green;
-          blue = (fractionThere * (colorAbove.blue - colorBelow.blue)).round() +
+          green = ((fractionThere - fractionThere.floor()) *
+                      (colorAbove.green - colorBelow.green))
+                  .round() +
+              colorBelow.green;
+          blue = ((fractionThere - fractionThere.floor()) *
+                      (colorAbove.blue - colorBelow.blue))
+                  .round() +
               colorBelow.blue;
           blockColor = Color.fromRGBO(red, green, blue, globals.terrainOpacity);
 
@@ -115,8 +131,7 @@ class GamePainter extends CustomPainter {
     canvasSize = size;
 
     //render terrain
-    canvas =
-        generateTerrain([0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69], canvas);
+    generateTerrain([0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69], canvas);
   }
 
   @override
