@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
@@ -17,24 +16,55 @@ class MainGamePage extends StatefulWidget {
 
 class _MainGamePageState extends State<MainGamePage> {
   //locals
+  double zoom = globals.defaultZoom;
 
   //functions
+  void moveScroller(double increase) {
+    double currentPos = globals.gameScroller.offset;
+    double newPos = currentPos + increase;
+    double maxPos = UI.screenWidth(context) * zoom * 0.5;
+    newPos = newPos >= 0
+        ? newPos < maxPos
+            ? newPos
+            : maxPos
+        : 0;
+    print(newPos);
+    globals.gameScroller.jumpTo(newPos);
+  }
+
+  void keyPresses(RawKeyEvent key) {
+    String keyChar = key.data.keyLabel ?? "";
+    //print("Key Press: " + keyChar);
+    switch (keyChar) {
+      case "a":
+        //move left
+        moveScroller(-globals.scrollAmount);
+        break;
+      case "d":
+        //move right
+        moveScroller(globals.scrollAmount);
+        break;
+    }
+  }
 
   //build UI
   @override
   Widget build(BuildContext context) {
     Scaffold page = UI.scaffoldWithBackground(children: [
-      CustomPaint(
-        size: Size(UI.screenWidth(context), UI.screenHeight(context)),
-        painter: GamePainter(),
+      SingleChildScrollView(
+        controller: globals.gameScroller,
+        scrollDirection: Axis.horizontal,
+        child: RawKeyboardListener(
+          autofocus: true,
+          onKey: keyPresses,
+          focusNode: globals.gameInputs,
+          child: CustomPaint(
+            size:
+                Size(UI.screenWidth(context) * zoom, UI.screenHeight(context)),
+            painter: GamePainter(),
+          ),
+        ),
       ),
-      /*RaisedButton(
-        onPressed: () {
-          setState(() {
-            print("Redrawn");
-          });
-        },
-      ),*/
     ], context: context, padding: false);
     return page;
   }
@@ -70,32 +100,38 @@ class GamePainter extends CustomPainter {
     Color colorBelow;
     double heightPos;
     double fractionThere;
+    double smoothedHeight;
+    double relativeX1;
+    double relativeX;
     Offset posBL;
-    Offset posBR;
     Offset posTR;
-    Offset posTL;
-
-    //canvas.drawColor(Colors.cyan, BlendMode.color);
 
     //loop through columns
-    for (int x = 1; x < xAmount; x++) {
+    for (int x = 1; x <= xAmount; x++) {
       //loop through rows
-      for (int y = 1; y < yAmount; y++) {
-        nearestIndex = ((x / xAmount) * terrainHeights.length).round();
-        nearestIndex = nearestIndex == terrainHeights.length
+      for (int y = 1; y <= yAmount; y++) {
+        //calculate the nearest mapping value to estimate height at
+        relativeX = x / xAmount;
+        nearestIndex = (relativeX * terrainHeights.length).floor();
+        nearestIndex = nearestIndex >= terrainHeights.length
             ? terrainHeights.length - 1
             : nearestIndex;
+        /*diffOfTerrain = nearestIndex == terrainHeights.length - 1
+            ? 0
+            : (terrainHeights[nearestIndex + 1] - terrainHeights[nearestIndex]);*/
+        smoothedHeight = terrainHeights[nearestIndex];
+        /*+
+            (diffOfTerrain * (relativeX - nearestIndex));*/
         heightPos = y / yAmount;
-        if (terrainHeights[nearestIndex] > heightPos) {
+        if (smoothedHeight > heightPos) {
           //square vertex positions
-          posBL = Offset((x - 1) / xAmount, 1 - ((y - 1) / yAmount));
-          //posBR = Offset((x) / xAmount, (y - 1) / yAmount);
-          //posTL = Offset((x) / xAmount, (y) / yAmount);
-          posTR = Offset((x) / xAmount, 1 - (y / yAmount));
+          relativeX = x / xAmount;
+          relativeX1 = (x - 1) / xAmount;
+          posBL = Offset(relativeX1, 1 - ((y - 1) / yAmount));
+          posTR = Offset(relativeX, 1 - (y / yAmount));
 
           //choose colour
-          fractionThere =
-              (heightPos / terrainHeights[nearestIndex]) * (colors.length - 1);
+          fractionThere = (heightPos / smoothedHeight) * (colors.length - 1);
           minFractionFloor = fractionThere.floor() == colors.length - 1
               ? colors.length - 2
               : fractionThere.floor();
@@ -115,10 +151,11 @@ class GamePainter extends CustomPainter {
               colorBelow.blue;
           blockColor = Color.fromRGBO(red, green, blue, globals.terrainOpacity);
 
+          //draw block
           final paint = Paint()
             ..color = blockColor
             ..strokeWidth = 4
-            ..strokeCap = StrokeCap.round;
+            ..strokeCap = StrokeCap.square;
           canvas.drawRect(Rect.fromPoints(relPos(posBL), relPos(posTR)), paint);
         }
       }
@@ -131,7 +168,7 @@ class GamePainter extends CustomPainter {
     canvasSize = size;
 
     //render terrain
-    generateTerrain([0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69], canvas);
+    generateTerrain(globals.terrainMaps[0], canvas);
   }
 
   @override

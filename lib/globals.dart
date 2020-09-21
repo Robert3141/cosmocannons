@@ -52,6 +52,12 @@ const double halfButton = 0.48;
 const double terrainBottomToMid = 0.5;
 const double terrainMidToTop = 0.5;
 const double terrainOpacity = 1.0;
+const double defaultZoom = 2.0;
+const double scrollAmount = 100.0;
+
+const List<List<double>> terrainMaps = [
+  [0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69],
+];
 
 const int maxLANPlayers = 4;
 const int terrainRowsToRender = 50;
@@ -87,3 +93,7 @@ List<int> playerTeams = [1, 2, 3, 4];
 
 AutoSizeGroup standardTextGroup = AutoSizeGroup();
 AutoSizeGroup buttonTextGroup = AutoSizeGroup();
+
+ScrollController gameScroller = ScrollController();
+
+FocusNode gameInputs = FocusNode();

@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'package:cosmocannons/UI/GamePage/mainGame.dart';
 import 'package:cosmocannons/globals.dart' as globals;
-import 'package:cosmocannons/UI/launcher.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
