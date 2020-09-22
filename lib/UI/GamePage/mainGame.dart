@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
 import 'package:cosmocannons/globals.dart' as globals;
+import 'package:flutter/services.dart';
 
 class MainGamePage extends StatefulWidget {
   //constructor of class
@@ -17,8 +18,22 @@ class MainGamePage extends StatefulWidget {
 class _MainGamePageState extends State<MainGamePage> {
   //locals
   double zoom = globals.defaultZoom;
+  bool paused = false;
+  BuildContext pageContext;
 
   //functions
+  void pausePress() {
+    setState(() {
+      paused = !paused;
+      //based on paused or unpaused
+      if (paused) {
+        //paused
+      } else {
+        //unpaused
+      }
+    });
+  }
+
   void moveScroller(double increase) {
     double currentPos = globals.gameScroller.offset;
     double newPos = currentPos + increase;
@@ -33,37 +48,93 @@ class _MainGamePageState extends State<MainGamePage> {
   }
 
   void keyPresses(RawKeyEvent key) {
-    String keyChar = key.data.keyLabel ?? "";
-    //print("Key Press: " + keyChar);
-    switch (keyChar) {
-      case "a":
-        //move left
-        moveScroller(-globals.scrollAmount);
-        break;
-      case "d":
-        //move right
-        moveScroller(globals.scrollAmount);
-        break;
+    //only take key down events not key up as well
+    if (key.runtimeType == RawKeyDownEvent) {
+      //only take most inputs when not paused
+      if (!paused) {
+        String keyChar = key.data.keyLabel ?? "";
+        KeyboardKey keyPress = key.logicalKey;
+        switch (keyChar) {
+          case "a":
+            //move left
+            moveScroller(-globals.scrollAmount);
+            break;
+          case "d":
+            //move right
+            moveScroller(globals.scrollAmount);
+            break;
+        }
+        if (keyPress == LogicalKeyboardKey.arrowLeft) {
+          //move left
+          moveScroller(-globals.scrollAmount);
+        }
+        if (keyPress == LogicalKeyboardKey.arrowRight) {
+          //move right
+          moveScroller(globals.scrollAmount);
+        }
+      }
+      //always on keyboard controls
+      if (key.logicalKey == LogicalKeyboardKey.escape) {
+        pausePress();
+      }
     }
   }
 
   //build UI
   @override
   Widget build(BuildContext context) {
+    pageContext = context;
     Scaffold page = UI.scaffoldWithBackground(children: [
-      SingleChildScrollView(
-        controller: globals.gameScroller,
-        scrollDirection: Axis.horizontal,
-        child: RawKeyboardListener(
-          autofocus: true,
-          onKey: keyPresses,
-          focusNode: globals.gameInputs,
-          child: CustomPaint(
-            size:
-                Size(UI.screenWidth(context) * zoom, UI.screenHeight(context)),
-            painter: GamePainter(),
+      Stack(
+        children: [
+          //main terrain
+          SingleChildScrollView(
+            controller: globals.gameScroller,
+            scrollDirection: Axis.horizontal,
+            //scrollable based on pause
+            physics: paused
+                ? NeverScrollableScrollPhysics()
+                : AlwaysScrollableScrollPhysics(),
+            child: RawKeyboardListener(
+              autofocus: true,
+              onKey: keyPresses,
+              focusNode: globals.gameInputs,
+              child: CustomPaint(
+                size: Size(
+                    UI.screenWidth(context) * zoom, UI.screenHeight(context)),
+                painter: GamePainter(),
+              ),
+            ),
           ),
-        ),
+          //pause menu
+          paused
+              ? Container(
+                  color: globals.disabledBorder,
+                  width: UI.screenWidth(context),
+                  height: UI.screenHeight(context),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Column(
+                      children: [
+                        UI.topTitle(
+                            titleText: "Paused", context: context, root: true),
+                      ],
+                    ),
+                  ),
+                )
+              : Container(),
+          //pause button
+          Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+                icon: Icon(paused ? Icons.play_arrow : Icons.pause,
+                    color: globals.textColor),
+                iconSize: globals.iconSize,
+                onPressed: () {
+                  pausePress();
+                }),
+          ),
+        ],
       ),
     ], context: context, padding: false);
     return page;
