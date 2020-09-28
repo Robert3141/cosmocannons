@@ -229,8 +229,9 @@ class UI {
                       );
                     } else {
                       // Other Cells
-                      return tableCell(context,
-                          onTap: () => changePlayerTeam(y, x),
+                      return tableCell(context, onTap: () {
+                        changePlayerTeam(y, x);
+                      },
                           ticked: playerTeams[y - 1] == x,
                           textColor: globals.teamColors[x - 1]);
                     }

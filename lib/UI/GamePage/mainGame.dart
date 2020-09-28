@@ -7,9 +7,12 @@ import 'package:flutter/services.dart';
 
 class MainGamePage extends StatefulWidget {
   //constructor of class
-  MainGamePage({Key key, this.title}) : super(key: key);
+  MainGamePage({Key key, this.title, this.playerColours, this.type})
+      : super(key: key);
 
   final String title;
+  final List<int> playerColours;
+  final globals.GameType type;
 
   @override
   _MainGamePageState createState() => _MainGamePageState();
@@ -19,6 +22,7 @@ class _MainGamePageState extends State<MainGamePage> {
   //locals
   double zoom = globals.defaultZoom;
   bool paused = false;
+  bool playersTurn = true;
   BuildContext pageContext;
 
   //functions
@@ -43,7 +47,6 @@ class _MainGamePageState extends State<MainGamePage> {
             ? newPos
             : maxPos
         : 0;
-    print(newPos);
     globals.gameScroller.jumpTo(newPos);
   }
 
@@ -84,6 +87,7 @@ class _MainGamePageState extends State<MainGamePage> {
   @override
   Widget build(BuildContext context) {
     pageContext = context;
+    playersTurn = widget.type.startingPlayer;
     Scaffold page = UI.scaffoldWithBackground(children: [
       Stack(
         children: [
@@ -109,15 +113,19 @@ class _MainGamePageState extends State<MainGamePage> {
           //pause menu
           paused
               ? Container(
+                  //give a disabled effect
                   color: globals.disabledBorder,
                   width: UI.screenWidth(context),
                   height: UI.screenHeight(context),
                   child: Align(
                     alignment: Alignment.center,
                     child: Column(
+                      //columnof actual data
                       children: [
                         UI.topTitle(
-                            titleText: "Paused", context: context, root: true),
+                            titleText: globals.paused,
+                            context: context,
+                            root: true),
                       ],
                     ),
                   ),
@@ -133,6 +141,23 @@ class _MainGamePageState extends State<MainGamePage> {
                 onPressed: () {
                   pausePress();
                 }),
+          ),
+          //player arrow buttons
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: IconButton(
+              icon: Icon(Icons.arrow_left_outlined),
+              iconSize: globals.iconSize,
+              onPressed: () {},
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: IconButton(
+              icon: Icon(Icons.arrow_right_outlined),
+              iconSize: globals.iconSize,
+              onPressed: () {},
+            ),
           ),
         ],
       ),

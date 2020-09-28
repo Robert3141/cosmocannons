@@ -27,6 +27,7 @@ const String readyForPlay = "Ready";
 const String client = "Client";
 const String host = "Host";
 const String notConnected = "Not Connected";
+const String paused = "Paused";
 
 const List<String> defaultTeamNames = ["R", "G", "B", "Y"];
 
@@ -98,3 +99,22 @@ AutoSizeGroup buttonTextGroup = AutoSizeGroup();
 ScrollController gameScroller = ScrollController();
 
 FocusNode gameInputs = FocusNode();
+
+enum GameType { singlePlayer, multiLocal, multiHost, multiClient }
+
+extension GameExtension on GameType {
+  bool get startingPlayer {
+    switch (this) {
+      case GameType.singlePlayer:
+        return true;
+      case GameType.multiHost:
+        return true;
+      case GameType.multiLocal:
+        return true;
+      case GameType.multiClient:
+        return false;
+      default:
+        return null;
+    }
+  }
+}

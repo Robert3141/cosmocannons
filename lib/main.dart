@@ -1,4 +1,5 @@
 import 'package:cosmocannons/UI/GamePage/mainGame.dart';
+import 'package:cosmocannons/UI/launcher.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -27,8 +28,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MainGamePage(title: "MainPage"),
-      //home: LauncherPage(title: globals.gameTitle),
+      //home: MainGamePage(title: "MainPage"),
+      home: LauncherPage(title: globals.gameTitle),
     );
   }
 }
