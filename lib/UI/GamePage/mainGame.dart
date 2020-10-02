@@ -38,6 +38,8 @@ class _MainGamePageState extends State<MainGamePage> {
     });
   }
 
+  void playerMove(bool right) {}
+
   void moveScroller(double increase) {
     double currentPos = globals.gameScroller.offset;
     double newPos = currentPos + increase;
@@ -67,13 +69,15 @@ class _MainGamePageState extends State<MainGamePage> {
             moveScroller(globals.scrollAmount);
             break;
         }
-        if (keyPress == LogicalKeyboardKey.arrowLeft) {
+        if (keyPress == LogicalKeyboardKey.arrowLeft && playersTurn) {
           //move left
-          moveScroller(-globals.scrollAmount);
+          playerMove(false);
+          //moveScroller(-globals.scrollAmount);
         }
-        if (keyPress == LogicalKeyboardKey.arrowRight) {
+        if (keyPress == LogicalKeyboardKey.arrowRight && playersTurn) {
           //move right
-          moveScroller(globals.scrollAmount);
+          playerMove(true);
+          //moveScroller(globals.scrollAmount);
         }
       }
       //always on keyboard controls
@@ -87,7 +91,7 @@ class _MainGamePageState extends State<MainGamePage> {
   @override
   Widget build(BuildContext context) {
     pageContext = context;
-    playersTurn = widget.type.startingPlayer;
+    playersTurn = widget.type.startingPlayer ?? true;
     Scaffold page = UI.scaffoldWithBackground(children: [
       Stack(
         children: [
@@ -143,22 +147,30 @@ class _MainGamePageState extends State<MainGamePage> {
                 }),
           ),
           //player arrow buttons
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: IconButton(
-              icon: Icon(Icons.arrow_left_outlined),
-              iconSize: globals.iconSize,
-              onPressed: () {},
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: IconButton(
-              icon: Icon(Icons.arrow_right_outlined),
-              iconSize: globals.iconSize,
-              onPressed: () {},
-            ),
-          ),
+          playersTurn
+              ? Positioned(
+                  left: 0.0,
+                  bottom: 0.0,
+                  child: IconButton(
+                    icon: Icon(Icons.arrow_back_ios_rounded,
+                        color: globals.textColor),
+                    iconSize: globals.iconSize,
+                    onPressed: () => playerMove(false),
+                  ),
+                )
+              : Container(),
+          playersTurn
+              ? Positioned(
+                  right: 0.0,
+                  bottom: 0.0,
+                  child: IconButton(
+                    icon: Icon(Icons.arrow_forward_ios_rounded,
+                        color: globals.textColor),
+                    iconSize: globals.iconSize,
+                    onPressed: () => playerMove(true),
+                  ),
+                )
+              : Container(),
         ],
       ),
     ], context: context, padding: false);

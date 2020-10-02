@@ -115,9 +115,15 @@ class UI {
           double width,
           double height,
           Color buttonFill = globals.buttonFill,
-          bool enabled = true}) =>
+          bool enabled = true,
+          bool textField = false,
+          TextEditingController controller}) =>
       GestureDetector(
-        onTap: enabled ? onTap : () {},
+        onTap: enabled
+            ? textField
+                ? () {}
+                : onTap
+            : () {},
         child: Container(
           width: screenWidth(context) * (width ?? getHalfWidth(context)),
           height: screenHeight(context) * (height ?? getHalfHeight(context)),
@@ -129,13 +135,21 @@ class UI {
               borderRadius: BorderRadius.circular(globals.buttonClipSize),
               color: enabled ? buttonFill : globals.buttonFill),
           alignment: Alignment.center,
-          child: AutoSizeText(
-            text,
-            group: globals.buttonTextGroup,
-            maxLines: 1,
-            textAlign: TextAlign.center,
-            style: defaultText(false, enabled),
-          ),
+          child: textField
+              ? TextField(
+                  onChanged: onTap,
+                  controller: controller ?? TextEditingController(text: text),
+                  maxLength: 10,
+                  textAlign: TextAlign.center,
+                  style: defaultText(false, enabled),
+                )
+              : AutoSizeText(
+                  text,
+                  group: globals.buttonTextGroup,
+                  maxLines: 1,
+                  textAlign: TextAlign.center,
+                  style: defaultText(false, enabled),
+                ),
         ),
       );
 
@@ -143,13 +157,17 @@ class UI {
   static GestureDetector smallButton(
           {@required String text,
           @required Function onTap,
-          @required BuildContext context}) =>
+          @required BuildContext context,
+          textField = false,
+          TextEditingController controller}) =>
       largeButton(
           text: text,
           onTap: onTap,
           context: context,
           width: globals.smallWidth,
-          height: globals.smallHeight);
+          height: globals.smallHeight,
+          textField: textField,
+          controller: controller);
 
   // This is a widget to provide a table like UI. This is primarily for the team selection interface.
   static InkWell tableCell(BuildContext context,
@@ -308,4 +326,12 @@ class UI {
         maxLines: 1,
         group: globals.standardTextGroup,
       );
+
+  static Dialog gamePopup(Widget child) {
+    return Dialog(
+      shape: RoundedRectangleBorder(),
+      backgroundColor: globals.disabledBorder,
+      child: child,
+    );
+  }
 }

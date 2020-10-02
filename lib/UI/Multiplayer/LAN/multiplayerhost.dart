@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
 import 'package:cosmocannons/globals.dart' as globals;
+import 'package:client_server_lan/client_server_lan.dart';
 
 class HostMultiPage extends StatefulWidget {
   //constructor of class
@@ -18,8 +19,50 @@ class _LocalMultiPageState extends State<HostMultiPage> {
   bool readyForPlay = false;
   bool hostingServer = false;
   List<int> playerTeams = globals.playerTeams;
+  String userNameText = "";
+  ServerNode server;
 
   //functions
+  void nameSelectPopup() {
+    setState(() {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => UI.gamePopup(UI.smallButton(
+          text: "",
+          onTap: (String text) {
+            setState(() {
+              //update player name
+              userNameText = text;
+              globals.playerNames[0] = text;
+            });
+          },
+          context: context,
+          textField: true,
+        )),
+      );
+    });
+  }
+
+  void startServer() async {
+    String ip = await Wifi.ip;
+    server = ServerNode(
+      name: "Server",
+      verbose: true,
+      host: ip,
+      port: 8085,
+    );
+    await server.init();
+    await server.onReady;
+    setState(() {
+      serverStatus = "Server ready on ${server.host}:${server.port}";
+    });
+    server.dataResponse.listen((DataPacket data) {
+      setState(() {
+        dataRecieved = data.payload;
+      });
+    });
+  }
+
   void changePlayerTeam(int playerNo, int newTeam) {
     setState(() {
       playerTeams[playerNo - 1] = newTeam;
@@ -52,7 +95,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
                           globals.halfButton *
                           globals.heightMultiplier,
                       text: globals.hostName,
-                      onTap: null,
+                      onTap: nameSelectPopup,
                       context: context),
                   Container(
                     width: UI.getPaddingSize(context),
@@ -64,6 +107,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
                           globals.heightMultiplier,
                       text: globals.hostStartServer,
                       onTap: null,
+                      enabled: userNameText.isNotEmpty,
                       context: context)
                 ],
               ),
