@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:client_server_lan/client_server_lan.dart';
+import 'dart:async';
+import 'package:wifi/wifi.dart';
 
 class HostMultiPage extends StatefulWidget {
   //constructor of class
@@ -53,15 +55,15 @@ class _LocalMultiPageState extends State<HostMultiPage> {
     );
     await server.init();
     await server.onReady;
+    //server now ready
     setState(() {
-      serverStatus = "Server ready on ${server.host}:${server.port}";
+      hostingServer = true;
+      //serverStatus = "Server ready on ${server.host}:${server.port}";
     });
-    server.dataResponse.listen((DataPacket data) {
-      setState(() {
-        dataRecieved = data.payload;
-      });
-    });
+    server.dataResponse.listen(dataReceived);
   }
+
+  void dataReceived(DataPacket data) {}
 
   void changePlayerTeam(int playerNo, int newTeam) {
     setState(() {
