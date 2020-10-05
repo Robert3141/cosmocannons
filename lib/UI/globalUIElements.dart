@@ -318,8 +318,11 @@ class UI {
             }),
       );
 
-  static Widget textWidget(String text) => AutoSizeText(
+  static Widget textWidget(String text,
+          {TextAlign spacing = TextAlign.center}) =>
+      AutoSizeText(
         text,
+        textAlign: spacing,
         style: defaultText(),
         maxFontSize: globals.smallTextSize,
         minFontSize: 6,

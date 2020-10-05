@@ -30,8 +30,11 @@ const String client = "Client";
 const String host = "Host";
 const String notConnected = "Not Connected";
 const String paused = "Paused";
+const String platformNotSupported = "Not supported on this device";
+const String amountOfPlayers = "Amount of players";
 
 const List<String> defaultTeamNames = ["R", "G", "B", "Y"];
+const List<String> playerAmounts = ["2", "3", "4"];
 
 List<AssetImage> backgrounds = [
   AssetImage("assets/images/1.png"),
@@ -90,6 +93,8 @@ const List<Color> terrainColors = [
 ];
 
 /// VARIABLES
+
+int playerNum;
 
 List<String> playerNames = [host, client, client, client];
 
