@@ -95,6 +95,8 @@ List<String> playerNames = [host, client, client, client];
 
 List<int> playerTeams = [1, 2, 3, 4];
 
+List<List<double>> playerPos;
+
 AutoSizeGroup standardTextGroup = AutoSizeGroup();
 AutoSizeGroup buttonTextGroup = AutoSizeGroup();
 

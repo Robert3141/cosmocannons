@@ -7,11 +7,9 @@ import 'package:flutter/services.dart';
 
 class MainGamePage extends StatefulWidget {
   //constructor of class
-  MainGamePage({Key key, this.title, this.playerColours, this.type})
-      : super(key: key);
+  MainGamePage({Key key, this.title, this.type}) : super(key: key);
 
   final String title;
-  final List<int> playerColours;
   final globals.GameType type;
 
   @override
@@ -21,6 +19,8 @@ class MainGamePage extends StatefulWidget {
 class _MainGamePageState extends State<MainGamePage> {
   //locals
   double zoom = globals.defaultZoom;
+  int amountOfPlayers;
+  bool startOfGame = true;
   bool paused = false;
   bool playersTurn = true;
   BuildContext pageContext;
@@ -39,6 +39,8 @@ class _MainGamePageState extends State<MainGamePage> {
   }
 
   void playerMove(bool right) {}
+
+  void gameStart() {}
 
   void moveScroller(double increase) {
     double currentPos = globals.gameScroller.offset;
@@ -194,7 +196,27 @@ class GamePainter extends CustomPainter {
     return Offset(pos.dx * canvasSize.width, pos.dy * canvasSize.height);
   }
 
-  Canvas generateTerrain(List<double> terrainHeights, Canvas canvas) {
+  void drawPlayer(int colour, List<double> pos, Canvas canvas) {
+    Offset position = Offset(pos[0], pos[1]);
+    final paint = Paint()
+      ..color = globals.teamColors[colour]
+      ..strokeWidth = 4
+      ..strokeCap = StrokeCap.square;
+    canvas.drawCircle(position, 10, paint);
+  }
+
+  void spawnInPlayers(List<int> playerColours, Canvas canvas) {
+    int amountOfPlayers = playerColours.length;
+    globals.playerPos = new List.filled(amountOfPlayers, [0, 0]);
+
+    for (int players = 0; players < amountOfPlayers; players++) {
+      //place in player
+      globals.playerPos[players] = [1 / amountOfPlayers, 0.5];
+      drawPlayer(playerColours[players], globals.playerPos[players], canvas);
+    }
+  }
+
+  void generateTerrain(List<double> terrainHeights, Canvas canvas) {
     int xAmount = globals.terrainRowsToRender;
     int yAmount = globals.terrainColumnsToRender;
     int nearestIndex;
@@ -268,7 +290,6 @@ class GamePainter extends CustomPainter {
         }
       }
     }
-    return canvas;
   }
 
   @override
@@ -277,6 +298,9 @@ class GamePainter extends CustomPainter {
 
     //render terrain
     generateTerrain(globals.terrainMaps[0], canvas);
+
+    //place in characters
+    spawnInPlayers(globals.playerTeams, canvas);
   }
 
   @override
