@@ -23,7 +23,9 @@ class _LocalMultiPageState extends State<LocalMultiPage> {
   Widget build(BuildContext context) {
     Scaffold page = UI.scaffoldWithBackground(children: [
       UI.topTitle(titleText: globals.localMulti, context: context),
-      Row(),
+      Row(
+        children: [],
+      ),
     ], context: context, backgroundNo: 3);
 
     return page;

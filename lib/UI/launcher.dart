@@ -21,7 +21,8 @@ class LauncherPage extends StatefulWidget {
 
 class _LauncherPageState extends State<LauncherPage> {
   //locals
-  bool firstBuild = true;  
+  bool firstBuild = true;
+  int amountOfPlays = 0;
   String _versionString = "Loading . . .";
 
   //functions
@@ -43,18 +44,24 @@ class _LauncherPageState extends State<LauncherPage> {
   }
 
   Future getVersionString() async {
+    //detect platform
+    var platform = Theme.of(context).platform;
+    bool kIsAndroid = platform == TargetPlatform.android;
+    bool kIsIOS = platform == TargetPlatform.iOS;
+    bool kIsMobile = kIsAndroid || kIsIOS;
     if (firstBuild) {
       firstBuild = false;
-      if (kIsWeb) {
+      //do platform specific
+      if (!kIsMobile) {
         setState(() {
-          _versionString = "Plays: 0";
+          _versionString = "Plays: $amountOfPlays";
         });
       } else {
         PackageInfo packageInfo = await PackageInfo.fromPlatform();
         //String versionName = packageInfo.version;
         String versionCode = packageInfo.buildNumber;
         String fullString =
-            "Version no: $versionCode Plays: 0"; //TODO add no. of plays
+            "Version no: $versionCode Plays: $amountOfPlays"; //TODO add no. of plays
         setState(() {
           _versionString = fullString;
         });
@@ -65,6 +72,7 @@ class _LauncherPageState extends State<LauncherPage> {
   //build UI
   @override
   Widget build(BuildContext context) {
+    getVersionString();
     Scaffold page = UI.scaffoldWithBackground(context: context, children: [
       UI.topTitle(titleText: globals.gameTitle, context: context, root: true),
       Row(
@@ -95,8 +103,6 @@ class _LauncherPageState extends State<LauncherPage> {
         ],
       ),
     ]);
-
-    getVersionString();
 
     return page;
   }

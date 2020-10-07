@@ -3,8 +3,10 @@ import 'package:cosmocannons/globals.dart' as globals;
 import 'package:cosmocannons/UI/Multiplayer/Local/multiplayerlocal.dart';
 import 'package:cosmocannons/UI/Multiplayer/LAN/multiplayerclient.dart';
 import 'package:cosmocannons/UI/Multiplayer/LAN/multiplayerhost.dart';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class MultiplayerPage extends StatefulWidget {
   //constructor of the class
@@ -35,6 +37,12 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
   //build UI
   @override
   Widget build(BuildContext context) {
+    //locals
+    var platform = Theme.of(context).platform;
+    bool kIsAndroid = platform == TargetPlatform.android;
+    bool kIsIOS = platform == TargetPlatform.iOS;
+    bool kIsMobile = true; //kIsAndroid || kIsIOS;
+
     Scaffold page = UI.scaffoldWithBackground(
       context: context,
       backgroundNo: 2,
@@ -56,16 +64,22 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
                     height: UI.getHalfHeight(context) *
                         globals.halfButton *
                         globals.heightMultiplier,
-                    text: globals.hostMulti,
+                    text: kIsMobile
+                        ? globals.hostMulti
+                        : globals.platformNotSupported,
                     onTap: () => hostMutli(),
+                    enabled: kIsMobile,
                     context: context),
                 Container(height: UI.getPaddingSize(context)),
                 UI.largeButton(
                     height: UI.getHalfHeight(context) *
                         globals.halfButton *
                         globals.heightMultiplier,
-                    text: globals.clientMulti,
+                    text: kIsMobile
+                        ? globals.clientMulti
+                        : globals.platformNotSupported,
                     onTap: () => clientMulti(),
+                    enabled: kIsMobile,
                     context: context),
               ],
             ),

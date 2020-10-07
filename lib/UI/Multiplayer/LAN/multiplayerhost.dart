@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:client_server_lan/client_server_lan.dart';
-import 'dart:async';
 import 'package:wifi/wifi.dart';
 
 class HostMultiPage extends StatefulWidget {
@@ -98,6 +97,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
                           globals.heightMultiplier,
                       text: globals.hostName,
                       onTap: nameSelectPopup,
+                      enabled: !hostingServer,
                       context: context),
                   Container(
                     width: UI.getPaddingSize(context),
