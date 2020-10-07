@@ -19,7 +19,7 @@ class _SingleplayerPageState extends State<SingleplayerPage> {
   //functions
   void amountOfPlayersChange(int i) {
     setState(() {
-      globals.playerNum = i + 2;
+      globals.playerTeams.length = i + 2;
     });
   }
 
@@ -43,7 +43,7 @@ class _SingleplayerPageState extends State<SingleplayerPage> {
                 UI.textWidget(globals.amountOfPlayers, spacing: TextAlign.end),
                 UI.optionToggle(
                   items: globals.playerAmounts,
-                  selectedInt: globals.playerNum - 2,
+                  selectedInt: globals.playerTeams.length - 2,
                   onTap: amountOfPlayersChange,
                   context: context,
                 ),

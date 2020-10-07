@@ -61,6 +61,7 @@ const double terrainOpacity = 1.0;
 const double defaultZoom = 2.0;
 const double scrollAmount = 200.0;
 const double iconSize = 50.0;
+const double movementAmount = 0.5;
 
 const List<List<double>> terrainMaps = [
   [0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69],
@@ -94,11 +95,13 @@ const List<Color> terrainColors = [
 
 /// VARIABLES
 
-int playerNum;
+bool firstRender = true;
+
+Canvas terrainCanvas;
 
 List<String> playerNames = [host, client, client, client];
 
-List<int> playerTeams = [1, 2, 3, 4];
+List<int> playerTeams = [0, 1, 2, 3];
 
 List<List<double>> playerPos;
 
@@ -122,6 +125,21 @@ extension GameExtension on GameType {
         return true;
       case GameType.multiClient:
         return false;
+      default:
+        return null;
+    }
+  }
+
+  int get playerNumber {
+    switch (this) {
+      case GameType.singlePlayer:
+        return 0;
+      case GameType.multiHost:
+        return 0;
+      case GameType.multiClient:
+        return 1;
+      case GameType.multiLocal:
+        return 0;
       default:
         return null;
     }

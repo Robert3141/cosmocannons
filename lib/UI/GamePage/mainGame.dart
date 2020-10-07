@@ -13,17 +13,22 @@ class MainGamePage extends StatefulWidget {
   final globals.GameType type;
 
   @override
-  _MainGamePageState createState() => _MainGamePageState();
+  _MainGamePageState createState() {
+    globals.firstRender = true;
+    return _MainGamePageState();
+  }
 }
 
 class _MainGamePageState extends State<MainGamePage> {
   //locals
   double zoom = globals.defaultZoom;
   int amountOfPlayers;
+  int playerNumber;
   bool startOfGame = true;
   bool paused = false;
   bool playersTurn = true;
   BuildContext pageContext;
+  List<double> gameMap = globals.terrainMaps[0];
 
   //functions
   void pausePress() {
@@ -38,7 +43,24 @@ class _MainGamePageState extends State<MainGamePage> {
     });
   }
 
-  void playerMove(bool right) {}
+  void playerMove(bool right) {
+    double playerX = globals.playerPos[playerNumber][0];
+    double playerY;
+    playerX = right
+        ? playerX + globals.movementAmount
+        : playerX - globals.movementAmount;
+    //make sure playerX is always between 0 and 1
+    playerX = playerX > 1
+        ? 1
+        : playerX < 0
+            ? 0
+            : playerX;
+    playerY = GamePainter().calcNearestHeight(gameMap, playerX);
+    setState(() {
+      globals.playerPos[playerNumber] = [playerX, playerY];
+      print("POS" + globals.playerPos.toString());
+    });
+  }
 
   void gameStart() {}
 
@@ -94,6 +116,10 @@ class _MainGamePageState extends State<MainGamePage> {
   Widget build(BuildContext context) {
     pageContext = context;
     playersTurn = widget.type.startingPlayer ?? true;
+    playerNumber = widget.type.playerNumber ?? 0;
+    Color playerButtonColour =
+        globals.teamColors[globals.playerTeams[playerNumber]] ??
+            globals.textColor;
     Scaffold page = UI.scaffoldWithBackground(children: [
       Stack(
         children: [
@@ -155,7 +181,7 @@ class _MainGamePageState extends State<MainGamePage> {
                   bottom: 0.0,
                   child: IconButton(
                     icon: Icon(Icons.arrow_back_ios_rounded,
-                        color: globals.textColor),
+                        color: playerButtonColour),
                     iconSize: globals.iconSize,
                     onPressed: () => playerMove(false),
                   ),
@@ -167,7 +193,7 @@ class _MainGamePageState extends State<MainGamePage> {
                   bottom: 0.0,
                   child: IconButton(
                     icon: Icon(Icons.arrow_forward_ios_rounded,
-                        color: globals.textColor),
+                        color: playerButtonColour),
                     iconSize: globals.iconSize,
                     onPressed: () => playerMove(true),
                   ),
@@ -183,6 +209,7 @@ class _MainGamePageState extends State<MainGamePage> {
 class GamePainter extends CustomPainter {
   //locals
   Size canvasSize;
+  List<List<double>> currentPlayerPos;
 
   Offset relativePos(double x, double y) {
     //takes x & y between 0 and 100
@@ -193,6 +220,8 @@ class GamePainter extends CustomPainter {
   }
 
   Offset relPos(Offset pos) {
+    // takes x and y between 0 and 1
+    // return size based on screen
     return Offset(pos.dx * canvasSize.width, pos.dy * canvasSize.height);
   }
 
@@ -202,24 +231,45 @@ class GamePainter extends CustomPainter {
       ..color = globals.teamColors[colour]
       ..strokeWidth = 4
       ..strokeCap = StrokeCap.square;
-    canvas.drawCircle(position, 10, paint);
+    canvas.drawCircle(relPos(position), 10, paint);
   }
 
-  void spawnInPlayers(List<int> playerColours, Canvas canvas) {
+  void spawnInPlayers(
+      List<int> playerColours, List<double> terrainHeights, Canvas canvas) {
     int amountOfPlayers = playerColours.length;
-    globals.playerPos = new List.filled(amountOfPlayers, [0, 0]);
+    double playerY = 0.0;
+    double playerX = 0.0;
+    //empty only on first render
+    if (globals.firstRender) {
+      globals.playerPos = new List.filled(amountOfPlayers, [0, 0]);
+    }
 
     for (int players = 0; players < amountOfPlayers; players++) {
-      //place in player
-      globals.playerPos[players] = [1 / amountOfPlayers, 0.5];
+      //place in player on firstRender calculate pos
+      if (globals.firstRender) {
+        playerX = (players + 1) / (amountOfPlayers + 1);
+        playerY = calcNearestHeight(terrainHeights, playerX);
+        globals.playerPos[players] = [playerX, 1 - playerY];
+        print("first render");
+      }
+      currentPlayerPos = globals.playerPos;
+      print(currentPlayerPos);
       drawPlayer(playerColours[players], globals.playerPos[players], canvas);
     }
+  }
+
+  double calcNearestHeight(List<double> terrainHeights, double relPos) {
+    //return nearest index int
+    int nearestIndex = (relPos * terrainHeights.length).floor();
+    nearestIndex = nearestIndex >= terrainHeights.length
+        ? terrainHeights.length - 1
+        : nearestIndex;
+    return terrainHeights[nearestIndex];
   }
 
   void generateTerrain(List<double> terrainHeights, Canvas canvas) {
     int xAmount = globals.terrainRowsToRender;
     int yAmount = globals.terrainColumnsToRender;
-    int nearestIndex;
     int red;
     int blue;
     int green;
@@ -242,16 +292,7 @@ class GamePainter extends CustomPainter {
       for (int y = 1; y <= yAmount; y++) {
         //calculate the nearest mapping value to estimate height at
         relativeX = x / xAmount;
-        nearestIndex = (relativeX * terrainHeights.length).floor();
-        nearestIndex = nearestIndex >= terrainHeights.length
-            ? terrainHeights.length - 1
-            : nearestIndex;
-        /*diffOfTerrain = nearestIndex == terrainHeights.length - 1
-            ? 0
-            : (terrainHeights[nearestIndex + 1] - terrainHeights[nearestIndex]);*/
-        smoothedHeight = terrainHeights[nearestIndex];
-        /*+
-            (diffOfTerrain * (relativeX - nearestIndex));*/
+        smoothedHeight = calcNearestHeight(terrainHeights, relativeX);
         heightPos = y / yAmount;
         if (smoothedHeight > heightPos) {
           //square vertex positions
@@ -290,21 +331,35 @@ class GamePainter extends CustomPainter {
         }
       }
     }
+    canvas.save();
+    globals.terrainCanvas = canvas;
   }
 
   @override
   void paint(Canvas canvas, Size size) {
     canvasSize = size;
+    List<double> gameMap = globals.terrainMaps[0];
 
     //render terrain
-    generateTerrain(globals.terrainMaps[0], canvas);
+    if (globals.firstRender) {
+      generateTerrain(gameMap, canvas);
+    } else {
+      //use dirty canvas:
+      canvas = globals.terrainCanvas;
+      canvas.restore();
+    }
 
     //place in characters
-    spawnInPlayers(globals.playerTeams, canvas);
+    spawnInPlayers(globals.playerTeams, gameMap, canvas);
+    globals.firstRender = false;
   }
 
   @override
   bool shouldRepaint(CustomPainter old) {
-    return false;
+    if (currentPlayerPos == globals.playerPos) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }
