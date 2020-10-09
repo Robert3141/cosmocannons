@@ -61,7 +61,7 @@ const double terrainOpacity = 1.0;
 const double defaultZoom = 2.0;
 const double scrollAmount = 200.0;
 const double iconSize = 50.0;
-const double movementAmount = 0.5;
+const double movementAmount = 0.05;
 
 const List<List<double>> terrainMaps = [
   [0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69],
