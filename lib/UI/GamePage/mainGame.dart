@@ -286,6 +286,10 @@ class GamePainter extends CustomPainter {
     Offset posBL;
     Offset posTR;
 
+    //reset terrain cache
+    globals.terrainCacheLocation = List.empty(growable: true);
+    globals.terrainCacheColour = List.empty(growable: true);
+
     //loop through columns
     for (int x = 1; x <= xAmount; x++) {
       //loop through rows
@@ -323,6 +327,8 @@ class GamePainter extends CustomPainter {
           blockColor = Color.fromRGBO(red, green, blue, globals.terrainOpacity);
 
           //draw block
+          globals.terrainCacheLocation.add([posBL, posTR]);
+          globals.terrainCacheColour.add(blockColor);
           final paint = Paint()
             ..color = blockColor
             ..strokeWidth = 4
@@ -331,8 +337,6 @@ class GamePainter extends CustomPainter {
         }
       }
     }
-    canvas.save();
-    globals.terrainCanvas = canvas;
   }
 
   @override
@@ -345,8 +349,16 @@ class GamePainter extends CustomPainter {
       generateTerrain(gameMap, canvas);
     } else {
       //use dirty canvas:
-      canvas = globals.terrainCanvas;
-      canvas.restore();
+      for (int i = 0; i < globals.terrainCacheLocation.length; i++) {
+        final paint = Paint()
+          ..color = globals.terrainCacheColour[i]
+          ..strokeWidth = 4
+          ..strokeCap = StrokeCap.square;
+        canvas.drawRect(
+            Rect.fromPoints(relPos(globals.terrainCacheLocation[i][0]),
+                relPos(globals.terrainCacheLocation[i][1])),
+            paint);
+      }
     }
 
     //place in characters

@@ -97,13 +97,15 @@ const List<Color> terrainColors = [
 
 bool firstRender = true;
 
-Canvas terrainCanvas;
-
 List<String> playerNames = [host, client, client, client];
 
 List<int> playerTeams = [0, 1, 2, 3];
 
 List<List<double>> playerPos;
+
+List<List<Offset>> terrainCacheLocation;
+
+List<Color> terrainCacheColour;
 
 AutoSizeGroup standardTextGroup = AutoSizeGroup();
 AutoSizeGroup buttonTextGroup = AutoSizeGroup();
