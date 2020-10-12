@@ -318,6 +318,20 @@ class UI {
             }),
       );
 
+  static Future dataInputPopup(
+          BuildContext context, Function(String) dataChange) =>
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => UI.gamePopup(
+            UI.smallButton(
+              text: "",
+              onTap: dataChange,
+              context: context,
+              textField: true,
+            ),
+            context),
+      );
+
   static Widget textWidget(String text,
           {TextAlign spacing = TextAlign.center}) =>
       AutoSizeText(
@@ -330,11 +344,18 @@ class UI {
         group: globals.standardTextGroup,
       );
 
-  static Dialog gamePopup(Widget child) {
+  static Dialog gamePopup(Widget child, BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(),
       backgroundColor: globals.disabledBorder,
-      child: child,
+      child: Column(
+        children: [
+          child,
+          RaisedButton(onPressed: () {
+            Navigator.of(context).pop();
+          })
+        ],
+      ),
     );
   }
 }

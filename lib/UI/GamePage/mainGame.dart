@@ -63,6 +63,40 @@ class _MainGamePageState extends State<MainGamePage> {
     });
   }
 
+  void doubleTap() {
+    //get positions
+    double tapX = tapDetails.localPosition.dx;
+    double tapY = tapDetails.localPosition.dy;
+    double playerX;
+    double playerY;
+    //for (int player = 0; player < amountOfPlayers; player++) {
+    int player = playerNumber;
+    playerX = globals.playerPos[player][0] *
+        UI.screenHeight(context) *
+        globals.defaultZoom;
+    playerY = globals.playerPos[player][1] * UI.screenHeight(context);
+    //check near player
+    print(playerX);
+    print(tapX);
+    print(tapDetails.localPosition.dx);
+    if (tapX > playerX - globals.tapNearPlayer &&
+        tapX < playerX + globals.tapNearPlayer &&
+        tapY > playerY - globals.tapNearPlayer &&
+        tapY < playerY + globals.tapNearPlayer) {
+      //toggle player selected
+      setState(() {
+        print("Tapped");
+        // if player already selected deselect player
+        setState(() {
+          UI.dataInputPopup(context, (String text) {});
+        });
+      });
+    }
+    //}
+
+    //playerShoot(intensity, angle);
+  }
+
   void playerShoot(double intensity, double angle) {}
 
   void gameStart() {}
@@ -139,33 +173,7 @@ class _MainGamePageState extends State<MainGamePage> {
               onKey: keyPresses,
               focusNode: globals.gameInputs,
               child: GestureDetector(
-                onDoubleTap: () {
-                  //get positions
-                  double tapX = tapDetails.globalPosition.dx;
-                  double tapY = tapDetails.globalPosition.dy;
-                  double playerX;
-                  double playerY;
-                  for (int player = 0; player < amountOfPlayers; player++) {
-                    playerX =
-                        globals.playerPos[player][0] * UI.screenHeight(context);
-                    playerY =
-                        globals.playerPos[player][1] * UI.screenHeight(context);
-                    //check near player
-                    if (tapX > playerX - globals.tapNearPlayer &&
-                        tapX < playerX + globals.tapNearPlayer &&
-                        tapY > playerY - globals.tapNearPlayer &&
-                        tapY < playerY + globals.tapNearPlayer) {
-                      //toggle player selected
-                      setState(() {
-                        // if player already selected deselect player
-                        globals.selectedPlayer =
-                            globals.selectedPlayer == player ? -1 : player;
-                      });
-                    }
-                  }
-
-                  //playerShoot(intensity, angle);
-                },
+                onDoubleTap: () => doubleTap(),
                 onTapDown: (details) {
                   tapDetails = details;
                 },

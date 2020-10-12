@@ -24,23 +24,17 @@ class _LocalMultiPageState extends State<HostMultiPage> {
   ServerNode server;
 
   //functions
+  void playerNameChange(String text) {
+    setState(() {
+      //update player name
+      userNameText = text;
+      globals.playerNames[0] = text;
+    });
+  }
+
   void nameSelectPopup() {
     setState(() {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) => UI.gamePopup(UI.smallButton(
-          text: "",
-          onTap: (String text) {
-            setState(() {
-              //update player name
-              userNameText = text;
-              globals.playerNames[0] = text;
-            });
-          },
-          context: context,
-          textField: true,
-        )),
-      );
+      UI.dataInputPopup(context, playerNameChange);
     });
   }
 
