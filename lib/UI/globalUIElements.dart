@@ -319,18 +319,21 @@ class UI {
       );
 
   static Future dataInputPopup(
-          BuildContext context, Function(String) dataChange) =>
-      showDialog(
+      BuildContext context, List<Function(String)> dataChange) {
+    List<Widget> children = [];
+    for (int i = 0; i < dataChange.length; i++) {
+      children.add(UI.largeButton(
+        text: "",
+        onTap: dataChange[i],
         context: context,
-        builder: (BuildContext context) => UI.gamePopup(
-            UI.smallButton(
-              text: "",
-              onTap: dataChange,
-              context: context,
-              textField: true,
-            ),
-            context),
-      );
+        textField: true,
+      ));
+    }
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) => UI.gamePopup(children, context),
+    );
+  }
 
   static Widget textWidget(String text,
           {TextAlign spacing = TextAlign.center}) =>
@@ -344,17 +347,18 @@ class UI {
         group: globals.standardTextGroup,
       );
 
-  static Dialog gamePopup(Widget child, BuildContext context) {
+  static Dialog gamePopup(List<Widget> children, BuildContext context) {
+    //add confirm button
+    children.add(UI.smallButton(
+        text: globals.confirm,
+        onTap: () => Navigator.of(context).pop(),
+        context: context));
     return Dialog(
-      shape: RoundedRectangleBorder(),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       backgroundColor: globals.disabledBorder,
       child: Column(
-        children: [
-          child,
-          RaisedButton(onPressed: () {
-            Navigator.of(context).pop();
-          })
-        ],
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: children,
       ),
     );
   }

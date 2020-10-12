@@ -32,6 +32,7 @@ const String notConnected = "Not Connected";
 const String paused = "Paused";
 const String platformNotSupported = "Not supported on this device";
 const String amountOfPlayers = "Amount of players";
+const String confirm = "Confirm";
 
 const List<String> defaultTeamNames = ["R", "G", "B", "Y"];
 const List<String> playerAmounts = ["2", "3", "4"];
