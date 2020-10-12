@@ -62,6 +62,7 @@ const double defaultZoom = 2.0;
 const double scrollAmount = 200.0;
 const double iconSize = 50.0;
 const double movementAmount = 0.05;
+const double tapNearPlayer = 10;
 
 const List<List<double>> terrainMaps = [
   [0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69],
@@ -96,6 +97,8 @@ const List<Color> terrainColors = [
 /// VARIABLES
 
 bool firstRender = true;
+
+int selectedPlayer = -1;
 
 List<String> playerNames = [host, client, client, client];
 

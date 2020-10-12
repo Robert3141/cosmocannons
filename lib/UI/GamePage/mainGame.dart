@@ -60,7 +60,6 @@ class _MainGamePageState extends State<MainGamePage> {
     playerY = 1 - GamePainter().calcNearestHeight(gameMap, playerX);
     setState(() {
       globals.playerPos[playerNumber] = [playerX, playerY];
-      print("POS" + globals.playerPos.toString());
     });
   }
 
@@ -140,7 +139,33 @@ class _MainGamePageState extends State<MainGamePage> {
               onKey: keyPresses,
               focusNode: globals.gameInputs,
               child: GestureDetector(
-                onDoubleTap: () {},
+                onDoubleTap: () {
+                  //get positions
+                  double tapX = tapDetails.globalPosition.dx;
+                  double tapY = tapDetails.globalPosition.dy;
+                  double playerX;
+                  double playerY;
+                  for (int player = 0; player < amountOfPlayers; player++) {
+                    playerX =
+                        globals.playerPos[player][0] * UI.screenHeight(context);
+                    playerY =
+                        globals.playerPos[player][1] * UI.screenHeight(context);
+                    //check near player
+                    if (tapX > playerX - globals.tapNearPlayer &&
+                        tapX < playerX + globals.tapNearPlayer &&
+                        tapY > playerY - globals.tapNearPlayer &&
+                        tapY < playerY + globals.tapNearPlayer) {
+                      //toggle player selected
+                      setState(() {
+                        // if player already selected deselect player
+                        globals.selectedPlayer =
+                            globals.selectedPlayer == player ? -1 : player;
+                      });
+                    }
+                  }
+
+                  //playerShoot(intensity, angle);
+                },
                 onTapDown: (details) {
                   tapDetails = details;
                 },
