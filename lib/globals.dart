@@ -33,6 +33,7 @@ const String paused = "Paused";
 const String platformNotSupported = "Not supported on this device";
 const String amountOfPlayers = "Amount of players";
 const String confirm = "Confirm";
+const String shootSetup = "Fire!";
 
 const List<String> defaultTeamNames = ["R", "G", "B", "Y"];
 const List<String> playerAmounts = ["2", "3", "4"];
@@ -64,6 +65,8 @@ const double scrollAmount = 200.0;
 const double iconSize = 50.0;
 const double movementAmount = 0.05;
 const double tapNearPlayer = 50;
+const double mediumWidth = 0.5;
+const double mediumHeight = 0.5;
 
 const List<List<double>> terrainMaps = [
   [0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69],

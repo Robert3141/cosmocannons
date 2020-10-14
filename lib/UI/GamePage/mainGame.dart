@@ -88,7 +88,8 @@ class _MainGamePageState extends State<MainGamePage> {
         print("Tapped");
         // if player already selected deselect player
         setState(() {
-          UI.dataInputPopup(context, [(String text) {}]);
+          UI.dataInputPopup(context, [(String text) {}],
+              title: globals.shootSetup);
         });
       });
     }

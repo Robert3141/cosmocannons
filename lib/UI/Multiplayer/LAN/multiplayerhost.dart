@@ -34,7 +34,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
 
   void nameSelectPopup() {
     setState(() {
-      UI.dataInputPopup(context, [playerNameChange]);
+      UI.dataInputPopup(context, [playerNameChange], title: globals.hostName);
     });
   }
 

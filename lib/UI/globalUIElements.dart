@@ -236,7 +236,7 @@ class UI {
                       return tableCell(
                         context,
                         text: playerNames[y - 1],
-                        textColor: globals.teamColors[playerTeams[y - 1] - 1],
+                        textColor: globals.teamColors[playerTeams[y - 1]],
                       );
                     } else if (y == 0) {
                       // Top Row Cells
@@ -319,14 +319,23 @@ class UI {
       );
 
   static Future dataInputPopup(
-      BuildContext context, List<Function(String)> dataChange) {
+      BuildContext context, List<Function(String)> dataChange,
+      {List<String> dataTitle = const ["", "", ""], String title = ""}) {
     List<Widget> children = [];
+    //title
+    children.add(UI.textWidget(title));
     for (int i = 0; i < dataChange.length; i++) {
-      children.add(UI.largeButton(
-        text: "",
-        onTap: dataChange[i],
-        context: context,
-        textField: true,
+      children.add(Column(
+        children: [
+          UI.textWidget(dataTitle[i]),
+          UI.largeButton(
+            height: globals.smallHeight,
+            text: "",
+            onTap: dataChange[i],
+            context: context,
+            textField: true,
+          )
+        ],
       ));
     }
     return showDialog(
@@ -349,7 +358,8 @@ class UI {
 
   static Dialog gamePopup(List<Widget> children, BuildContext context) {
     //add confirm button
-    children.add(UI.smallButton(
+    children.add(UI.largeButton(
+        height: globals.smallHeight,
         text: globals.confirm,
         onTap: () => Navigator.of(context).pop(),
         context: context));
