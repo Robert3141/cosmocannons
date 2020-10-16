@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -104,7 +105,49 @@ class _MainGamePageState extends State<MainGamePage> {
     }
   }
 
-  void playerShoot(double intensity, double angle) {}
+  List<double> solveQuadratic(double a, double b, double c) {
+    double discriminant = b * b - (4 * a * c);
+    if (discriminant >= 0) {
+      double x1 = (-b + sqrt(discriminant)) / (2 * a);
+      double x2 = (-b - sqrt(discriminant)) / (2 * a);
+      return [x1, x2];
+    } else {
+      return null;
+    }
+  }
+
+  void playerShoot(double intensity, double angleDegrees) async {
+    //simulate particle
+    double angleRadians = angleDegrees * globals.degreesToRadians;
+    double uX = intensity * -cos(angleRadians);
+    double aX = globals.Ax;
+    double sX;
+    double uY = intensity * sin(angleRadians);
+    double aY = globals.Ay;
+    double sY = 0;
+    double t;
+    List<double> tempT;
+
+    //calulate time taken for level firing
+    tempT = solveQuadratic(0.5 * aY, uY, -sY) ?? [0, 0];
+    t = tempT[0] <= 0
+        ? tempT[1] <= 0
+            ? 0
+            : tempT[1]
+        : tempT[0];
+
+    //render correct amount of times
+    for (int i = 0; i < t * (1 / (globals.frameLengthMs / 1000)); i++) {
+      setState(() {
+        // s = ut + 0.5att
+        sX = uX * t + 0.5 * aX * i * i;
+        sY = uY * t + 0.5 * aY * i * i;
+
+        globals.projectilePos = [sX, sY];
+      });
+      await Future.delayed(Duration(milliseconds: globals.frameLengthMs));
+    }
+  }
 
   void gameStart() {}
 
@@ -180,7 +223,7 @@ class _MainGamePageState extends State<MainGamePage> {
               onKey: keyPresses,
               focusNode: globals.gameInputs,
               child: GestureDetector(
-                onDoubleTap: () => doubleTap(),
+                onDoubleTap: () => tapDetails == null ? () {} : doubleTap(),
                 onTapDown: (details) {
                   tapDetails = details;
                 },

@@ -7,6 +7,7 @@ class GamePainter extends CustomPainter {
   //locals
   Size canvasSize;
   List<List<double>> currentPlayerPos;
+  List<double> currentProjectilePos;
 
   Offset relativePos(double x, double y) {
     //takes x & y between 0 and 100
@@ -50,6 +51,40 @@ class GamePainter extends CustomPainter {
       }
       currentPlayerPos = globals.playerPos;
       drawPlayer(playerColours[players], globals.playerPos[players], canvas);
+    }
+  }
+
+  void drawProjectile(int colour, List<double> pos, Canvas canvas) {
+    Offset position = Offset(pos[0], pos[1]);
+    final paint = Paint()
+      ..color = globals.teamColors[colour]
+      ..strokeWidth = 4
+      ..strokeCap = StrokeCap.square;
+    canvas.drawCircle(relPos(position), 3, paint);
+  }
+
+  void spawnProjectile(Canvas canvas) {
+    if (globals.projectilePos != null) {
+      double sX = globals.projectilePos[0];
+      double sY = globals.projectilePos[1];
+
+      //add current player pos
+      //sX = sX + currentPlayerPos[]
+
+      // scale down and make between 1 & 0
+      sX = sX * globals.xSF;
+      sX = sX > 1
+          ? 1
+          : sX < 0
+              ? 0
+              : sX;
+      sY = sY * globals.ySF;
+      sY = sY > 1
+          ? 1
+          : sY < 0
+              ? 0
+              : sY;
+      drawProjectile(1, [sX, sY], canvas);
     }
   }
 
@@ -158,12 +193,14 @@ class GamePainter extends CustomPainter {
 
     //place in characters
     spawnInPlayers(globals.playerTeams, gameMap, canvas);
+    spawnProjectile(canvas);
     globals.firstRender = false;
   }
 
   @override
   bool shouldRepaint(CustomPainter old) {
-    if (currentPlayerPos == globals.playerPos) {
+    if (currentPlayerPos == globals.playerPos &&
+        currentProjectilePos == globals.projectilePos) {
       return false;
     } else {
       return true;

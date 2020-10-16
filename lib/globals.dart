@@ -1,6 +1,7 @@
 library cosmocannons.globals;
 
 import 'dart:ui';
+import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -71,6 +72,11 @@ const double movementAmount = 0.05;
 const double tapNearPlayer = 50;
 const double mediumWidth = 0.5;
 const double mediumHeight = 0.5;
+const double degreesToRadians = pi / 180;
+const double Ax = 0;
+const double Ay = -9.81;
+const double xSF = 1 / 1000;
+const double ySF = 1 / 100;
 
 const List<List<double>> terrainMaps = [
   [0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69],
@@ -79,6 +85,7 @@ const List<List<double>> terrainMaps = [
 const int maxLANPlayers = 4;
 const int terrainRowsToRender = 50;
 const int terrainColumnsToRender = 50;
+const int frameLengthMs = 16;
 
 const Color buttonFill = Colors.black54;
 const Color buttonBorder = Colors.white38;
@@ -106,13 +113,13 @@ const List<Color> terrainColors = [
 
 bool firstRender = true;
 
-//int selectedPlayer = -1;
-
 List<String> playerNames = [host, client, client, client];
 
 List<int> playerTeams = [0, 1, 2, 3];
 
 List<List<double>> playerPos;
+
+List<double> projectilePos;
 
 List<List<Offset>> terrainCacheLocation;
 
@@ -124,6 +131,8 @@ AutoSizeGroup buttonTextGroup = AutoSizeGroup();
 ScrollController gameScroller = ScrollController();
 
 FocusNode gameInputs = FocusNode();
+
+/// DATA TYPES
 
 enum GameType { singlePlayer, multiLocal, multiHost, multiClient }
 
