@@ -34,9 +34,13 @@ const String platformNotSupported = "Not supported on this device";
 const String amountOfPlayers = "Amount of players";
 const String confirm = "Confirm";
 const String shootSetup = "Fire!";
+const String shootIntensity = "Intensity";
+const String shootAngle = "Angle";
 
 const List<String> defaultTeamNames = ["R", "G", "B", "Y"];
 const List<String> playerAmounts = ["2", "3", "4"];
+const List<String> defaultFireSetup = ["10", "135"];
+const List<String> shootOptions = [shootIntensity, shootAngle];
 
 List<AssetImage> backgrounds = [
   AssetImage("assets/images/1.png"),

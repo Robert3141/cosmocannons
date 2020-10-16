@@ -47,10 +47,8 @@ class GamePainter extends CustomPainter {
         playerX = (players + 1) / (amountOfPlayers + 1);
         playerY = calcNearestHeight(terrainHeights, playerX);
         globals.playerPos[players] = [playerX, 1 - playerY];
-        print("first render");
       }
       currentPlayerPos = globals.playerPos;
-      print(currentPlayerPos);
       drawPlayer(playerColours[players], globals.playerPos[players], canvas);
     }
   }

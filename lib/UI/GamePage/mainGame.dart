@@ -69,33 +69,42 @@ class _MainGamePageState extends State<MainGamePage> {
     double tapY = tapDetails.localPosition.dy;
     double playerX;
     double playerY;
-    //for (int player = 0; player < amountOfPlayers; player++) {
+    double intensity = double.parse(globals.defaultFireSetup[0]);
+    double angle = double.parse(globals.defaultFireSetup[1]);
     int player = playerNumber;
+
+    //set player locations
     playerX = globals.playerPos[player][0] *
-        UI.screenHeight(context) *
+        UI.screenWidth(context) *
         globals.defaultZoom;
     playerY = globals.playerPos[player][1] * UI.screenHeight(context);
+
     //check near player
-    print(playerX);
-    print(tapX);
-    print(tapDetails.localPosition.dx);
     if (tapX > playerX - globals.tapNearPlayer &&
         tapX < playerX + globals.tapNearPlayer &&
         tapY > playerY - globals.tapNearPlayer &&
         tapY < playerY + globals.tapNearPlayer) {
       //toggle player selected
       setState(() {
-        print("Tapped");
         // if player already selected deselect player
         setState(() {
-          UI.dataInputPopup(context, [(String text) {}],
-              title: globals.shootSetup);
+          UI.dataInputPopup(
+              context,
+              [
+                (String text) => intensity = double.parse(text),
+                (String text) => angle = double.parse(text)
+              ],
+              dataTitle: globals.shootOptions,
+              title: globals.shootSetup,
+              data: globals.defaultFireSetup,
+              numericData: [true, true],
+              barrierDismissable: false, onFinish: () {
+            //code after player finished
+            playerShoot(intensity, angle);
+          });
         });
       });
     }
-    //}
-
-    //playerShoot(intensity, angle);
   }
 
   void playerShoot(double intensity, double angle) {}

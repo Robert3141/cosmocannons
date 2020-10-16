@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
@@ -117,6 +118,8 @@ class UI {
           Color buttonFill = globals.buttonFill,
           bool enabled = true,
           bool textField = false,
+          bool numericTextField = false,
+          bool numericData = false,
           TextEditingController controller}) =>
       GestureDetector(
         onTap: enabled
@@ -137,6 +140,14 @@ class UI {
           alignment: Alignment.center,
           child: textField
               ? TextField(
+                  keyboardType: numericData
+                      ? TextInputType.numberWithOptions(decimal: true)
+                      : TextInputType.text,
+                  inputFormatters: [
+                    numericData
+                        ? FilteringTextInputFormatter.digitsOnly
+                        : FilteringTextInputFormatter.singleLineFormatter
+                  ],
                   onChanged: onTap,
                   controller: controller ?? TextEditingController(text: text),
                   maxLength: 10,
@@ -320,8 +331,20 @@ class UI {
 
   static Future dataInputPopup(
       BuildContext context, List<Function(String)> dataChange,
-      {List<String> dataTitle = const ["", "", ""], String title = ""}) {
+      {List<String> dataTitle = const [""],
+      List<bool> numericData = const [false],
+      List<String> data = const [""],
+      String title = "",
+      bool barrierDismissable = true,
+      Function() onFinish}) {
     List<Widget> children = [];
+
+    //make sure other arrays is same size and dataChange
+    while (dataTitle.length < dataChange.length) dataTitle.add("");
+    while (data.length < dataChange.length) data.add("");
+    while (numericData.length < dataChange.length) numericData.add(false);
+    onFinish = onFinish ?? () {};
+
     //title
     children.add(UI.textWidget(title));
     for (int i = 0; i < dataChange.length; i++) {
@@ -329,8 +352,9 @@ class UI {
         children: [
           UI.textWidget(dataTitle[i]),
           UI.largeButton(
+            numericData: numericData[i],
             height: globals.smallHeight,
-            text: "",
+            text: data[i],
             onTap: dataChange[i],
             context: context,
             textField: true,
@@ -339,8 +363,11 @@ class UI {
       ));
     }
     return showDialog(
+      barrierColor: globals.disabledBorder,
+      barrierDismissible: barrierDismissable,
       context: context,
-      builder: (BuildContext context) => UI.gamePopup(children, context),
+      builder: (BuildContext context) =>
+          UI.gamePopup(children, context, onFinish),
     );
   }
 
@@ -356,12 +383,16 @@ class UI {
         group: globals.standardTextGroup,
       );
 
-  static Dialog gamePopup(List<Widget> children, BuildContext context) {
+  static Dialog gamePopup(
+      List<Widget> children, BuildContext context, Function onFinish) {
     //add confirm button
     children.add(UI.largeButton(
         height: globals.smallHeight,
         text: globals.confirm,
-        onTap: () => Navigator.of(context).pop(),
+        onTap: () {
+          Navigator.of(context).pop();
+          onFinish();
+        },
         context: context));
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
