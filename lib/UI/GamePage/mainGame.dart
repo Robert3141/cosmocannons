@@ -84,24 +84,21 @@ class _MainGamePageState extends State<MainGamePage> {
         tapX < playerX + globals.tapNearPlayer &&
         tapY > playerY - globals.tapNearPlayer &&
         tapY < playerY + globals.tapNearPlayer) {
-      //toggle player selected
+      //show popup
       setState(() {
-        // if player already selected deselect player
-        setState(() {
-          UI.dataInputPopup(
-              context,
-              [
-                (String text) => intensity = double.parse(text),
-                (String text) => angle = double.parse(text)
-              ],
-              dataTitle: globals.shootOptions,
-              title: globals.shootSetup,
-              data: globals.defaultFireSetup,
-              numericData: [true, true],
-              barrierDismissable: false, onFinish: () {
-            //code after player finished
-            playerShoot(intensity, angle);
-          });
+        UI.dataInputPopup(
+            context,
+            [
+              (String text) => intensity = double.parse(text),
+              (String text) => angle = double.parse(text)
+            ],
+            dataTitle: globals.shootOptions,
+            title: globals.shootSetup,
+            data: globals.defaultFireSetup,
+            numericData: [true, true],
+            barrierDismissable: false, onFinish: () {
+          //code after player finished
+          playerShoot(intensity, angle);
         });
       });
     }

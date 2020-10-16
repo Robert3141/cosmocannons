@@ -146,7 +146,7 @@ class UI {
                   inputFormatters: [
                     numericData
                         ? FilteringTextInputFormatter.digitsOnly
-                        : FilteringTextInputFormatter.singleLineFormatter
+                        : FilteringTextInputFormatter.singleLineFormatter,
                   ],
                   onChanged: onTap,
                   controller: controller ?? TextEditingController(text: text),
