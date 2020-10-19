@@ -29,7 +29,7 @@ class GamePainter extends CustomPainter {
       ..color = globals.teamColors[colour]
       ..strokeWidth = 4
       ..strokeCap = StrokeCap.square;
-    canvas.drawCircle(relPos(position), 10, paint);
+    canvas.drawCircle(relPos(position).translate(0, -10), 10, paint);
   }
 
   void spawnInPlayers(
@@ -47,6 +47,8 @@ class GamePainter extends CustomPainter {
       if (globals.firstRender) {
         playerX = (players + 1) / (amountOfPlayers + 1);
         playerY = calcNearestHeight(terrainHeights, playerX);
+        print(playerX);
+        print(playerY);
         globals.playerPos[players] = [playerX, playerY];
       }
       currentPlayerPos = globals.playerPos;
@@ -60,7 +62,7 @@ class GamePainter extends CustomPainter {
       ..color = globals.teamColors[colour]
       ..strokeWidth = 4
       ..strokeCap = StrokeCap.square;
-    canvas.drawCircle(relPos(position), 3, paint);
+    canvas.drawCircle(relPos(position).translate(0, -3), 3, paint);
   }
 
   void spawnProjectile(Canvas canvas) {
@@ -85,15 +87,16 @@ class GamePainter extends CustomPainter {
 
   double calcNearestHeight(List<double> terrainHeights, double relPos) {
     //return nearest index int
-    int nearestIndex = (relPos * terrainHeights.length).floor();
-    nearestIndex = nearestIndex >= terrainHeights.length
+    double exactIndex = relPos * (terrainHeights.length - 1);
+    int nearestIndex = exactIndex.round();
+    nearestIndex = nearestIndex >= terrainHeights.length - 1
         ? terrainHeights.length - 1
         : nearestIndex;
     return terrainHeights[nearestIndex];
   }
 
   void generateTerrain(List<double> terrainHeights, Canvas canvas) {
-    int xAmount = globals.terrainRowsToRender;
+    int xAmount = terrainHeights.length;
     int yAmount = globals.terrainColumnsToRender;
     int red;
     int blue;
@@ -103,9 +106,10 @@ class GamePainter extends CustomPainter {
     Color blockColor;
     Color colorAbove;
     Color colorBelow;
-    double heightPos;
     double fractionThere;
-    double smoothedHeight;
+    double actualHeight;
+    double blockHeight;
+    double blockTop;
     double relativeX1;
     double relativeX;
     Offset posBL;
@@ -116,53 +120,60 @@ class GamePainter extends CustomPainter {
     globals.terrainCacheColour = List.empty(growable: true);
 
     //loop through columns
-    for (int x = 1; x <= xAmount; x++) {
+    for (int x = 0; x < xAmount; x++) {
+      //calculate height
+      actualHeight = terrainHeights[x];
+
+      //calculate block height
+      blockHeight = actualHeight / yAmount;
+
       //loop through rows
-      for (int y = 1; y < yAmount; y++) {
-        //calculate the nearest mapping value to estimate height at
-        relativeX = x / xAmount;
-        smoothedHeight = calcNearestHeight(terrainHeights, relativeX);
-        heightPos = y / yAmount;
-        if (smoothedHeight > heightPos) {
-          //square vertex positions
-          relativeX = x / xAmount;
-          relativeX1 = (x - 1) / xAmount;
-          posBL = Offset(relativeX1, 1 - ((y - 1) / yAmount));
-          posTR = Offset(relativeX, 1 - (y / yAmount));
-          //remove gap between blocks
-          posTR = posTR.translate(
-              (posTR.dx - posBL.dx) * 0.1, (posTR.dy - posBL.dy) * 0.1);
+      for (int y = 1; y <= yAmount; y++) {
+        //calculate top postion
+        blockTop = blockHeight * y;
 
-          //choose colour
-          fractionThere = (heightPos / smoothedHeight) * (colors.length - 1);
-          minFractionFloor = fractionThere.floor() == colors.length - 1
-              ? colors.length - 2
-              : fractionThere.floor();
-          colorBelow = colors[minFractionFloor];
-          colorAbove = colors[minFractionFloor + 1];
-          red = ((fractionThere - fractionThere.floor()) *
-                      (colorAbove.red - colorBelow.red))
-                  .round() +
-              colorBelow.red;
-          green = ((fractionThere - fractionThere.floor()) *
-                      (colorAbove.green - colorBelow.green))
-                  .round() +
-              colorBelow.green;
-          blue = ((fractionThere - fractionThere.floor()) *
-                      (colorAbove.blue - colorBelow.blue))
-                  .round() +
-              colorBelow.blue;
-          blockColor = Color.fromRGBO(red, green, blue, globals.terrainOpacity);
+        //square vertex positions
+        relativeX = x / (xAmount - 1);
+        relativeX1 = (x - 1) / (xAmount - 1);
+        posBL = Offset(relativeX1, 1 - (blockTop - blockHeight));
+        posTR = Offset(relativeX, 1 - blockTop);
+        //print(posBL.dy);
+        //print(posTR.dy);
+        //print(1 - actualHeight);
+        //print("------");
 
-          //draw block
-          globals.terrainCacheLocation.add([posBL, posTR]);
-          globals.terrainCacheColour.add(blockColor);
-          final paint = Paint()
-            ..color = blockColor
-            ..strokeWidth = 4
-            ..strokeCap = StrokeCap.square;
-          canvas.drawRect(Rect.fromPoints(relPos(posBL), relPos(posTR)), paint);
-        }
+        //add block blend
+        posBL = posBL.translate(0, relativeX * 0.01);
+
+        //choose colour
+        fractionThere = (y / yAmount) * (colors.length - 1);
+        minFractionFloor = fractionThere.floor();
+        colorBelow = colors[minFractionFloor];
+        colorAbove = colors[minFractionFloor + 1 > colors.length - 1
+            ? colors.length - 1
+            : minFractionFloor + 1];
+        red = ((fractionThere - fractionThere.floor()) *
+                    (colorAbove.red - colorBelow.red))
+                .round() +
+            colorBelow.red;
+        green = ((fractionThere - fractionThere.floor()) *
+                    (colorAbove.green - colorBelow.green))
+                .round() +
+            colorBelow.green;
+        blue = ((fractionThere - fractionThere.floor()) *
+                    (colorAbove.blue - colorBelow.blue))
+                .round() +
+            colorBelow.blue;
+        blockColor = Color.fromRGBO(red, green, blue, globals.terrainOpacity);
+
+        //draw block
+        globals.terrainCacheLocation.add([posBL, posTR]);
+        globals.terrainCacheColour.add(blockColor);
+        final paint = Paint()
+          ..color = blockColor
+          ..strokeWidth = 4
+          ..strokeCap = StrokeCap.square;
+        canvas.drawRect(Rect.fromPoints(relPos(posBL), relPos(posTR)), paint);
       }
     }
   }

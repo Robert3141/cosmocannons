@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:flutter/material.dart';
@@ -394,6 +396,7 @@ class UI {
       Function onFinish, bool barrierDismissable) {
     //on enter:
     FocusNode popupKeyboard = FocusNode();
+    Timer popupStart = Timer(Duration(milliseconds: 500), () {});
 
     //add confirm button
     children.add(Column(children: [
@@ -413,7 +416,8 @@ class UI {
           autofocus: true,
           focusNode: popupKeyboard,
           onKey: (RawKeyEvent key) {
-            if (key.logicalKey == LogicalKeyboardKey.enter) {
+            if (key.logicalKey == LogicalKeyboardKey.enter &&
+                !popupStart.isActive) {
               Navigator.of(context).pop();
               onFinish();
             }

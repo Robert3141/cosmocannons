@@ -133,19 +133,19 @@ class _MainGamePageState extends State<MainGamePage> {
     double uY = intensity * sin(angleRadians);
     double aY = globals.Ay;
     double sY = 0;
-    double t = 0;
+    double terrainHeight = 0;
     double playerX = globals.playerPos[playerNumber][0];
     double playerY = globals.playerPos[playerNumber][1];
     List<double> tempT;
     Timer animationTimer;
 
     //calulate time taken for level firing
-    tempT = solveQuadratic(0.5 * aY, uY, -sY) ?? [0, 0];
+    /*tempT = solveQuadratic(0.5 * aY, uY, -sY) ?? [0, 0];
     t = tempT[0] <= 0
         ? tempT[1] <= 0
             ? 0
             : tempT[1]
-        : tempT[0];
+        : tempT[0];*/
 
     //render correct amount of time
     animationTimer =
@@ -167,9 +167,10 @@ class _MainGamePageState extends State<MainGamePage> {
       });
 
       //stop when done
+      terrainHeight = GamePainter().calcNearestHeight(gameMap, sX);
       print(sY);
-      print(GamePainter().calcNearestHeight(gameMap, sX));
-      if (GamePainter().calcNearestHeight(gameMap, sX) > sY) {
+      print(terrainHeight);
+      if (terrainHeight >= sY - 0.01) {
         timer.cancel();
       }
     });
