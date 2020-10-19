@@ -374,7 +374,7 @@ class UI {
       barrierDismissible: barrierDismissable,
       context: context,
       builder: (BuildContext context) =>
-          UI.gamePopup(children, context, onFinish),
+          UI.gamePopup(children, context, onFinish, barrierDismissable),
     );
   }
 
@@ -390,8 +390,11 @@ class UI {
         group: globals.standardTextGroup,
       );
 
-  static Dialog gamePopup(
-      List<Widget> children, BuildContext context, Function onFinish) {
+  static Dialog gamePopup(List<Widget> children, BuildContext context,
+      Function onFinish, bool barrierDismissable) {
+    //on enter:
+    FocusNode popupKeyboard = FocusNode();
+
     //add confirm button
     children.add(Column(children: [
       UI.largeButton(
@@ -404,12 +407,26 @@ class UI {
           context: context)
     ]));
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      backgroundColor: globals.disabledBorder,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: children,
-      ),
-    );
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: globals.disabledBorder,
+        child: RawKeyboardListener(
+          autofocus: true,
+          focusNode: popupKeyboard,
+          onKey: (RawKeyEvent key) {
+            if (key.logicalKey == LogicalKeyboardKey.enter) {
+              Navigator.of(context).pop();
+              onFinish();
+            }
+            if (key.logicalKey == LogicalKeyboardKey.escape &&
+                !barrierDismissable) {
+              Navigator.of(context).pop();
+              globals.popup = false;
+            }
+          },
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: children,
+          ),
+        ));
   }
 }

@@ -60,7 +60,7 @@ class _MainGamePageState extends State<MainGamePage> {
         : playerX < 0
             ? 0
             : playerX;
-    playerY = 1 - GamePainter().calcNearestHeight(gameMap, playerX);
+    playerY = GamePainter().calcNearestHeight(gameMap, playerX);
     setState(() {
       globals.playerPos[playerNumber] = [playerX, playerY];
     });
@@ -69,7 +69,7 @@ class _MainGamePageState extends State<MainGamePage> {
   void doubleTap() {
     //get positions
     double tapX = tapDetails.localPosition.dx;
-    double tapY = tapDetails.localPosition.dy;
+    double tapY = UI.screenHeight(context) - tapDetails.localPosition.dy;
     double playerX;
     double playerY;
     int player = playerNumber;
@@ -129,11 +129,11 @@ class _MainGamePageState extends State<MainGamePage> {
     double angleRadians = angleDegrees * globals.degreesToRadians;
     double uX = intensity * -cos(angleRadians);
     double aX = globals.Ax;
-    double sX;
+    double sX = 0;
     double uY = intensity * sin(angleRadians);
     double aY = globals.Ay;
     double sY = 0;
-    double t;
+    double t = 0;
     double playerX = globals.playerPos[playerNumber][0];
     double playerY = globals.playerPos[playerNumber][1];
     List<double> tempT;
@@ -152,7 +152,6 @@ class _MainGamePageState extends State<MainGamePage> {
         Timer.periodic(Duration(milliseconds: globals.frameLengthMs), (timer) {
       //amount of times called
       int tick = timer.tick;
-      //tick = (tick.toDouble() / globals.animationSpeed).truncate();
       double timeSec =
           (globals.frameLengthMs * tick * globals.animationSpeed) / 1000;
 
@@ -164,11 +163,13 @@ class _MainGamePageState extends State<MainGamePage> {
         sY = (uY * timeSec + 0.5 * aY * timeSec * timeSec) * globals.ySF +
             playerY;
 
-        globals.projectilePos = [sX, 1 - sY];
+        globals.projectilePos = [sX, sY];
       });
 
       //stop when done
-      if (timeSec >= t) {
+      print(sY);
+      print(GamePainter().calcNearestHeight(gameMap, sX));
+      if (GamePainter().calcNearestHeight(gameMap, sX) > sY) {
         timer.cancel();
       }
     });
@@ -208,12 +209,14 @@ class _MainGamePageState extends State<MainGamePage> {
         if (keyPress == LogicalKeyboardKey.arrowLeft && playersTurn) {
           //move left
           playerMove(false);
-          //moveScroller(-globals.scrollAmount);
         }
         if (keyPress == LogicalKeyboardKey.arrowRight && playersTurn) {
           //move right
           playerMove(true);
-          //moveScroller(globals.scrollAmount);
+        }
+        if (keyPress == LogicalKeyboardKey.enter) {
+          //fire!!
+          playerShootTap();
         }
       }
       //always on keyboard controls
@@ -234,6 +237,7 @@ class _MainGamePageState extends State<MainGamePage> {
             globals.textColor;
     Scaffold page = UI.scaffoldWithBackground(children: [
       Stack(
+        alignment: Alignment.center,
         children: [
           //main terrain
           SingleChildScrollView(
@@ -250,6 +254,9 @@ class _MainGamePageState extends State<MainGamePage> {
               child: GestureDetector(
                 onDoubleTap: () => tapDetails == null ? () {} : doubleTap(),
                 onTapDown: (details) {
+                  tapDetails = details;
+                },
+                onDoubleTapDown: (details) {
                   tapDetails = details;
                 },
                 child: CustomPaint(
@@ -283,8 +290,9 @@ class _MainGamePageState extends State<MainGamePage> {
               : Container(),
           //pause button
           (globals.popup && paused) || (!globals.popup)
-              ? Align(
-                  alignment: Alignment.topRight,
+              ? Positioned(
+                  right: 0.0,
+                  top: 0.0,
                   child: IconButton(
                       icon: Icon(paused ? Icons.play_arrow : Icons.pause,
                           color: globals.textColor),
@@ -309,8 +317,8 @@ class _MainGamePageState extends State<MainGamePage> {
               : Container(),
           playersTurn && !globals.popup
               ? Positioned(
-                  left: 0.0,
-                  right: 0.0,
+                  //left: 0.0,
+                  //right: 0.0,
                   bottom: 0.0,
                   child: IconButton(
                     icon: Icon(

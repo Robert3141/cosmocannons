@@ -85,7 +85,7 @@ const List<List<double>> terrainMaps = [
 
 const int maxLANPlayers = 4;
 const int terrainRowsToRender = 50;
-const int terrainColumnsToRender = 50;
+const int terrainColumnsToRender = 100;
 const int frameLengthMs = 16;
 
 const Color buttonFill = Colors.black54;

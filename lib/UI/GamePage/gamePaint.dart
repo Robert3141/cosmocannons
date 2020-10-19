@@ -24,7 +24,7 @@ class GamePainter extends CustomPainter {
   }
 
   void drawPlayer(int colour, List<double> pos, Canvas canvas) {
-    Offset position = Offset(pos[0], pos[1]);
+    Offset position = Offset(pos[0], 1 - pos[1]);
     final paint = Paint()
       ..color = globals.teamColors[colour]
       ..strokeWidth = 4
@@ -47,7 +47,7 @@ class GamePainter extends CustomPainter {
       if (globals.firstRender) {
         playerX = (players + 1) / (amountOfPlayers + 1);
         playerY = calcNearestHeight(terrainHeights, playerX);
-        globals.playerPos[players] = [playerX, 1 - playerY];
+        globals.playerPos[players] = [playerX, playerY];
       }
       currentPlayerPos = globals.playerPos;
       drawPlayer(playerColours[players], globals.playerPos[players], canvas);
@@ -55,8 +55,7 @@ class GamePainter extends CustomPainter {
   }
 
   void drawProjectile(int colour, List<double> pos, Canvas canvas) {
-    Offset position = Offset(pos[0], pos[1]);
-    print(position);
+    Offset position = Offset(pos[0], 1 - pos[1]);
     final paint = Paint()
       ..color = globals.teamColors[colour]
       ..strokeWidth = 4
@@ -68,9 +67,6 @@ class GamePainter extends CustomPainter {
     if (globals.projectilePos != null) {
       double sX = globals.projectilePos[0];
       double sY = globals.projectilePos[1];
-
-      //add current player pos
-      //sX = sX + currentPlayerPos[]
 
       // make between 1 & 0
       sX = sX > 1
@@ -122,7 +118,7 @@ class GamePainter extends CustomPainter {
     //loop through columns
     for (int x = 1; x <= xAmount; x++) {
       //loop through rows
-      for (int y = 1; y <= yAmount; y++) {
+      for (int y = 1; y < yAmount; y++) {
         //calculate the nearest mapping value to estimate height at
         relativeX = x / xAmount;
         smoothedHeight = calcNearestHeight(terrainHeights, relativeX);
@@ -133,6 +129,9 @@ class GamePainter extends CustomPainter {
           relativeX1 = (x - 1) / xAmount;
           posBL = Offset(relativeX1, 1 - ((y - 1) / yAmount));
           posTR = Offset(relativeX, 1 - (y / yAmount));
+          //remove gap between blocks
+          posTR = posTR.translate(
+              (posTR.dx - posBL.dx) * 0.1, (posTR.dy - posBL.dy) * 0.1);
 
           //choose colour
           fractionThere = (heightPos / smoothedHeight) * (colors.length - 1);
