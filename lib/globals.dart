@@ -40,7 +40,7 @@ const String shootAngle = "Angle";
 
 const List<String> defaultTeamNames = ["R", "G", "B", "Y"];
 const List<String> playerAmounts = ["2", "3", "4"];
-const List<String> defaultFireSetup = ["10", "135"];
+const List<String> defaultFireSetup = ["30", "135"];
 const List<String> shootOptions = [shootIntensity, shootAngle];
 
 List<AssetImage> backgrounds = [
@@ -76,7 +76,8 @@ const double degreesToRadians = pi / 180;
 const double Ax = 0;
 const double Ay = -9.81;
 const double xSF = 1 / 1000;
-const double ySF = 1 / 100;
+const double ySF = 1 / 1000;
+const double animationSpeed = 3;
 
 const List<List<double>> terrainMaps = [
   [0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69],
@@ -112,6 +113,7 @@ const List<Color> terrainColors = [
 /// VARIABLES
 
 bool firstRender = true;
+bool popup = false;
 
 List<String> playerNames = [host, client, client, client];
 

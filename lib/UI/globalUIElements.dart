@@ -339,11 +339,18 @@ class UI {
       Function() onFinish}) {
     List<Widget> children = [];
 
+    //popup
+    globals.popup = true;
+
     //make sure other arrays is same size and dataChange
     while (dataTitle.length < dataChange.length) dataTitle.add("");
     while (data.length < dataChange.length) data.add("");
     while (numericData.length < dataChange.length) numericData.add(false);
-    onFinish = onFinish ?? () {};
+    Function tempFinish = onFinish ?? () {};
+    onFinish = () {
+      globals.popup = false;
+      tempFinish();
+    };
 
     //title
     children.add(UI.textWidget(title));
@@ -386,14 +393,16 @@ class UI {
   static Dialog gamePopup(
       List<Widget> children, BuildContext context, Function onFinish) {
     //add confirm button
-    children.add(UI.largeButton(
-        height: globals.smallHeight,
-        text: globals.confirm,
-        onTap: () {
-          Navigator.of(context).pop();
-          onFinish();
-        },
-        context: context));
+    children.add(Column(children: [
+      UI.largeButton(
+          height: globals.smallHeight,
+          text: globals.confirm,
+          onTap: () {
+            Navigator.of(context).pop();
+            onFinish();
+          },
+          context: context)
+    ]));
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       backgroundColor: globals.disabledBorder,

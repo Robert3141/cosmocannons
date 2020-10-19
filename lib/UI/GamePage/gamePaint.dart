@@ -56,6 +56,7 @@ class GamePainter extends CustomPainter {
 
   void drawProjectile(int colour, List<double> pos, Canvas canvas) {
     Offset position = Offset(pos[0], pos[1]);
+    print(position);
     final paint = Paint()
       ..color = globals.teamColors[colour]
       ..strokeWidth = 4
@@ -71,14 +72,12 @@ class GamePainter extends CustomPainter {
       //add current player pos
       //sX = sX + currentPlayerPos[]
 
-      // scale down and make between 1 & 0
-      sX = sX * globals.xSF;
+      // make between 1 & 0
       sX = sX > 1
           ? 1
           : sX < 0
               ? 0
               : sX;
-      sY = sY * globals.ySF;
       sY = sY > 1
           ? 1
           : sY < 0

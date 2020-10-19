@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
@@ -37,6 +38,7 @@ class _MainGamePageState extends State<MainGamePage> {
   void pausePress() {
     setState(() {
       paused = !paused;
+      globals.popup = paused;
       //based on paused or unpaused
       if (paused) {
         //paused
@@ -70,8 +72,6 @@ class _MainGamePageState extends State<MainGamePage> {
     double tapY = tapDetails.localPosition.dy;
     double playerX;
     double playerY;
-    double intensity = double.parse(globals.defaultFireSetup[0]);
-    double angle = double.parse(globals.defaultFireSetup[1]);
     int player = playerNumber;
 
     //set player locations
@@ -85,23 +85,7 @@ class _MainGamePageState extends State<MainGamePage> {
         tapX < playerX + globals.tapNearPlayer &&
         tapY > playerY - globals.tapNearPlayer &&
         tapY < playerY + globals.tapNearPlayer) {
-      //show popup
-      setState(() {
-        UI.dataInputPopup(
-            context,
-            [
-              (String text) => intensity = double.parse(text),
-              (String text) => angle = double.parse(text)
-            ],
-            dataTitle: globals.shootOptions,
-            title: globals.shootSetup,
-            data: globals.defaultFireSetup,
-            numericData: [true, true],
-            barrierDismissable: false, onFinish: () {
-          //code after player finished
-          playerShoot(intensity, angle);
-        });
-      });
+      playerShootTap();
     }
   }
 
@@ -116,6 +100,30 @@ class _MainGamePageState extends State<MainGamePage> {
     }
   }
 
+  void playerShootTap() {
+    //local variables
+    double intensity = double.parse(globals.defaultFireSetup[0]);
+    double angle = double.parse(globals.defaultFireSetup[1]);
+
+    //show popup
+    setState(() {
+      UI.dataInputPopup(
+          context,
+          [
+            (String text) => intensity = double.parse(text),
+            (String text) => angle = double.parse(text)
+          ],
+          dataTitle: globals.shootOptions,
+          title: globals.shootSetup,
+          data: globals.defaultFireSetup,
+          numericData: [true, true],
+          barrierDismissable: false, onFinish: () {
+        //code after player finished
+        playerShoot(intensity, angle);
+      });
+    });
+  }
+
   void playerShoot(double intensity, double angleDegrees) async {
     //simulate particle
     double angleRadians = angleDegrees * globals.degreesToRadians;
@@ -126,7 +134,10 @@ class _MainGamePageState extends State<MainGamePage> {
     double aY = globals.Ay;
     double sY = 0;
     double t;
+    double playerX = globals.playerPos[playerNumber][0];
+    double playerY = globals.playerPos[playerNumber][1];
     List<double> tempT;
+    Timer animationTimer;
 
     //calulate time taken for level firing
     tempT = solveQuadratic(0.5 * aY, uY, -sY) ?? [0, 0];
@@ -136,17 +147,31 @@ class _MainGamePageState extends State<MainGamePage> {
             : tempT[1]
         : tempT[0];
 
-    //render correct amount of times
-    for (int i = 0; i < t * (1 / (globals.frameLengthMs / 1000)); i++) {
+    //render correct amount of time
+    animationTimer =
+        Timer.periodic(Duration(milliseconds: globals.frameLengthMs), (timer) {
+      //amount of times called
+      int tick = timer.tick;
+      //tick = (tick.toDouble() / globals.animationSpeed).truncate();
+      double timeSec =
+          (globals.frameLengthMs * tick * globals.animationSpeed) / 1000;
+
+      //rebuild with new location
       setState(() {
         // s = ut + 0.5att
-        sX = uX * t + 0.5 * aX * i * i;
-        sY = uY * t + 0.5 * aY * i * i;
+        sX = (uX * timeSec + 0.5 * aX * timeSec * timeSec) * globals.xSF +
+            playerX;
+        sY = (uY * timeSec + 0.5 * aY * timeSec * timeSec) * globals.ySF +
+            playerY;
 
-        globals.projectilePos = [sX, sY];
+        globals.projectilePos = [sX, 1 - sY];
       });
-      await Future.delayed(Duration(milliseconds: globals.frameLengthMs));
-    }
+
+      //stop when done
+      if (timeSec >= t) {
+        timer.cancel();
+      }
+    });
   }
 
   void gameStart() {}
@@ -236,7 +261,7 @@ class _MainGamePageState extends State<MainGamePage> {
             ),
           ),
           //pause menu
-          paused
+          (paused && globals.popup)
               ? Container(
                   //give a disabled effect
                   color: globals.disabledBorder,
@@ -257,18 +282,20 @@ class _MainGamePageState extends State<MainGamePage> {
                 )
               : Container(),
           //pause button
-          Align(
-            alignment: Alignment.topRight,
-            child: IconButton(
-                icon: Icon(paused ? Icons.play_arrow : Icons.pause,
-                    color: globals.textColor),
-                iconSize: globals.iconSize,
-                onPressed: () {
-                  pausePress();
-                }),
-          ),
+          (globals.popup && paused) || (!globals.popup)
+              ? Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                      icon: Icon(paused ? Icons.play_arrow : Icons.pause,
+                          color: globals.textColor),
+                      iconSize: globals.iconSize,
+                      onPressed: () {
+                        pausePress();
+                      }),
+                )
+              : Container(),
           //player arrow buttons
-          playersTurn
+          playersTurn && !globals.popup
               ? Positioned(
                   left: 0.0,
                   bottom: 0.0,
@@ -280,7 +307,22 @@ class _MainGamePageState extends State<MainGamePage> {
                   ),
                 )
               : Container(),
-          playersTurn
+          playersTurn && !globals.popup
+              ? Positioned(
+                  left: 0.0,
+                  right: 0.0,
+                  bottom: 0.0,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.bubble_chart,
+                      color: playerButtonColour,
+                    ),
+                    iconSize: globals.iconSize,
+                    onPressed: () => playerShootTap(),
+                  ),
+                )
+              : Container(),
+          playersTurn && !globals.popup
               ? Positioned(
                   right: 0.0,
                   bottom: 0.0,
