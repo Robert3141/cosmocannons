@@ -10,25 +10,25 @@ class GamePainter extends CustomPainter {
   List<double> currentProjectilePos;
 
   Offset relativePos(double x, double y) {
-    //takes x & y between 0 and 100
+    //takes x & y between 0 and 1
     //returns size based on screen
     double newX = x * canvasSize.width;
-    double newY = y * canvasSize.height;
+    double newY = (1 - y) * canvasSize.height;
     return Offset(newX, newY);
   }
 
   Offset relPos(Offset pos) {
     // takes x and y between 0 and 1
     // return size based on screen
-    return Offset(pos.dx * canvasSize.width, pos.dy * canvasSize.height);
+    return Offset(pos.dx * canvasSize.width, (1 - pos.dy) * canvasSize.height);
   }
 
   void drawPlayer(int colour, List<double> pos, Canvas canvas) {
-    Offset position = Offset(pos[0], 1 - pos[1]);
+    Offset position = Offset(pos[0], pos[1]);
     final paint = Paint()
       ..color = globals.teamColors[colour]
-      ..strokeWidth = 4
-      ..strokeCap = StrokeCap.square;
+      ..strokeWidth = 0
+      ..strokeCap = StrokeCap.butt;
     canvas.drawCircle(relPos(position).translate(0, -10), 10, paint);
   }
 
@@ -46,9 +46,8 @@ class GamePainter extends CustomPainter {
       //place in player on firstRender calculate pos
       if (globals.firstRender) {
         playerX = (players + 1) / (amountOfPlayers + 1);
-        playerY = calcNearestHeight(terrainHeights, playerX);
-        print(playerX);
-        print(playerY);
+        playerY =
+            calcNearestHeight(terrainHeights, playerX) + globals.playerPadding;
         globals.playerPos[players] = [playerX, playerY];
       }
       currentPlayerPos = globals.playerPos;
@@ -57,11 +56,11 @@ class GamePainter extends CustomPainter {
   }
 
   void drawProjectile(int colour, List<double> pos, Canvas canvas) {
-    Offset position = Offset(pos[0], 1 - pos[1]);
+    Offset position = Offset(pos[0], pos[1]);
     final paint = Paint()
       ..color = globals.teamColors[colour]
-      ..strokeWidth = 4
-      ..strokeCap = StrokeCap.square;
+      ..strokeWidth = 0
+      ..strokeCap = StrokeCap.butt;
     canvas.drawCircle(relPos(position).translate(0, -3), 3, paint);
   }
 
@@ -81,17 +80,22 @@ class GamePainter extends CustomPainter {
           : sY < 0
               ? 0
               : sY;
-      drawProjectile(1, [sX, sY], canvas);
+      drawProjectile(globals.currentPlayer, [sX, sY], canvas);
     }
   }
 
   double calcNearestHeight(List<double> terrainHeights, double relPos) {
     //return nearest index int
-    double exactIndex = relPos * (terrainHeights.length - 1);
-    int nearestIndex = exactIndex.round();
-    nearestIndex = nearestIndex >= terrainHeights.length - 1
-        ? terrainHeights.length - 1
-        : nearestIndex;
+    double blockWidth = 1 / terrainHeights.length;
+    double blockRight;
+    int nearestIndex = 0;
+    for (int x = 0; x < terrainHeights.length; x++) {
+      blockRight = (x) * blockWidth;
+      if (relPos > blockRight) {
+        //located on left of block x+1
+        nearestIndex = x;
+      }
+    }
     return terrainHeights[nearestIndex];
   }
 
@@ -110,8 +114,8 @@ class GamePainter extends CustomPainter {
     double actualHeight;
     double blockHeight;
     double blockTop;
-    double relativeX1;
-    double relativeX;
+    double blockWidth = 1 / xAmount;
+    double blockRight;
     Offset posBL;
     Offset posTR;
 
@@ -127,23 +131,23 @@ class GamePainter extends CustomPainter {
       //calculate block height
       blockHeight = actualHeight / yAmount;
 
+      //calculate row position
+      blockRight = (x + 1) * blockWidth;
+
       //loop through rows
-      for (int y = 1; y <= yAmount; y++) {
+      for (int y = 1; y < yAmount; y++) {
         //calculate top postion
         blockTop = blockHeight * y;
 
         //square vertex positions
-        relativeX = x / (xAmount - 1);
-        relativeX1 = (x - 1) / (xAmount - 1);
-        posBL = Offset(relativeX1, 1 - (blockTop - blockHeight));
-        posTR = Offset(relativeX, 1 - blockTop);
-        //print(posBL.dy);
-        //print(posTR.dy);
-        //print(1 - actualHeight);
-        //print("------");
+        posBL = Offset(blockRight - blockWidth, blockTop - blockHeight);
+        posTR = Offset(blockRight, blockTop);
+        if (y == yAmount - 1) {
+          posTR = Offset(blockRight, terrainHeights[x]);
+        }
 
         //add block blend
-        posBL = posBL.translate(0, relativeX * 0.01);
+        posBL = posBL.translate(0, -0.05);
 
         //choose colour
         fractionThere = (y / yAmount) * (colors.length - 1);
@@ -171,8 +175,8 @@ class GamePainter extends CustomPainter {
         globals.terrainCacheColour.add(blockColor);
         final paint = Paint()
           ..color = blockColor
-          ..strokeWidth = 4
-          ..strokeCap = StrokeCap.square;
+          ..strokeWidth = 1
+          ..strokeCap = StrokeCap.butt;
         canvas.drawRect(Rect.fromPoints(relPos(posBL), relPos(posTR)), paint);
       }
     }
@@ -191,8 +195,8 @@ class GamePainter extends CustomPainter {
       for (int i = 0; i < globals.terrainCacheLocation.length; i++) {
         final paint = Paint()
           ..color = globals.terrainCacheColour[i]
-          ..strokeWidth = 4
-          ..strokeCap = StrokeCap.square;
+          ..strokeWidth = 1
+          ..strokeCap = StrokeCap.butt;
         canvas.drawRect(
             Rect.fromPoints(relPos(globals.terrainCacheLocation[i][0]),
                 relPos(globals.terrainCacheLocation[i][1])),

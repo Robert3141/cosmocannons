@@ -26,7 +26,6 @@ class _MainGamePageState extends State<MainGamePage> {
   //locals
   double zoom = globals.defaultZoom;
   int amountOfPlayers;
-  int playerNumber;
   bool startOfGame = true;
   bool paused = false;
   bool playersTurn = true;
@@ -49,7 +48,7 @@ class _MainGamePageState extends State<MainGamePage> {
   }
 
   void playerMove(bool right) {
-    double playerX = globals.playerPos[playerNumber][0];
+    double playerX = globals.playerPos[globals.currentPlayer][0];
     double playerY;
     playerX = right
         ? playerX + globals.movementAmount
@@ -60,9 +59,10 @@ class _MainGamePageState extends State<MainGamePage> {
         : playerX < 0
             ? 0
             : playerX;
-    playerY = GamePainter().calcNearestHeight(gameMap, playerX);
+    playerY = GamePainter().calcNearestHeight(gameMap, playerX) +
+        globals.playerPadding;
     setState(() {
-      globals.playerPos[playerNumber] = [playerX, playerY];
+      globals.playerPos[globals.currentPlayer] = [playerX, playerY];
     });
   }
 
@@ -72,7 +72,7 @@ class _MainGamePageState extends State<MainGamePage> {
     double tapY = UI.screenHeight(context) - tapDetails.localPosition.dy;
     double playerX;
     double playerY;
-    int player = playerNumber;
+    int player = globals.currentPlayer;
 
     //set player locations
     playerX = globals.playerPos[player][0] *
@@ -117,9 +117,12 @@ class _MainGamePageState extends State<MainGamePage> {
           title: globals.shootSetup,
           data: globals.defaultFireSetup,
           numericData: [true, true],
-          barrierDismissable: false, onFinish: () {
+          barrierDismissable: true, onFinish: (bool confirm) {
         //code after player finished
-        playerShoot(intensity, angle);
+        setState(() {
+          globals.popup = false;
+        });
+        if (confirm) playerShoot(intensity, angle);
       });
     });
   }
@@ -134,8 +137,8 @@ class _MainGamePageState extends State<MainGamePage> {
     double aY = globals.Ay;
     double sY = 0;
     double terrainHeight = 0;
-    double playerX = globals.playerPos[playerNumber][0];
-    double playerY = globals.playerPos[playerNumber][1];
+    double playerX = globals.playerPos[globals.currentPlayer][0];
+    double playerY = globals.playerPos[globals.currentPlayer][1] + 0.01;
     List<double> tempT;
     Timer animationTimer;
 
@@ -168,9 +171,7 @@ class _MainGamePageState extends State<MainGamePage> {
 
       //stop when done
       terrainHeight = GamePainter().calcNearestHeight(gameMap, sX);
-      print(sY);
-      print(terrainHeight);
-      if (terrainHeight >= sY - 0.01) {
+      if (terrainHeight >= sY) {
         timer.cancel();
       }
     });
@@ -222,6 +223,7 @@ class _MainGamePageState extends State<MainGamePage> {
       }
       //always on keyboard controls
       if (key.logicalKey == LogicalKeyboardKey.escape) {
+        print("oh");
         pausePress();
       }
     }
@@ -232,9 +234,9 @@ class _MainGamePageState extends State<MainGamePage> {
   Widget build(BuildContext context) {
     pageContext = context;
     playersTurn = widget.type.startingPlayer ?? true;
-    playerNumber = widget.type.playerNumber ?? 0;
+    globals.currentPlayer = widget.type.playerNumber ?? 0;
     Color playerButtonColour =
-        globals.teamColors[globals.playerTeams[playerNumber]] ??
+        globals.teamColors[globals.playerTeams[globals.currentPlayer]] ??
             globals.textColor;
     Scaffold page = UI.scaffoldWithBackground(children: [
       Stack(

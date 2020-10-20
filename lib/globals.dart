@@ -78,9 +78,33 @@ const double Ay = -9.81;
 const double xSF = 1 / 1000;
 const double ySF = 1 / 1000;
 const double animationSpeed = 3;
+const double playerPadding = 0.001;
 
 const List<List<double>> terrainMaps = [
   [0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69],
+  /*[
+    0.47,
+    0.48,
+    0.48,
+    0.50,
+    0.51,
+    0.52,
+    0.52,
+    0.54,
+    0.56,
+    0.58,
+    0.61,
+    0.64,
+    0.67,
+    0.69,
+    0.70,
+    0.72,
+    0.71,
+    0.72,
+    0.69,
+    0.69,
+    0.53
+  ]*/
 ];
 
 const int maxLANPlayers = 4;
@@ -111,6 +135,8 @@ const List<Color> terrainColors = [
 ];
 
 /// VARIABLES
+
+int currentPlayer = 0;
 
 bool firstRender = true;
 bool popup = false;

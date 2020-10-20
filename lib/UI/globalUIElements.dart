@@ -338,7 +338,7 @@ class UI {
       List<String> data = const [""],
       String title = "",
       bool barrierDismissable = true,
-      Function() onFinish}) {
+      Function(bool confirm) onFinish}) {
     List<Widget> children = [];
 
     //popup
@@ -348,10 +348,10 @@ class UI {
     while (dataTitle.length < dataChange.length) dataTitle.add("");
     while (data.length < dataChange.length) data.add("");
     while (numericData.length < dataChange.length) numericData.add(false);
-    Function tempFinish = onFinish ?? () {};
-    onFinish = () {
+    Function tempFinish = onFinish ?? (bool confirm) {};
+    onFinish = (bool confirm) {
       globals.popup = false;
-      tempFinish();
+      tempFinish(confirm);
     };
 
     //title
@@ -393,7 +393,7 @@ class UI {
       );
 
   static Dialog gamePopup(List<Widget> children, BuildContext context,
-      Function onFinish, bool barrierDismissable) {
+      Function onFinish(bool confirm), bool barrierDismissable) {
     //on enter:
     FocusNode popupKeyboard = FocusNode();
     Timer popupStart = Timer(Duration(milliseconds: 500), () {});
@@ -405,7 +405,7 @@ class UI {
           text: globals.confirm,
           onTap: () {
             Navigator.of(context).pop();
-            onFinish();
+            onFinish(true);
           },
           context: context)
     ]));
@@ -419,12 +419,12 @@ class UI {
             if (key.logicalKey == LogicalKeyboardKey.enter &&
                 !popupStart.isActive) {
               Navigator.of(context).pop();
-              onFinish();
+              onFinish(true);
             }
-            if (key.logicalKey == LogicalKeyboardKey.escape &&
-                !barrierDismissable) {
-              Navigator.of(context).pop();
+            if (key.logicalKey == LogicalKeyboardKey.escape) {
               globals.popup = false;
+              Navigator.of(context).pop();
+              onFinish(false);
             }
           },
           child: Column(
