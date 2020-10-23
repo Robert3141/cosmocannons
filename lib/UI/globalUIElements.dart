@@ -402,7 +402,16 @@ class UI {
     };
 
     //title
-    children.add(UI.textWidget(title));
+    children.add(Container(
+        padding: EdgeInsets.symmetric(vertical: UI.getPaddingSize(context)),
+        child: Text(
+          title,
+          style: UI.defaultText(true),
+          textAlign: TextAlign.center,
+        )));
+    children.add(Container(
+      height: UI.getPaddingSize(context),
+    ));
     for (int i = 0; i < dataChange.length; i++) {
       children.add(Column(
         children: [
@@ -414,6 +423,9 @@ class UI {
             onTap: dataChange[i],
             context: context,
             textField: true,
+          ),
+          Container(
+            height: UI.getPaddingSize(context),
           )
         ],
       ));
@@ -422,13 +434,13 @@ class UI {
       barrierColor: globals.disabledBorder,
       barrierDismissible: barrierDismissable,
       context: context,
-      builder: (BuildContext context) =>
-          UI.gamePopup(children, context, onFinish, barrierDismissable),
+      builder: (BuildContext context) => UI.gamePopup(
+          children, context, onFinish, barrierDismissable, dataChange),
     );
   }
 
   static Widget textWidget(String text,
-          {TextAlign spacing = TextAlign.center}) =>
+          {TextAlign spacing = TextAlign.center, double fontSize = 1}) =>
       AutoSizeText(
         text,
         textAlign: spacing,
@@ -436,26 +448,33 @@ class UI {
         maxFontSize: globals.smallTextSize,
         minFontSize: 6,
         maxLines: 1,
+        textScaleFactor: fontSize,
         group: globals.standardTextGroup,
       );
 
-  static Dialog gamePopup(List<Widget> children, BuildContext context,
-      Function onFinish(bool confirm), bool barrierDismissable) {
+  static Dialog gamePopup(
+    List<Widget> children,
+    BuildContext context,
+    Function onFinish(bool confirm),
+    bool barrierDismissable,
+    List<Function(String)> dataChange,
+  ) {
     //on enter:
     FocusNode popupKeyboard = FocusNode();
     Timer popupStart = Timer(Duration(milliseconds: 500), () {});
 
     //add confirm button
-    children.add(Column(children: [
-      UI.largeButton(
-          height: globals.smallHeight,
-          text: globals.confirm,
-          onTap: () {
-            Navigator.of(context).pop();
-            onFinish(true);
-          },
-          context: context)
-    ]));
+    if (children.length == dataChange.length + 2)
+      children.add(Column(children: [
+        UI.largeButton(
+            height: globals.smallHeight,
+            text: globals.confirm,
+            onTap: () {
+              Navigator.of(context).pop();
+              onFinish(true);
+            },
+            context: context)
+      ]));
     return Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         backgroundColor: globals.disabledBorder,
@@ -474,9 +493,12 @@ class UI {
               onFinish(false);
             }
           },
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: children,
+          child: Container(
+            width: screenWidth(context) * getHalfWidth(context),
+            child: ListView(
+              //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: children,
+            ),
           ),
         ));
   }

@@ -238,6 +238,9 @@ class _MainGamePageState extends State<MainGamePage> {
   void gameStart() {
     // depends on game mode
     globals.currentPlayer = widget.type.playerNumber;
+
+    //not start anymore
+    startOfGame = false;
   }
 
   void moveScroller(double increase) {
@@ -292,6 +295,7 @@ class _MainGamePageState extends State<MainGamePage> {
   //build UI
   @override
   Widget build(BuildContext context) {
+    if (startOfGame) gameStart();
     pageContext = context;
     playersTurn = globals.thisPlayer == globals.currentPlayer;
     Color playerButtonColour =
