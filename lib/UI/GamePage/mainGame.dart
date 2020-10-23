@@ -10,7 +10,9 @@ import 'package:flutter/services.dart';
 
 class MainGamePage extends StatefulWidget {
   //constructor of class
-  MainGamePage({Key key, this.title, this.type}) : super(key: key);
+  MainGamePage(
+      {Key key, this.title = "", this.type = globals.GameType.multiLocal})
+      : super(key: key);
 
   final String title;
   final globals.GameType type;
@@ -44,6 +46,17 @@ class _MainGamePageState extends State<MainGamePage> {
       } else {
         //unpaused
       }
+    });
+  }
+
+  void moveScrollerToRelativePosition(List<double> pos) {
+    print(pos);
+    double offsetX = globals.gameScroller.position.maxScrollExtent * pos[0];
+    setState(() {
+      print(globals.gameScroller.offset);
+      globals.gameScroller.animateTo(offsetX,
+          curve: Curves.bounceIn,
+          duration: Duration(milliseconds: globals.animationSpeed.round()));
     });
   }
 
@@ -110,8 +123,8 @@ class _MainGamePageState extends State<MainGamePage> {
       UI.dataInputPopup(
           context,
           [
-            (String text) => intensity = double.parse(text),
-            (String text) => angle = double.parse(text)
+            (String text) => intensity = double.tryParse(text) ?? 0,
+            (String text) => angle = double.tryParse(text) ?? 0,
           ],
           dataTitle: globals.shootOptions,
           title: globals.shootSetup,
@@ -124,10 +137,13 @@ class _MainGamePageState extends State<MainGamePage> {
         });
         if (confirm) playerShoot(intensity, angle);
       });
+
+      //move terrain to player
+      moveScrollerToRelativePosition(globals.playerPos[globals.currentPlayer]);
     });
   }
 
-  void playerShoot(double intensity, double angleDegrees) async {
+  Future<bool> animateProjectile(double intensity, double angleDegrees) async {
     //simulate particle
     double angleRadians = angleDegrees * globals.degreesToRadians;
     double uX = intensity * -cos(angleRadians);
@@ -139,8 +155,10 @@ class _MainGamePageState extends State<MainGamePage> {
     double terrainHeight = 0;
     double playerX = globals.playerPos[globals.currentPlayer][0];
     double playerY = globals.playerPos[globals.currentPlayer][1] + 0.01;
-    List<double> tempT;
+    double timeSec = 0;
+    //List<double> tempT;
     Timer animationTimer;
+    bool tickerActive;
 
     //calulate time taken for level firing
     /*tempT = solveQuadratic(0.5 * aY, uY, -sY) ?? [0, 0];
@@ -155,8 +173,7 @@ class _MainGamePageState extends State<MainGamePage> {
         Timer.periodic(Duration(milliseconds: globals.frameLengthMs), (timer) {
       //amount of times called
       int tick = timer.tick;
-      double timeSec =
-          (globals.frameLengthMs * tick * globals.animationSpeed) / 1000;
+      timeSec = (globals.frameLengthMs * tick * globals.animationSpeed) / 1000;
 
       //rebuild with new location
       setState(() {
@@ -175,9 +192,53 @@ class _MainGamePageState extends State<MainGamePage> {
         timer.cancel();
       }
     });
+
+    //return false if too long
+    while (animationTimer.isActive && timeSec <= globals.maxFlightLength) {
+      await Future.delayed(Duration(milliseconds: globals.checkDoneMs));
+    }
+
+    //cancel ticker and remove projectile from UI
+    tickerActive = animationTimer.isActive;
+    animationTimer.cancel();
+    globals.projectilePos = globals.locationInvisible;
+    return !tickerActive;
   }
 
-  void gameStart() {}
+  void nextPlayer() {
+    int playerInt = globals.currentPlayer;
+    playerInt++;
+    //check for overflow
+    if (playerInt == globals.playerTeams.length) {
+      playerInt = 0;
+    }
+    globals.currentPlayer = playerInt;
+    globals.thisPlayer =
+        widget.type.showPlayerUI(playerInt) ? playerInt : globals.thisPlayer;
+  }
+
+  Future<void> playerShoot(double intensity, double angleDegrees) async {
+    //set locals
+    bool firingLanded;
+
+    setState(() {
+      //disable shoot UI
+      globals.thisPlayer = -1;
+    });
+
+    //shoot projectile
+    firingLanded = await animateProjectile(intensity, angleDegrees);
+
+    setState(() {
+      //set next player
+      nextPlayer();
+    });
+  }
+
+  void gameStart() {
+    // depends on game mode
+    globals.currentPlayer = widget.type.playerNumber;
+  }
 
   void moveScroller(double increase) {
     double currentPos = globals.gameScroller.offset;
@@ -223,7 +284,6 @@ class _MainGamePageState extends State<MainGamePage> {
       }
       //always on keyboard controls
       if (key.logicalKey == LogicalKeyboardKey.escape) {
-        print("oh");
         pausePress();
       }
     }
@@ -233,8 +293,7 @@ class _MainGamePageState extends State<MainGamePage> {
   @override
   Widget build(BuildContext context) {
     pageContext = context;
-    playersTurn = widget.type.startingPlayer ?? true;
-    globals.currentPlayer = widget.type.playerNumber ?? 0;
+    playersTurn = globals.thisPlayer == globals.currentPlayer;
     Color playerButtonColour =
         globals.teamColors[globals.playerTeams[globals.currentPlayer]] ??
             globals.textColor;
@@ -305,7 +364,7 @@ class _MainGamePageState extends State<MainGamePage> {
                       }),
                 )
               : Container(),
-          //player arrow buttons
+          //player arrow and shoot buttons
           playersTurn && !globals.popup
               ? Positioned(
                   left: 0.0,

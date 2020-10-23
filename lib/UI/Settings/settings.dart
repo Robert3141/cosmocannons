@@ -34,15 +34,16 @@ class _SettingsPageState extends State<SettingsPage> {
             child: ListView(
               children: [
                 Container(
-                  height: UI.getHalfHeight(context) * globals.halfButton * UI.screenHeight(context),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       UI.textWidget("test"),
                       UI.optionToggle(
-                          items: ["yes", "no","maybe"],
-                          onTap: (int i) {},
-                          context: context,)
+                        heightMultiplier: 0.5,
+                        items: ["yes", "no", "maybe"],
+                        onTap: (int i) {},
+                        context: context,
+                      )
                     ],
                   ),
                 ),

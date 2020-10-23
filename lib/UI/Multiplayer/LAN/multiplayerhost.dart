@@ -84,11 +84,8 @@ class _LocalMultiPageState extends State<HostMultiPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  UI.largeButton(
-                      width: UI.getHalfWidth(context) * globals.halfButton,
-                      height: UI.getHalfHeight(context) *
-                          globals.halfButton *
-                          globals.heightMultiplier,
+                  UI.halfButton(
+                      quaterButton: true,
                       text: globals.hostName,
                       onTap: nameSelectPopup,
                       enabled: !hostingServer,
@@ -96,13 +93,10 @@ class _LocalMultiPageState extends State<HostMultiPage> {
                   Container(
                     width: UI.getPaddingSize(context),
                   ),
-                  UI.largeButton(
-                      width: UI.getHalfWidth(context) * globals.halfButton,
-                      height: UI.getHalfHeight(context) *
-                          globals.halfButton *
-                          globals.heightMultiplier,
+                  UI.halfButton(
+                      quaterButton: true,
                       text: globals.hostStartServer,
-                      onTap: null,
+                      onTap: () {},
                       enabled: userNameText.isNotEmpty,
                       context: context)
                 ],
@@ -110,11 +104,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
               Container(
                 height: UI.getPaddingSize(context),
               ),
-              UI.largeButton(
-                width: UI.getHalfWidth(context),
-                height: UI.getHalfHeight(context) *
-                    globals.halfButton *
-                    globals.heightMultiplier,
+              UI.halfButton(
                 text: readyForPlay ? globals.readyForPlay : globals.readyUp,
                 onTap: () => toggleReady(),
                 enabled: hostingServer,

@@ -37,6 +37,7 @@ const String confirm = "Confirm";
 const String shootSetup = "Fire!";
 const String shootIntensity = "Intensity";
 const String shootAngle = "Angle";
+const String beginGame = "Begin";
 
 const List<String> defaultTeamNames = ["R", "G", "B", "Y"];
 const List<String> playerAmounts = ["2", "3", "4"];
@@ -80,6 +81,8 @@ const double ySF = 1 / 1000;
 const double animationSpeed = 3;
 const double playerPadding = 0.001;
 
+const List<double> locationInvisible = [-1, -1];
+
 const List<List<double>> terrainMaps = [
   [0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69],
   /*[
@@ -108,9 +111,12 @@ const List<List<double>> terrainMaps = [
 ];
 
 const int maxLANPlayers = 4;
+const int defualtPlayerAmount = 2;
 const int terrainRowsToRender = 50;
 const int terrainColumnsToRender = 50;
 const int frameLengthMs = 16;
+const int maxFlightLength = 10;
+const int checkDoneMs = 100;
 
 const Color buttonFill = Colors.black54;
 const Color buttonBorder = Colors.white38;
@@ -137,6 +143,7 @@ const List<Color> terrainColors = [
 /// VARIABLES
 
 int currentPlayer = 0;
+int thisPlayer = 0;
 
 bool firstRender = true;
 bool popup = false;
@@ -175,6 +182,25 @@ extension GameExtension on GameType {
         return true;
       case GameType.multiClient:
         return false;
+      default:
+        return null;
+    }
+  }
+
+  bool showPlayerUI(int playerNo) {
+    switch (this) {
+      case GameType.singlePlayer:
+        return false;
+        break;
+      case GameType.multiLocal:
+        return true;
+        break;
+      case GameType.multiHost:
+        return playerNo == 0;
+        break;
+      case GameType.multiClient:
+        return playerNo == 1;
+        break;
       default:
         return null;
     }

@@ -3,7 +3,6 @@ import 'package:cosmocannons/globals.dart' as globals;
 import 'package:cosmocannons/UI/Multiplayer/Local/multiplayerlocal.dart';
 import 'package:cosmocannons/UI/Multiplayer/LAN/multiplayerclient.dart';
 import 'package:cosmocannons/UI/Multiplayer/LAN/multiplayerhost.dart';
-import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -41,7 +40,7 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
     var platform = Theme.of(context).platform;
     bool kIsAndroid = platform == TargetPlatform.android;
     bool kIsIOS = platform == TargetPlatform.iOS;
-    bool kIsMobile = true; //kIsAndroid || kIsIOS;
+    bool kIsMobile = kIsAndroid || kIsIOS;
 
     Scaffold page = UI.scaffoldWithBackground(
       context: context,

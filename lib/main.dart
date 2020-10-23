@@ -28,8 +28,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MainGamePage(title: "MainPage"),
-      //home: LauncherPage(title: globals.gameTitle),
+      //home: MainGamePage(title: "MainPage"),
+      home: LauncherPage(title: globals.gameTitle),
     );
   }
 }

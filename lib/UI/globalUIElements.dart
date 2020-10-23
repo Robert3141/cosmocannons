@@ -150,7 +150,10 @@ class UI {
                         ? FilteringTextInputFormatter.digitsOnly
                         : FilteringTextInputFormatter.singleLineFormatter,
                   ],
-                  onChanged: onTap,
+                  onChanged: (String newText) {
+                    newText ??= "";
+                    onTap(newText);
+                  },
                   controller: controller ?? TextEditingController(text: text),
                   maxLength: 10,
                   textAlign: TextAlign.center,
@@ -164,6 +167,29 @@ class UI {
                   style: defaultText(false, enabled),
                 ),
         ),
+      );
+
+  // Quater button
+  static GestureDetector halfButton({
+    @required String text,
+    @required Function onTap,
+    @required BuildContext context,
+    bool enabled = true,
+    bool quaterButton = false,
+    Color buttonFill = globals.buttonFill,
+  }) =>
+      largeButton(
+        text: text,
+        onTap: onTap,
+        context: context,
+        width: quaterButton
+            ? UI.getHalfWidth(context) * globals.halfButton
+            : UI.getHalfWidth(context),
+        height: UI.getHalfHeight(context) *
+            globals.halfButton *
+            globals.heightMultiplier,
+        enabled: enabled,
+        buttonFill: buttonFill,
       );
 
   // This is a unique widget for the small buttons used for the home page, back button and the about page button
@@ -286,50 +312,71 @@ class UI {
     @required BuildContext context,
     double width,
     double height,
+    double heightMultiplier = 1,
     Color selectedItemFill = globals.optionToggleColor,
     Color defaultFill = globals.buttonFill,
     bool enabled = true,
     int selectedInt = 0,
     bool selectedBool = false,
+    String title,
   }) =>
       Container(
-        width: screenWidth(context) * (width ?? getHalfWidth(context)),
-        height: screenHeight(context) * (height ?? getHalfHeight(context)),
-        decoration: BoxDecoration(
-            border: Border.all(
-              width: globals.buttonBorderSize,
-              color: enabled ? globals.buttonBorder : globals.disabledBorder,
-            ),
-            borderRadius: BorderRadius.circular(globals.buttonClipSize)),
-        child: ListView.builder(
-            itemCount: items.length,
-            scrollDirection: Axis.horizontal,
-            physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (BuildContext context, int selectedItem) {
-              return GestureDetector(
-                onTap: onTap(selectedItem),
-                child: Container(
-                  width: screenWidth(context) *
-                      (width ?? getHalfWidth(context)) /
-                      items.length,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
+          height: screenHeight(context) *
+              (height ??
+                  getHalfHeight(context) *
+                      globals.heightMultiplier *
+                      globals.halfButton) *
+              heightMultiplier,
+          child: Column(children: [
+            title == null ? Container() : textWidget(title),
+            Container(
+                height: heightMultiplier *
+                        screenHeight(context) *
+                        (height ??
+                            getHalfHeight(context) *
+                                globals.heightMultiplier *
+                                globals.halfButton) *
+                        (title == null ? 1 : 0.95) -
+                    (globals.buttonBorderSize * 2),
+                width: screenWidth(context) * (width ?? getHalfWidth(context)),
+                decoration: BoxDecoration(
+                    border: Border.all(
+                      width: globals.buttonBorderSize,
                       color: enabled
-                          ? items.length == 2
-                              //choose boolean input
-                              ? selectedBool && selectedItem == 1
-                                  ? selectedItemFill
-                                  : defaultFill
-                              //choose integer input
-                              : selectedItem == selectedInt
-                                  ? selectedItemFill
-                                  : defaultFill
-                          : globals.buttonFill),
-                  child: textWidget(items[selectedItem]),
-                ),
-              );
-            }),
-      );
+                          ? globals.buttonBorder
+                          : globals.disabledBorder,
+                    ),
+                    borderRadius:
+                        BorderRadius.circular(globals.buttonClipSize)),
+                child: ListView.builder(
+                    itemCount: items.length,
+                    scrollDirection: Axis.horizontal,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (BuildContext context, int selectedItem) {
+                      return GestureDetector(
+                        onTapDown: (deats) => onTap(selectedItem),
+                        child: Container(
+                          width: screenWidth(context) *
+                              (width ?? (getHalfWidth(context))) /
+                              items.length,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              color: enabled
+                                  ? items.length == 2
+                                      //choose boolean input
+                                      ? selectedBool == (selectedItem == 1)
+                                          ? selectedItemFill
+                                          : defaultFill
+                                      //choose integer input
+                                      : selectedItem == selectedInt
+                                          ? selectedItemFill
+                                          : defaultFill
+                                  : globals.buttonFill),
+                          child: textWidget(items[selectedItem]),
+                        ),
+                      );
+                    }))
+          ]));
 
   static Future dataInputPopup(
       BuildContext context, List<Function(String)> dataChange,
