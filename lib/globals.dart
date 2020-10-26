@@ -33,7 +33,7 @@ const String notConnected = "Not Connected";
 const String paused = "Paused";
 const String platformNotSupported = "Not supported on this device";
 const String amountOfPlayers = "Amount of players";
-const String confirm = "Confirm";
+const String confirm = "OK";
 const String shootSetup = "Fire!";
 const String shootIntensity = "Intensity";
 const String shootAngle = "Angle";
@@ -80,8 +80,11 @@ const double xSF = 1 / 1000;
 const double ySF = 1 / 1000;
 const double animationSpeed = 3;
 const double playerPadding = 0.001;
+const double blastRadius = 0.01;
+const double blastDamage = -20;
 
 const List<double> locationInvisible = [-1, -1];
+const List<double> defaultPlayerHealth = [100, 100, 100, 100];
 
 const List<List<double>> terrainMaps = [
   [0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69],
@@ -142,7 +145,9 @@ const List<Color> terrainColors = [
 
 /// VARIABLES
 
+//player playing game
 int currentPlayer = 0;
+//the last player on this device (Same unless LAN game)
 int thisPlayer = 0;
 
 bool firstRender = true;
@@ -155,6 +160,7 @@ List<int> playerTeams = [0, 1, 2, 3];
 List<List<double>> playerPos;
 
 List<double> projectilePos;
+List<double> playerHealth = defaultPlayerHealth;
 
 List<List<Offset>> terrainCacheLocation;
 

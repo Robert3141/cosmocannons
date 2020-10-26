@@ -391,6 +391,50 @@ class UI {
                     }))
           ]));
 
+  static Future textDisplayPopup(BuildContext context, String text,
+      {Function(bool confirm) onFinish, String title = ""}) {
+    //local vars
+    List<Widget> children;
+
+    //popup
+    globals.popup = true;
+
+    //make sure suitable
+    Function tempFinish = onFinish ?? (bool confirm) {};
+    onFinish = (bool confirm) {
+      globals.popup = false;
+      tempFinish(confirm);
+    };
+
+    //title
+    children.add(Container(
+        padding: EdgeInsets.symmetric(vertical: UI.getPaddingSize(context)),
+        child: Text(
+          title,
+          style: UI.defaultText(true),
+          textAlign: TextAlign.center,
+        )));
+    children.add(Container(
+      height: UI.getPaddingSize(context),
+    ));
+    //text
+    children.add(Container(
+        padding: EdgeInsets.symmetric(vertical: UI.getPaddingSize(context)),
+        child: Text(
+          text,
+          style: UI.defaultText(false),
+          textAlign: TextAlign.center,
+        )));
+
+    return showDialog(
+      barrierColor: globals.disabledBorder,
+      barrierDismissible: true,
+      context: context,
+      builder: (BuildContext context) =>
+          UI.gamePopup(children, context, onFinish, true, []),
+    );
+  }
+
   static Future dataInputPopup(
       BuildContext context, List<Function(String)> dataChange,
       {List<String> dataTitle = const [""],
@@ -425,6 +469,7 @@ class UI {
     children.add(Container(
       height: UI.getPaddingSize(context),
     ));
+    //buttons
     for (int i = 0; i < dataChange.length; i++) {
       children.add(Column(
         children: [
@@ -466,18 +511,18 @@ class UI {
       );
 
   static Dialog gamePopup(
-    List<Widget> children,
-    BuildContext context,
-    Function onFinish(bool confirm),
-    bool barrierDismissable,
-    List<Function(String)> dataChange,
-  ) {
+      List<Widget> children,
+      BuildContext context,
+      Function onFinish(bool confirm),
+      bool barrierDismissable,
+      List<Function(String)> dataChange,
+      {bool textPopup = false}) {
     //on enter:
     FocusNode popupKeyboard = FocusNode();
     Timer popupStart = Timer(Duration(milliseconds: 500), () {});
 
     //add confirm button
-    if (children.length == dataChange.length + 2)
+    if (children.length == dataChange.length + 2 || textPopup)
       children.add(Column(children: [
         UI.largeButton(
             height: globals.smallHeight,

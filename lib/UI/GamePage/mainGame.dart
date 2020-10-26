@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
+import 'package:cosmocannons/UI/launcher.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
@@ -92,10 +93,8 @@ class _MainGamePageState extends State<MainGamePage> {
     playerY = globals.playerPos[player][1] * UI.screenHeight(context);
 
     //check near player
-    if (tapX > playerX - globals.tapNearPlayer &&
-        tapX < playerX + globals.tapNearPlayer &&
-        tapY > playerY - globals.tapNearPlayer &&
-        tapY < playerY + globals.tapNearPlayer) {
+    if (checkInRadius(
+        [tapX, tapY], [playerX, playerY], globals.tapNearPlayer)) {
       playerShootTap();
     }
   }
@@ -141,7 +140,8 @@ class _MainGamePageState extends State<MainGamePage> {
     });
   }
 
-  Future<bool> animateProjectile(double intensity, double angleDegrees) async {
+  Future<List<double>> animateProjectile(
+      double intensity, double angleDegrees, int playerInt) async {
     //simulate particle
     double angleRadians = angleDegrees * globals.degreesToRadians;
     double uX = intensity * -cos(angleRadians);
@@ -151,20 +151,21 @@ class _MainGamePageState extends State<MainGamePage> {
     double aY = globals.Ay;
     double sY = 0;
     double terrainHeight = 0;
-    double playerX = globals.playerPos[globals.currentPlayer][0];
-    double playerY = globals.playerPos[globals.currentPlayer][1] + 0.01;
+    double playerX = globals.playerPos[playerInt][0];
+    double playerY = globals.playerPos[playerInt][1] + 0.01;
     double timeSec = 0;
-    //List<double> tempT;
+    /*double t;
+    List<double> levelTime;*/
     Timer animationTimer;
-    bool tickerActive;
+    List<double> impactPos = globals.locationInvisible;
 
     //calulate time taken for level firing
-    /*tempT = solveQuadratic(0.5 * aY, uY, -sY) ?? [0, 0];
-    t = tempT[0] <= 0
-        ? tempT[1] <= 0
+    /*levelTime = solveQuadratic(0.5 * aY, uY, -sY) ?? [0, 0];
+    t = levelTime[0] <= 0
+        ? levelTime[1] <= 0
             ? 0
-            : tempT[1]
-        : tempT[0];*/
+            : levelTime[1]
+        : levelTime[0];*/
 
     //render correct amount of time
     animationTimer =
@@ -189,6 +190,11 @@ class _MainGamePageState extends State<MainGamePage> {
       if (terrainHeight >= sY) {
         timer.cancel();
       }
+      // stop if going to take too long!
+      /*if (t > globals.maxFlightLength) {
+        globals.projectilePos = globals.locationInvisible;
+        timer.cancel();
+      }*/
     });
 
     //return false if too long
@@ -197,19 +203,44 @@ class _MainGamePageState extends State<MainGamePage> {
     }
 
     //cancel ticker and remove projectile from UI
-    tickerActive = animationTimer.isActive;
     animationTimer.cancel();
+    impactPos = globals.projectilePos;
     globals.projectilePos = globals.locationInvisible;
-    return !tickerActive;
+    return impactPos;
   }
 
-  void nextPlayer() {
-    int playerInt = globals.currentPlayer;
+  bool takeDamage(List<double> impactPos, int playerInt) {
+    //local vars
+    int currentPlayerTeam = globals.playerTeams[playerInt];
+    int amountRemaining = 0;
+
+    //check for all players
+    for (int i = 0; i < amountOfPlayers; i++) {
+      //only check for players not in team
+      if (globals.playerTeams[i] != currentPlayerTeam) {
+        if (checkInRadius(
+            impactPos, globals.playerPos[i], globals.blastRadius)) {
+          //reduce player health
+          globals.playerHealth[i] += globals.blastDamage;
+        }
+      }
+
+      //check amount of players remaining
+      if (globals.playerHealth[i] <= 0) amountRemaining++;
+    }
+
+    return amountRemaining <= 1;
+  }
+
+  void nextPlayer(int playerInt) {
+    //next player
     playerInt++;
+
     //check for overflow
     if (playerInt == globals.playerTeams.length) {
       playerInt = 0;
     }
+
     globals.currentPlayer = playerInt;
     globals.thisPlayer =
         widget.type.showPlayerUI(playerInt) ? playerInt : globals.thisPlayer;
@@ -217,6 +248,10 @@ class _MainGamePageState extends State<MainGamePage> {
 
   Future<void> playerShoot(double intensity, double angleDegrees) async {
     //set locals
+    List<double> impactPos;
+    int playerInt;
+    bool oneOrLessPlayers;
+    int winningPlayer;
 
     setState(() {
       //disable shoot UI
@@ -224,12 +259,39 @@ class _MainGamePageState extends State<MainGamePage> {
     });
 
     //shoot projectile
-    await animateProjectile(intensity, angleDegrees);
+    impactPos = await animateProjectile(intensity, angleDegrees, playerInt);
 
-    setState(() {
+    //take damage
+    oneOrLessPlayers = takeDamage(impactPos, playerInt);
+
+    //game dictates on player health
+    if (oneOrLessPlayers) {
+      //find winning player
+      winningPlayer = -2; //signifies draw
+
+      for (int i = 0; i < amountOfPlayers; i++) {
+        if (globals.playerHealth[i] > 0) winningPlayer = i;
+      }
+
+      //exit to main menu with popup
+      UI.startNewPage(context,
+          newPage: LauncherPage(
+            winner: winningPlayer,
+          ));
+    } else {
       //set next player
-      nextPlayer();
-    });
+      setState(() {
+        nextPlayer(playerInt);
+      });
+    }
+  }
+
+  bool checkInRadius(
+      List<double> item, List<double> hitbox, double hitboxRadius) {
+    return item[0] > hitbox[0] - hitboxRadius &&
+        item[0] < hitbox[0] + hitboxRadius &&
+        item[1] > hitbox[1] - hitboxRadius &&
+        item[1] < hitbox[1] + hitboxRadius;
   }
 
   void gameStart() {
