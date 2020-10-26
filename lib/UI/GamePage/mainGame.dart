@@ -34,6 +34,7 @@ class _MainGamePageState extends State<MainGamePage> {
   bool playersTurn = true;
   BuildContext pageContext;
   List<double> gameMap = globals.terrainMaps[0];
+  List<List<double>> lastFireSetup;
   TapDownDetails tapDetails;
 
   //functions
@@ -114,20 +115,30 @@ class _MainGamePageState extends State<MainGamePage> {
 
   void playerShootTap() {
     //local variables
-    double intensity = double.parse(globals.defaultFireSetup[0]);
-    double angle = double.parse(globals.defaultFireSetup[1]);
+    double intensity = lastFireSetup[globals.currentPlayer][0];
+    double angle = lastFireSetup[globals.currentPlayer][1];
+    List<String> fireSetupString = [
+      intensity.round().toString(),
+      angle.round().toString()
+    ];
 
     //show popup
     setState(() {
       UI.dataInputPopup(
           context,
           [
-            (String text) => intensity = double.tryParse(text) ?? 0,
-            (String text) => angle = double.tryParse(text) ?? 0,
+            (String text) {
+              intensity = double.tryParse(text) ?? 0;
+              lastFireSetup[globals.currentPlayer][0] = intensity;
+            },
+            (String text) {
+              angle = double.tryParse(text) ?? 0;
+              lastFireSetup[globals.currentPlayer][1] = angle;
+            },
           ],
           dataTitle: globals.shootOptions,
           title: globals.shootSetup,
-          data: globals.defaultFireSetup,
+          data: fireSetupString,
           numericData: [true, true],
           barrierDismissable: true, onFinish: (bool confirm) {
         //code after player finished
@@ -309,10 +320,12 @@ class _MainGamePageState extends State<MainGamePage> {
     //set amount of players
     amountOfPlayers = globals.playerTeams.length;
 
-    //reset health
+    //reset health and fire setups
     globals.playerHealth = List.empty(growable: true);
+    lastFireSetup = List.empty(growable: true);
     for (int i = 0; i < amountOfPlayers; i++) {
       globals.playerHealth.add(globals.defaultPlayerHealth);
+      lastFireSetup.add(globals.defaultFireSetup);
     }
   }
 

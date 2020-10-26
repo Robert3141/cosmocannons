@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/globals.dart' as globals;
+import 'package:cosmocannons/UI/globalUIElements.dart';
 
 class GamePainter extends CustomPainter {
   //locals
@@ -23,13 +24,25 @@ class GamePainter extends CustomPainter {
     return Offset(pos.dx * canvasSize.width, (1 - pos.dy) * canvasSize.height);
   }
 
-  void drawPlayer(int colour, List<double> pos, Canvas canvas) {
-    Offset position = Offset(pos[0], pos[1]);
-    final paint = Paint()
-      ..color = globals.teamColors[colour]
-      ..strokeWidth = 0
-      ..strokeCap = StrokeCap.butt;
-    canvas.drawCircle(relPos(position).translate(0, -10), 10, paint);
+  void drawPlayer(int colour, List<double> pos, Canvas canvas, int playerNo) {
+    //define locals
+    const double drawRadius = 10;
+    Offset position = relPos(Offset(pos[0], pos[1]));
+
+    //define paints
+    final TextPainter playerHealth = globals.defaultTextPaint
+      ..text = TextSpan(
+          text: globals.playerHealth[playerNo].round().toString(),
+          style: UI.defaultText())
+      ..layout();
+    final Paint playerCircle = globals.defaultDrawPaint
+      ..color = globals.teamColors[colour];
+
+    //draw paints
+    canvas.drawCircle(
+        position.translate(0, -drawRadius), drawRadius, playerCircle);
+    playerHealth.paint(
+        canvas, position.translate(-drawRadius, -drawRadius * 4));
   }
 
   void spawnInPlayers(
@@ -51,16 +64,17 @@ class GamePainter extends CustomPainter {
         globals.playerPos[players] = [playerX, playerY];
       }
       currentPlayerPos = globals.playerPos;
-      drawPlayer(playerColours[players], globals.playerPos[players], canvas);
+      drawPlayer(
+          playerColours[players], globals.playerPos[players], canvas, players);
     }
   }
 
   void drawProjectile(int colour, List<double> pos, Canvas canvas) {
+    //define vars
     Offset position = Offset(pos[0], pos[1]);
-    final paint = Paint()
-      ..color = globals.teamColors[colour]
-      ..strokeWidth = 0
-      ..strokeCap = StrokeCap.butt;
+    final paint = globals.defaultDrawPaint..color = globals.teamColors[colour];
+
+    //draw projectile
     canvas.drawCircle(relPos(position).translate(0, -3), 3, paint);
   }
 

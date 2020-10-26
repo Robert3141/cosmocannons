@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:cosmocannons/UI/globalUIElements.dart';
 
 /// CONSTANTS
 
@@ -41,7 +42,6 @@ const String beginGame = "Begin";
 
 const List<String> defaultTeamNames = ["Red", "Green", "Blue", "Yellow"];
 const List<String> playerAmounts = ["2", "3", "4"];
-const List<String> defaultFireSetup = ["30", "135"];
 const List<String> shootOptions = [shootIntensity, shootAngle];
 
 List<AssetImage> backgrounds = [
@@ -85,6 +85,7 @@ const double blastDamage = -20;
 const double defaultPlayerHealth = 100;
 
 const List<double> locationInvisible = [-1, -1];
+const List<double> defaultFireSetup = [30, 135];
 
 const List<List<double>> terrainMaps = [
   [0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69],
@@ -172,6 +173,15 @@ AutoSizeGroup buttonTextGroup = AutoSizeGroup();
 ScrollController gameScroller = ScrollController();
 
 FocusNode gameInputs = FocusNode();
+
+TextPainter defaultTextPaint = TextPainter(
+    text: TextSpan(style: UI.defaultText()),
+    textAlign: TextAlign.center,
+    textDirection: TextDirection.ltr);
+
+Paint defaultDrawPaint = Paint()
+  ..strokeWidth = 0
+  ..strokeCap = StrokeCap.butt;
 
 /// DATA TYPES
 
