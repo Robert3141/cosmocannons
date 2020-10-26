@@ -50,10 +50,8 @@ class _MainGamePageState extends State<MainGamePage> {
   }
 
   void moveScrollerToRelativePosition(List<double> pos) {
-    print(pos);
     double offsetX = globals.gameScroller.position.maxScrollExtent * pos[0];
     setState(() {
-      print(globals.gameScroller.offset);
       globals.gameScroller.animateTo(offsetX,
           curve: Curves.bounceIn,
           duration: Duration(milliseconds: globals.animationSpeed.round()));
@@ -219,7 +217,6 @@ class _MainGamePageState extends State<MainGamePage> {
 
   Future<void> playerShoot(double intensity, double angleDegrees) async {
     //set locals
-    bool firingLanded;
 
     setState(() {
       //disable shoot UI
@@ -227,7 +224,7 @@ class _MainGamePageState extends State<MainGamePage> {
     });
 
     //shoot projectile
-    firingLanded = await animateProjectile(intensity, angleDegrees);
+    await animateProjectile(intensity, angleDegrees);
 
     setState(() {
       //set next player

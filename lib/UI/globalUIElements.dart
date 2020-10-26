@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cosmocannons/UI/GamePage/mainGame.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:flutter/material.dart';
@@ -305,6 +306,18 @@ class UI {
           type: PageTransitionType.scale,
           child: newPage,
           alignment: alignment));
+
+  //launching game
+  static void startNewPage(BuildContext context,
+      {StatefulWidget newPage, Alignment alignment = Alignment.bottomCenter}) {
+    if (newPage == null) newPage = MainGamePage();
+    Navigator.of(context).pushAndRemoveUntil(
+        PageTransition(
+            type: PageTransitionType.scale,
+            child: newPage,
+            alignment: alignment),
+        (route) => false);
+  }
 
   static Container optionToggle({
     @required List<String> items,

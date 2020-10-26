@@ -1,4 +1,4 @@
-import 'package:cosmocannons/UI/GamePage/mainGame.dart';
+//import 'package:cosmocannons/UI/GamePage/mainGame.dart';
 import 'package:cosmocannons/UI/launcher.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:flutter/foundation.dart';

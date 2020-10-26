@@ -1,4 +1,3 @@
-import 'package:cosmocannons/UI/GamePage/mainGame.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
@@ -25,7 +24,7 @@ class _LocalMultiPageState extends State<LocalMultiPage> {
     for (int i = 0; i < amountOfPlayers; i++) {
       globals.playerTeams.add(i);
     }
-    UI.gotoNewPage(context, MainGamePage());
+    UI.startNewPage(context);
   }
 
   //build UI
