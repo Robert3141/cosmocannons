@@ -394,7 +394,7 @@ class UI {
   static Future textDisplayPopup(BuildContext context, String text,
       {Function(bool confirm) onFinish, String title = ""}) {
     //local vars
-    List<Widget> children;
+    List<Widget> children = [];
 
     //popup
     globals.popup = true;

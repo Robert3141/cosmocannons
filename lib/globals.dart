@@ -39,7 +39,7 @@ const String shootIntensity = "Intensity";
 const String shootAngle = "Angle";
 const String beginGame = "Begin";
 
-const List<String> defaultTeamNames = ["R", "G", "B", "Y"];
+const List<String> defaultTeamNames = ["Red", "Green", "Blue", "Yellow"];
 const List<String> playerAmounts = ["2", "3", "4"];
 const List<String> defaultFireSetup = ["30", "135"];
 const List<String> shootOptions = [shootIntensity, shootAngle];
@@ -82,9 +82,9 @@ const double animationSpeed = 3;
 const double playerPadding = 0.001;
 const double blastRadius = 0.01;
 const double blastDamage = -20;
+const double defaultPlayerHealth = 100;
 
 const List<double> locationInvisible = [-1, -1];
-const List<double> defaultPlayerHealth = [100, 100, 100, 100];
 
 const List<List<double>> terrainMaps = [
   [0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69],
@@ -160,7 +160,7 @@ List<int> playerTeams = [0, 1, 2, 3];
 List<List<double>> playerPos;
 
 List<double> projectilePos;
-List<double> playerHealth = defaultPlayerHealth;
+List<double> playerHealth;
 
 List<List<Offset>> terrainCacheLocation;
 

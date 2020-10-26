@@ -44,7 +44,7 @@ class _LauncherPageState extends State<LauncherPage> {
     UI.gotoNewPage(context, AchievementsPage());
   }
 
-  Future getVersionString() async {
+  /*Future getVersionString() async {
     //detect platform
     var platform = Theme.of(context).platform;
     bool kIsAndroid = platform == TargetPlatform.android;
@@ -66,15 +66,23 @@ class _LauncherPageState extends State<LauncherPage> {
         _versionString = fullString;
       });
     }
-  }
+  }*/
 
   void showWinningPopup() {
     //check not null
+    // TODO: add as strings
     if (widget.winner != -1) {
-      setState(() {
-        UI.textDisplayPopup(context,
-            "The winner is player ${widget.winner} part of team ${globals.teamColors[globals.playerTeams[widget.winner]]}");
-      });
+      if (widget.winner == -2) {
+        _versionString = "No players survived!";
+        //UI.textDisplayPopup(context, "No players survived!");
+      } else {
+        _versionString =
+            "The winner is player ${widget.winner + 1} from team ${globals.defaultTeamNames[globals.playerTeams[widget.winner]]}";
+        //UI.textDisplayPopup(context,
+        //    "The winner is player ${widget.winner + 1} from team ${globals.defaultTeamNames[globals.playerTeams[widget.winner]]}");
+      }
+    } else {
+      _versionString = "Welcome back";
     }
   }
 
@@ -82,7 +90,7 @@ class _LauncherPageState extends State<LauncherPage> {
     if (firstBuild) {
       firstBuild = false;
       showWinningPopup();
-      getVersionString();
+      //getVersionString();
     }
   }
 

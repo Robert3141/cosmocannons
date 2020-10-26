@@ -94,7 +94,9 @@ class _MainGamePageState extends State<MainGamePage> {
 
     //check near player
     if (checkInRadius(
-        [tapX, tapY], [playerX, playerY], globals.tapNearPlayer)) {
+            [tapX, tapY], [playerX, playerY], globals.tapNearPlayer) &&
+        playersTurn &&
+        !globals.popup) {
       playerShootTap();
     }
   }
@@ -197,14 +199,14 @@ class _MainGamePageState extends State<MainGamePage> {
       }*/
     });
 
-    //return false if too long
+    //wait until flight over or long flight
     while (animationTimer.isActive && timeSec <= globals.maxFlightLength) {
       await Future.delayed(Duration(milliseconds: globals.checkDoneMs));
     }
 
     //cancel ticker and remove projectile from UI
     animationTimer.cancel();
-    impactPos = globals.projectilePos;
+    impactPos = globals.projectilePos ?? globals.locationInvisible;
     globals.projectilePos = globals.locationInvisible;
     return impactPos;
   }
@@ -226,7 +228,7 @@ class _MainGamePageState extends State<MainGamePage> {
       }
 
       //check amount of players remaining
-      if (globals.playerHealth[i] <= 0) amountRemaining++;
+      if (globals.playerHealth[i] > 0) amountRemaining++;
     }
 
     return amountRemaining <= 1;
@@ -249,7 +251,7 @@ class _MainGamePageState extends State<MainGamePage> {
   Future<void> playerShoot(double intensity, double angleDegrees) async {
     //set locals
     List<double> impactPos;
-    int playerInt;
+    int playerInt = globals.currentPlayer;
     bool oneOrLessPlayers;
     int winningPlayer;
 
@@ -260,9 +262,11 @@ class _MainGamePageState extends State<MainGamePage> {
 
     //shoot projectile
     impactPos = await animateProjectile(intensity, angleDegrees, playerInt);
+    print(impactPos);
 
     //take damage
     oneOrLessPlayers = takeDamage(impactPos, playerInt);
+    print(oneOrLessPlayers);
 
     //game dictates on player health
     if (oneOrLessPlayers) {
@@ -297,9 +301,19 @@ class _MainGamePageState extends State<MainGamePage> {
   void gameStart() {
     // depends on game mode
     globals.currentPlayer = widget.type.playerNumber;
+    globals.thisPlayer = globals.currentPlayer;
 
     //not start anymore
     startOfGame = false;
+
+    //set amount of players
+    amountOfPlayers = globals.playerTeams.length;
+
+    //reset health
+    globals.playerHealth = List.empty(growable: true);
+    for (int i = 0; i < amountOfPlayers; i++) {
+      globals.playerHealth.add(globals.defaultPlayerHealth);
+    }
   }
 
   void moveScroller(double increase) {
