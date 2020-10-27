@@ -350,23 +350,23 @@ class UI {
     String title,
   }) =>
       Container(
-          height: screenHeight(context) *
-              (height ??
+          height: height ??
+              (screenHeight(context) *
                   getHalfHeight(context) *
-                      globals.heightMultiplier *
-                      globals.halfButton) *
-              heightMultiplier,
+                  globals.heightMultiplier *
+                  globals.halfButton *
+                  heightMultiplier),
           child: Column(children: [
             title == null ? Container() : textWidget(title),
             Container(
-                height: heightMultiplier *
-                        screenHeight(context) *
-                        (height ??
+                height: height ??
+                    (heightMultiplier *
+                            screenHeight(context) *
                             getHalfHeight(context) *
-                                globals.heightMultiplier *
-                                globals.halfButton) *
-                        (title == null ? 1 : 0.95) -
-                    (globals.buttonBorderSize * 2),
+                            globals.heightMultiplier *
+                            globals.halfButton *
+                            (title == null ? 1 : 0.95) -
+                        (globals.buttonBorderSize * 2)),
                 width: screenWidth(context) * (width ?? getHalfWidth(context)),
                 decoration: BoxDecoration(
                     border: Border.all(
@@ -623,7 +623,7 @@ class UI {
           UI.optionToggle(
               items: icons,
               onTap: onTap,
-              heightMultiplier: 0.5,
+              height: globals.iconSize * 2,
               context: context,
               selectedBool: !variable)
         ],

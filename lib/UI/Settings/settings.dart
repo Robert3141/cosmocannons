@@ -43,6 +43,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     UI.dataStore(globals.keyVolume, globals.playAudio);
                   });
                 }, context),
+                Container(
+                  height: UI.getPaddingSize(context),
+                ),
                 //MUSIC
                 UI.settingsEntry(
                     globals.keyMusic,
