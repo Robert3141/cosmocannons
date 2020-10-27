@@ -113,9 +113,9 @@ class UI {
 
   // This is the widget for the standard button used within the app.
   static GestureDetector largeButton(
-          {@required String text,
-          @required Function onTap,
+          {@required Function onTap,
           @required BuildContext context,
+          String text = "",
           double width,
           double height,
           Color buttonFill = globals.buttonFill,
@@ -123,6 +123,7 @@ class UI {
           bool textField = false,
           bool numericTextField = false,
           bool numericData = false,
+          IconData icon,
           TextEditingController controller}) =>
       GestureDetector(
         onTap: enabled
@@ -160,23 +161,31 @@ class UI {
                   textAlign: TextAlign.center,
                   style: defaultText(false, enabled),
                 )
-              : AutoSizeText(
-                  text,
-                  group: globals.buttonTextGroup,
-                  maxLines: 1,
-                  textAlign: TextAlign.center,
-                  style: defaultText(false, enabled),
-                ),
+              : (icon != null)
+                  ? IconButton(
+                      icon: Icon(icon),
+                      onPressed: onTap,
+                      color: globals.textColor,
+                      iconSize: globals.iconSize,
+                    )
+                  : AutoSizeText(
+                      text,
+                      group: globals.buttonTextGroup,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      style: defaultText(false, enabled),
+                    ),
         ),
       );
 
   // Quater button
   static GestureDetector halfButton({
-    @required String text,
     @required Function onTap,
     @required BuildContext context,
+    String text = "",
     bool enabled = true,
     bool quaterButton = false,
+    IconData icon,
     Color buttonFill = globals.buttonFill,
   }) =>
       largeButton(
@@ -191,6 +200,7 @@ class UI {
             globals.heightMultiplier,
         enabled: enabled,
         buttonFill: buttonFill,
+        icon: icon,
       );
 
   // This is a unique widget for the small buttons used for the home page, back button and the about page button

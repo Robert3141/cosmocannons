@@ -39,6 +39,7 @@ const String shootSetup = "Fire!";
 const String shootIntensity = "Intensity";
 const String shootAngle = "Angle";
 const String beginGame = "Begin";
+const String quitWithSave = "Save and Quit";
 
 const List<String> defaultTeamNames = ["Red", "Green", "Blue", "Yellow"];
 const List<String> playerAmounts = ["2", "3", "4"];
@@ -153,6 +154,8 @@ int thisPlayer = 0;
 
 bool firstRender = true;
 bool popup = false;
+bool playMusic = true;
+bool playAudio = true;
 
 List<String> playerNames = [host, client, client, client];
 

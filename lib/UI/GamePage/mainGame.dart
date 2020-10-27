@@ -325,7 +325,7 @@ class _MainGamePageState extends State<MainGamePage> {
     lastFireSetup = List.empty(growable: true);
     for (int i = 0; i < amountOfPlayers; i++) {
       globals.playerHealth.add(globals.defaultPlayerHealth);
-      lastFireSetup.add(globals.defaultFireSetup);
+      lastFireSetup.add(globals.defaultFireSetup.toList());
     }
   }
 
@@ -435,6 +435,46 @@ class _MainGamePageState extends State<MainGamePage> {
                             titleText: globals.paused,
                             context: context,
                             root: true),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            UI.halfButton(
+                                text: globals.quitWithSave,
+                                onTap: () {},
+                                context: context),
+                          ],
+                        ),
+                        Container(
+                          height: UI.getPaddingSize(context),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            UI.halfButton(
+                                icon: globals.playAudio
+                                    ? Icons.volume_up_rounded
+                                    : Icons.volume_off_rounded,
+                                onTap: () {
+                                  setState(() {
+                                    globals.playAudio = !globals.playAudio;
+                                  });
+                                },
+                                context: context,
+                                quaterButton: true),
+                            Container(width: UI.getPaddingSize(context)),
+                            UI.halfButton(
+                                icon: globals.playMusic
+                                    ? Icons.music_note_rounded
+                                    : Icons.music_off_rounded,
+                                onTap: () {
+                                  setState(() {
+                                    globals.playMusic = !globals.playMusic;
+                                  });
+                                },
+                                context: context,
+                                quaterButton: true),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -446,7 +486,10 @@ class _MainGamePageState extends State<MainGamePage> {
                   right: 0.0,
                   top: 0.0,
                   child: IconButton(
-                      icon: Icon(paused ? Icons.play_arrow : Icons.pause,
+                      icon: Icon(
+                          paused
+                              ? Icons.play_arrow_rounded
+                              : Icons.pause_rounded,
                           color: globals.textColor),
                       iconSize: globals.iconSize,
                       onPressed: () {
@@ -474,7 +517,7 @@ class _MainGamePageState extends State<MainGamePage> {
                   bottom: 0.0,
                   child: IconButton(
                     icon: Icon(
-                      Icons.bubble_chart,
+                      Icons.bubble_chart_rounded,
                       color: playerButtonColour,
                     ),
                     iconSize: globals.iconSize,
