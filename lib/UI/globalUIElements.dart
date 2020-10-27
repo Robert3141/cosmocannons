@@ -107,7 +107,10 @@ class UI {
             root
                 ? Container()
                 : smallButton(
-                    text: globals.help, onTap: null, context: context),
+                    text: globals.help,
+                    onTap: null,
+                    context: context,
+                    enabled: false),
           ],
         ),
       );
