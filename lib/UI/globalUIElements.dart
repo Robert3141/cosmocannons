@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UI {
   // simplified methods to get the screen details
@@ -209,6 +210,7 @@ class UI {
           @required Function onTap,
           @required BuildContext context,
           textField = false,
+          enabled = true,
           TextEditingController controller}) =>
       largeButton(
           text: text,
@@ -217,7 +219,8 @@ class UI {
           width: globals.smallWidth,
           height: globals.smallHeight,
           textField: textField,
-          controller: controller);
+          controller: controller,
+          enabled: enabled);
 
   // This is a widget to provide a table like UI. This is primarily for the team selection interface.
   static InkWell tableCell(BuildContext context,
@@ -330,9 +333,9 @@ class UI {
   }
 
   static Container optionToggle({
-    @required List<String> items,
     @required Function(int) onTap,
     @required BuildContext context,
+    List<dynamic> items,
     double width,
     double height,
     double heightMultiplier = 1,
@@ -395,7 +398,18 @@ class UI {
                                           ? selectedItemFill
                                           : defaultFill
                                   : globals.buttonFill),
-                          child: textWidget(items[selectedItem]),
+                          child: items[selectedItem].runtimeType == String
+                              ? textWidget(items[selectedItem])
+                              : items[selectedItem].runtimeType == IconData
+                                  ? IconButton(
+                                      icon: Icon(
+                                        items[selectedItem],
+                                        color: globals.textColor,
+                                      ),
+                                      onPressed: null,
+                                      iconSize: globals.iconSize,
+                                    )
+                                  : Container(),
                         ),
                       );
                     }))
@@ -570,4 +584,45 @@ class UI {
           ),
         ));
   }
+
+  static Future dataStore(String key, dynamic value) async {
+    //get shared prefs
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    Type type = value.runtimeType;
+
+    //set pref based on type
+    if (type == String) await prefs.setString(key, value);
+    if (type == int) await prefs.setInt(key, value);
+    if (type == double) await prefs.setDouble(key, value);
+    if (type == bool) await prefs.setBool(key, value);
+  }
+
+  static Future<dynamic> dataLoad(String key, Type type) async {
+    //get share prefs
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    dynamic data;
+
+    //set pref based on type
+    if (type == String) data = prefs.getString(key);
+    if (type == int) data = prefs.getInt(key);
+    if (type == double) data = prefs.getDouble(key);
+    if (type == bool) data = prefs.getBool(key);
+
+    return data;
+  }
+
+  static Row settingsEntry(String key, List<IconData> icons, bool variable,
+          Function(int) onTap, BuildContext context) =>
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          UI.textWidget(key),
+          UI.optionToggle(
+              items: icons,
+              onTap: onTap,
+              heightMultiplier: 0.5,
+              context: context,
+              selectedBool: !variable)
+        ],
+      );
 }

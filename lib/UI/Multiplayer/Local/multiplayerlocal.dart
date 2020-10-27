@@ -48,11 +48,7 @@ class _LocalMultiPageState extends State<LocalMultiPage> {
                     });
                   },
                   context: context),
-              UI.optionToggle(
-                  title: "test",
-                  items: ["yes", "no"],
-                  onTap: (int selected) {},
-                  context: context),
+              UI.halfButton(onTap: () {}, context: context, enabled: false)
             ],
           ),
           Container(

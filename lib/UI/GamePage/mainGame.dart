@@ -140,7 +140,7 @@ class _MainGamePageState extends State<MainGamePage> {
           title: globals.shootSetup,
           data: fireSetupString,
           numericData: [true, true],
-          barrierDismissable: true, onFinish: (bool confirm) {
+          barrierDismissable: false, onFinish: (bool confirm) {
         //code after player finished
         setState(() {
           globals.popup = false;
@@ -327,6 +327,9 @@ class _MainGamePageState extends State<MainGamePage> {
       globals.playerHealth.add(globals.defaultPlayerHealth);
       lastFireSetup.add(globals.defaultFireSetup.toList());
     }
+
+    //cancel popup
+    globals.popup = false;
   }
 
   void moveScroller(double increase) {
@@ -339,6 +342,11 @@ class _MainGamePageState extends State<MainGamePage> {
             : maxPos
         : 0;
     globals.gameScroller.jumpTo(newPos);
+  }
+
+  void quitWithSaving() {
+    //quit without saving
+    UI.startNewPage(context, newPage: LauncherPage());
   }
 
   void keyPresses(RawKeyEvent key) {
@@ -440,7 +448,7 @@ class _MainGamePageState extends State<MainGamePage> {
                           children: [
                             UI.halfButton(
                                 text: globals.quitWithSave,
-                                onTap: () {},
+                                onTap: quitWithSaving,
                                 context: context),
                           ],
                         ),
@@ -457,6 +465,8 @@ class _MainGamePageState extends State<MainGamePage> {
                                 onTap: () {
                                   setState(() {
                                     globals.playAudio = !globals.playAudio;
+                                    UI.dataStore(
+                                        globals.keyVolume, globals.playAudio);
                                   });
                                 },
                                 context: context,
@@ -469,6 +479,8 @@ class _MainGamePageState extends State<MainGamePage> {
                                 onTap: () {
                                   setState(() {
                                     globals.playMusic = !globals.playMusic;
+                                    UI.dataStore(
+                                        globals.keyMusic, globals.playMusic);
                                   });
                                 },
                                 context: context,

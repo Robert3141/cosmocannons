@@ -33,20 +33,26 @@ class _SettingsPageState extends State<SettingsPage> {
             width: UI.screenWidth(context) - 2 * UI.getPaddingSize(context),
             child: ListView(
               children: [
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      UI.textWidget("test"),
-                      UI.optionToggle(
-                        heightMultiplier: 0.5,
-                        items: ["yes", "no", "maybe"],
-                        onTap: (int i) {},
-                        context: context,
-                      )
-                    ],
-                  ),
-                ),
+                //VOLUME
+                UI.settingsEntry(
+                    globals.keyVolume,
+                    [Icons.volume_up_rounded, Icons.volume_off_rounded],
+                    globals.playAudio, (int i) {
+                  setState(() {
+                    globals.playAudio = i == 0;
+                    UI.dataStore(globals.keyVolume, globals.playAudio);
+                  });
+                }, context),
+                //MUSIC
+                UI.settingsEntry(
+                    globals.keyMusic,
+                    [Icons.music_note_rounded, Icons.music_off_rounded],
+                    globals.playMusic, (int i) {
+                  setState(() {
+                    globals.playMusic = i == 0;
+                    UI.dataStore(globals.keyMusic, globals.playMusic);
+                  });
+                }, context),
               ],
             ),
           ),

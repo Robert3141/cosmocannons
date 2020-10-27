@@ -39,7 +39,11 @@ const String shootSetup = "Fire!";
 const String shootIntensity = "Intensity";
 const String shootAngle = "Angle";
 const String beginGame = "Begin";
-const String quitWithSave = "Save and Quit";
+//TODO: add game save
+const String quitWithSave = "Quit without saving";
+
+const String keyMusic = "music";
+const String keyVolume = "volume";
 
 const List<String> defaultTeamNames = ["Red", "Green", "Blue", "Yellow"];
 const List<String> playerAmounts = ["2", "3", "4"];

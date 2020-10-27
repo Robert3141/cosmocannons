@@ -56,32 +56,34 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
                 text: globals.localMulti,
                 onTap: () => localMutli(),
                 context: context),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                UI.largeButton(
-                    height: UI.getHalfHeight(context) *
-                        globals.halfButton *
-                        globals.heightMultiplier,
-                    text: kIsMobile
-                        ? globals.hostMulti
-                        : globals.platformNotSupported,
-                    onTap: () => hostMutli(),
-                    enabled: kIsMobile,
+            kIsMobile
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      UI.largeButton(
+                          height: UI.getHalfHeight(context) *
+                              globals.halfButton *
+                              globals.heightMultiplier,
+                          text: globals.hostMulti,
+                          onTap: () => hostMutli(),
+                          context: context),
+                      Container(height: UI.getPaddingSize(context)),
+                      UI.largeButton(
+                          height: UI.getHalfHeight(context) *
+                              globals.halfButton *
+                              globals.heightMultiplier,
+                          text: globals.clientMulti,
+                          onTap: () => clientMulti(),
+                          context: context),
+                    ],
+                  )
+                : UI.largeButton(
+                    enabled: false,
+                    height:
+                        UI.getHalfHeight(context) * globals.heightMultiplier,
+                    text: globals.platformNotSupported,
+                    onTap: () {},
                     context: context),
-                Container(height: UI.getPaddingSize(context)),
-                UI.largeButton(
-                    height: UI.getHalfHeight(context) *
-                        globals.halfButton *
-                        globals.heightMultiplier,
-                    text: kIsMobile
-                        ? globals.clientMulti
-                        : globals.platformNotSupported,
-                    onTap: () => clientMulti(),
-                    enabled: kIsMobile,
-                    context: context),
-              ],
-            ),
           ],
         ),
       ],
