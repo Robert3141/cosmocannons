@@ -7,7 +7,6 @@ import 'package:cosmocannons/UI/Singleplayer/singleplayer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:package_info/package_info.dart';
 
 class LauncherPage extends StatefulWidget {
   //constructor of the class
@@ -44,42 +43,15 @@ class _LauncherPageState extends State<LauncherPage> {
     UI.gotoNewPage(context, AchievementsPage());
   }
 
-  /*Future getVersionString() async {
-    //detect platform
-    var platform = Theme.of(context).platform;
-    bool kIsAndroid = platform == TargetPlatform.android;
-    bool kIsIOS = platform == TargetPlatform.iOS;
-    bool kIsMobile = kIsAndroid || kIsIOS;
-
-    //do platform specific
-    if (!kIsMobile) {
-      setState(() {
-        _versionString = "Plays: $amountOfPlays";
-      });
-    } else {
-      PackageInfo packageInfo = await PackageInfo.fromPlatform();
-      //String versionName = packageInfo.version;
-      String versionCode = packageInfo.buildNumber;
-      String fullString =
-          "Version no: $versionCode Plays: $amountOfPlays"; //TODO add no. of plays
-      setState(() {
-        _versionString = fullString;
-      });
-    }
-  }*/
-
   void showWinningPopup() {
     //check not null
     // TODO: add as strings
     if (widget.winner != -1) {
       if (widget.winner == -2) {
         _versionString = "No players survived!";
-        //UI.textDisplayPopup(context, "No players survived!");
       } else {
         _versionString =
             "The winner is player ${widget.winner + 1} from team ${globals.defaultTeamNames[globals.playerTeams[widget.winner]]}";
-        //UI.textDisplayPopup(context,
-        //    "The winner is player ${widget.winner + 1} from team ${globals.defaultTeamNames[globals.playerTeams[widget.winner]]}");
       }
     } else {
       _versionString = "Welcome back";
