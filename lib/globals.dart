@@ -41,6 +41,8 @@ const String shootAngle = "Angle";
 const String beginGame = "Begin";
 //TODO: add game save
 const String quitWithSave = "Quit without saving";
+const String allDead = "No players survived!";
+const String welcomeBack = "Welcome back";
 
 const String keyMusic = "music";
 const String keyVolume = "volume";
@@ -48,6 +50,7 @@ const String keyVolume = "volume";
 const List<String> defaultTeamNames = ["Red", "Green", "Blue", "Yellow"];
 const List<String> playerAmounts = ["2", "3", "4"];
 const List<String> shootOptions = [shootIntensity, shootAngle];
+const List<String> winningPlayerIs = ["The winner is player ", " from team "];
 
 List<AssetImage> backgrounds = [
   AssetImage("assets/images/1.png"),

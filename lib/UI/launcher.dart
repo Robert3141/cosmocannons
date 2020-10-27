@@ -45,16 +45,18 @@ class _LauncherPageState extends State<LauncherPage> {
 
   void showWinningPopup() {
     //check not null
-    // TODO: add as strings
     if (widget.winner != -1) {
       if (widget.winner == -2) {
-        _versionString = "No players survived!";
+        _versionString = globals.allDead;
       } else {
-        _versionString =
-            "The winner is player ${widget.winner + 1} from team ${globals.defaultTeamNames[globals.playerTeams[widget.winner]]}";
+        _versionString = globals.winningPlayerIs[0];
+        _versionString += (widget.winner + 1).toString();
+        _versionString += globals.winningPlayerIs[1];
+        _versionString +=
+            globals.defaultTeamNames[globals.playerTeams[widget.winner]];
       }
     } else {
-      _versionString = "Welcome back";
+      _versionString = globals.welcomeBack;
     }
   }
 
