@@ -51,6 +51,7 @@ const List<String> defaultTeamNames = ["Red", "Green", "Blue", "Yellow"];
 const List<String> playerAmounts = ["2", "3", "4"];
 const List<String> shootOptions = [shootIntensity, shootAngle];
 const List<String> winningPlayerIs = ["The winner is player ", " from team "];
+const List<String> playerNames = [host, client, client, client];
 
 List<AssetImage> backgrounds = [
   AssetImage("assets/images/1.png"),
@@ -130,6 +131,8 @@ const int frameLengthMs = 16;
 const int maxFlightLength = 10;
 const int checkDoneMs = 100;
 
+const List<int> playerTeams = [0, 1, 2, 3];
+
 const Color buttonFill = Colors.black54;
 const Color buttonBorder = Colors.white38;
 const Color disabledBorder = Colors.white10;
@@ -154,19 +157,10 @@ const List<Color> terrainColors = [
 
 /// VARIABLES
 
-//player playing game
-int currentPlayer = 0;
-//the last player on this device (Same unless LAN game)
-int thisPlayer = 0;
-
 bool firstRender = true;
 bool popup = false;
 bool playMusic = true;
 bool playAudio = true;
-
-List<String> playerNames = [host, client, client, client];
-
-List<int> playerTeams = [0, 1, 2, 3];
 
 List<List<double>> playerPos;
 

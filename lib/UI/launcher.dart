@@ -10,10 +10,12 @@ import 'package:flutter/material.dart';
 
 class LauncherPage extends StatefulWidget {
   //constructor of the class
-  LauncherPage({Key key, this.title, this.winner = -1}) : super(key: key);
+  LauncherPage({Key key, this.title, this.winner = -1, this.playerTeams})
+      : super(key: key);
 
   final String title;
   final int winner;
+  final List<int> playerTeams;
 
   @override
   _LauncherPageState createState() => _LauncherPageState();
@@ -53,7 +55,7 @@ class _LauncherPageState extends State<LauncherPage> {
         _versionString += (widget.winner + 1).toString();
         _versionString += globals.winningPlayerIs[1];
         _versionString +=
-            globals.defaultTeamNames[globals.playerTeams[widget.winner]];
+            globals.defaultTeamNames[widget.playerTeams[widget.winner]];
       }
     } else {
       _versionString = globals.welcomeBack;

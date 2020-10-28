@@ -324,9 +324,12 @@ class UI {
           alignment: alignment));
 
   //launching game
-  static void startNewPage(BuildContext context,
+  static void startNewPage(BuildContext context, List<int> playerTeams,
       {StatefulWidget newPage, Alignment alignment = Alignment.bottomCenter}) {
-    if (newPage == null) newPage = MainGamePage();
+    if (newPage == null)
+      newPage = MainGamePage(
+        playerTeams: playerTeams,
+      );
     Navigator.of(context).pushAndRemoveUntil(
         PageTransition(
             type: PageTransitionType.scale,

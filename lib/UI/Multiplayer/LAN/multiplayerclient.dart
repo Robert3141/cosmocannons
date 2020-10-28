@@ -18,6 +18,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
   bool readyForPlay = false;
   bool connectedToServer = false;
   List<int> playerTeams = globals.playerTeams;
+  List<String> playerNames = globals.playerNames;
 
   //functions
   void toggleReady() {
@@ -80,8 +81,8 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
           ),
           UI.playerTeamsTable(
               context: context,
-              playerNames: globals.playerNames,
-              playerTeams: globals.playerTeams,
+              playerNames: playerNames,
+              playerTeams: playerTeams,
               changePlayerTeam: null)
         ],
       ),

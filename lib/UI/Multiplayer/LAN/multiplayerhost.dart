@@ -20,6 +20,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
   bool readyForPlay = false;
   bool hostingServer = false;
   List<int> playerTeams = globals.playerTeams;
+  List<String> playerNames = globals.playerNames;
   String userNameText = "";
   ServerNode server;
 
@@ -28,7 +29,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
     setState(() {
       //update player name
       userNameText = text;
-      globals.playerNames[0] = text;
+      playerNames[0] = text;
     });
   }
 
@@ -116,8 +117,8 @@ class _LocalMultiPageState extends State<HostMultiPage> {
           ),
           UI.playerTeamsTable(
               context: context,
-              playerNames: globals.playerNames,
-              playerTeams: globals.playerTeams,
+              playerNames: playerNames,
+              playerTeams: playerTeams,
               changePlayerTeam: changePlayerTeam),
         ],
       ),

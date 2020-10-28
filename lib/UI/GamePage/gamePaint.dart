@@ -9,6 +9,11 @@ class GamePainter extends CustomPainter {
   Size canvasSize;
   List<List<double>> currentPlayerPos;
   List<double> currentProjectilePos;
+  List<int> playerTeams;
+  int currentPlayer;
+
+  //constructor
+  GamePainter(this.currentPlayer, this.playerTeams);
 
   Offset relativePos(double x, double y) {
     //takes x & y between 0 and 1
@@ -94,7 +99,7 @@ class GamePainter extends CustomPainter {
           : sY < 0
               ? 0
               : sY;
-      drawProjectile(globals.currentPlayer, [sX, sY], canvas);
+      drawProjectile(currentPlayer, [sX, sY], canvas);
     }
   }
 
@@ -219,7 +224,7 @@ class GamePainter extends CustomPainter {
     }
 
     //place in characters
-    spawnInPlayers(globals.playerTeams, gameMap, canvas);
+    spawnInPlayers(playerTeams, gameMap, canvas);
     spawnProjectile(canvas);
     globals.firstRender = false;
   }

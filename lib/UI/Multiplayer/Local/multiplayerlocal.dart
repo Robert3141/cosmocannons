@@ -16,15 +16,16 @@ class LocalMultiPage extends StatefulWidget {
 class _LocalMultiPageState extends State<LocalMultiPage> {
   //locals
   int amountOfPlayers = globals.defualtPlayerAmount;
+  List<int> playerTeams = globals.playerTeams;
 
   //functions
   void beginGame() {
     //add players to player teams
-    globals.playerTeams = List.empty(growable: true);
+    playerTeams = List.empty(growable: true);
     for (int i = 0; i < amountOfPlayers; i++) {
-      globals.playerTeams.add(i);
+      playerTeams.add(i);
     }
-    UI.startNewPage(context);
+    UI.startNewPage(context, playerTeams);
   }
 
   //build UI

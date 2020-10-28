@@ -12,11 +12,15 @@ import 'package:flutter/services.dart';
 class MainGamePage extends StatefulWidget {
   //constructor of class
   MainGamePage(
-      {Key key, this.title = "", this.type = globals.GameType.multiLocal})
+      {@required this.playerTeams,
+      Key key,
+      this.title = "",
+      this.type = globals.GameType.multiLocal})
       : super(key: key);
 
   final String title;
   final globals.GameType type;
+  final List<int> playerTeams;
 
   @override
   _MainGamePageState createState() {
@@ -27,12 +31,16 @@ class MainGamePage extends StatefulWidget {
 
 class _MainGamePageState extends State<MainGamePage> {
   //locals
+  //int currentPlayer = 0;
   double zoom = globals.defaultZoom;
   int amountOfPlayers;
+  int currentPlayer;
+  int thisPlayer;
   bool startOfGame = true;
   bool paused = false;
   bool playersTurn = true;
   BuildContext pageContext;
+  List<int> playerTeams;
   List<double> gameMap = globals.terrainMaps[0];
   List<List<double>> lastFireSetup;
   TapDownDetails tapDetails;
@@ -61,7 +69,7 @@ class _MainGamePageState extends State<MainGamePage> {
   }
 
   void playerMove(bool right) {
-    double playerX = globals.playerPos[globals.currentPlayer][0];
+    double playerX = globals.playerPos[currentPlayer][0];
     double playerY;
     playerX = right
         ? playerX + globals.movementAmount
@@ -72,10 +80,11 @@ class _MainGamePageState extends State<MainGamePage> {
         : playerX < 0
             ? 0
             : playerX;
-    playerY = GamePainter().calcNearestHeight(gameMap, playerX) +
+    playerY = GamePainter(currentPlayer, playerTeams)
+            .calcNearestHeight(gameMap, playerX) +
         globals.playerPadding;
     setState(() {
-      globals.playerPos[globals.currentPlayer] = [playerX, playerY];
+      globals.playerPos[currentPlayer] = [playerX, playerY];
     });
   }
 
@@ -85,7 +94,7 @@ class _MainGamePageState extends State<MainGamePage> {
     double tapY = UI.screenHeight(context) - tapDetails.localPosition.dy;
     double playerX;
     double playerY;
-    int player = globals.currentPlayer;
+    int player = currentPlayer;
 
     //set player locations
     playerX = globals.playerPos[player][0] *
@@ -115,8 +124,8 @@ class _MainGamePageState extends State<MainGamePage> {
 
   void playerShootTap() {
     //local variables
-    double intensity = lastFireSetup[globals.currentPlayer][0];
-    double angle = lastFireSetup[globals.currentPlayer][1];
+    double intensity = lastFireSetup[currentPlayer][0];
+    double angle = lastFireSetup[currentPlayer][1];
     List<String> fireSetupString = [
       intensity.round().toString(),
       angle.round().toString()
@@ -129,11 +138,11 @@ class _MainGamePageState extends State<MainGamePage> {
           [
             (String text) {
               intensity = double.tryParse(text) ?? 0;
-              lastFireSetup[globals.currentPlayer][0] = intensity;
+              lastFireSetup[currentPlayer][0] = intensity;
             },
             (String text) {
               angle = double.tryParse(text) ?? 0;
-              lastFireSetup[globals.currentPlayer][1] = angle;
+              lastFireSetup[currentPlayer][1] = angle;
             },
           ],
           dataTitle: globals.shootOptions,
@@ -149,7 +158,7 @@ class _MainGamePageState extends State<MainGamePage> {
       });
 
       //move terrain to player
-      moveScrollerToRelativePosition(globals.playerPos[globals.currentPlayer]);
+      moveScrollerToRelativePosition(globals.playerPos[currentPlayer]);
     });
   }
 
@@ -199,7 +208,8 @@ class _MainGamePageState extends State<MainGamePage> {
       });
 
       //stop when done
-      terrainHeight = GamePainter().calcNearestHeight(gameMap, sX);
+      terrainHeight = GamePainter(currentPlayer, playerTeams)
+          .calcNearestHeight(gameMap, sX);
       if (terrainHeight >= sY) {
         timer.cancel();
       }
@@ -224,13 +234,13 @@ class _MainGamePageState extends State<MainGamePage> {
 
   bool takeDamage(List<double> impactPos, int playerInt) {
     //local vars
-    int currentPlayerTeam = globals.playerTeams[playerInt];
+    int currentPlayerTeam = playerTeams[playerInt];
     int amountRemaining = 0;
 
     //check for all players
     for (int i = 0; i < amountOfPlayers; i++) {
       //only check for players not in team
-      if (globals.playerTeams[i] != currentPlayerTeam) {
+      if (playerTeams[i] != currentPlayerTeam) {
         if (checkInRadius(
             impactPos, globals.playerPos[i], globals.blastRadius)) {
           //reduce player health
@@ -250,25 +260,24 @@ class _MainGamePageState extends State<MainGamePage> {
     playerInt++;
 
     //check for overflow
-    if (playerInt == globals.playerTeams.length) {
+    if (playerInt == playerTeams.length) {
       playerInt = 0;
     }
 
-    globals.currentPlayer = playerInt;
-    globals.thisPlayer =
-        widget.type.showPlayerUI(playerInt) ? playerInt : globals.thisPlayer;
+    currentPlayer = playerInt;
+    thisPlayer = widget.type.showPlayerUI(playerInt) ? playerInt : thisPlayer;
   }
 
   Future<void> playerShoot(double intensity, double angleDegrees) async {
     //set locals
     List<double> impactPos;
-    int playerInt = globals.currentPlayer;
+    int playerInt = currentPlayer;
     bool oneOrLessPlayers;
     int winningPlayer;
 
     setState(() {
       //disable shoot UI
-      globals.thisPlayer = -1;
+      thisPlayer = -1;
     });
 
     //shoot projectile
@@ -289,9 +298,10 @@ class _MainGamePageState extends State<MainGamePage> {
       }
 
       //exit to main menu with popup
-      UI.startNewPage(context,
+      UI.startNewPage(context, [],
           newPage: LauncherPage(
             winner: winningPlayer,
+            playerTeams: playerTeams,
           ));
     } else {
       //set next player
@@ -310,15 +320,16 @@ class _MainGamePageState extends State<MainGamePage> {
   }
 
   void gameStart() {
-    // depends on game mode
-    globals.currentPlayer = widget.type.playerNumber;
-    globals.thisPlayer = globals.currentPlayer;
+    // get data from root
+    currentPlayer = widget.type.playerNumber;
+    playerTeams = widget.playerTeams;
+    thisPlayer = currentPlayer;
 
     //not start anymore
     startOfGame = false;
 
     //set amount of players
-    amountOfPlayers = globals.playerTeams.length;
+    amountOfPlayers = playerTeams.length;
 
     //reset health and fire setups
     globals.playerHealth = List.empty(growable: true);
@@ -346,7 +357,7 @@ class _MainGamePageState extends State<MainGamePage> {
 
   void quitWithSaving() {
     //quit without saving
-    UI.startNewPage(context, newPage: LauncherPage());
+    UI.startNewPage(context, [], newPage: LauncherPage());
   }
 
   void keyPresses(RawKeyEvent key) {
@@ -391,10 +402,9 @@ class _MainGamePageState extends State<MainGamePage> {
   Widget build(BuildContext context) {
     if (startOfGame) gameStart();
     pageContext = context;
-    playersTurn = globals.thisPlayer == globals.currentPlayer;
+    playersTurn = thisPlayer == currentPlayer;
     Color playerButtonColour =
-        globals.teamColors[globals.playerTeams[globals.currentPlayer]] ??
-            globals.textColor;
+        globals.teamColors[playerTeams[currentPlayer]] ?? globals.textColor;
     Scaffold page = UI.scaffoldWithBackground(children: [
       Stack(
         alignment: Alignment.center,
@@ -422,7 +432,7 @@ class _MainGamePageState extends State<MainGamePage> {
                 child: CustomPaint(
                   size: Size(
                       UI.screenWidth(context) * zoom, UI.screenHeight(context)),
-                  painter: GamePainter(),
+                  painter: GamePainter(currentPlayer, playerTeams),
                 ),
               ),
             ),
