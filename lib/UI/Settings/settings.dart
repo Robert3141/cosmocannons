@@ -36,10 +36,10 @@ class _SettingsPageState extends State<SettingsPage> {
                 //VOLUME
                 UI.settingsEntry(
                     globals.keyVolume,
-                    [Icons.volume_up_rounded, Icons.volume_off_rounded],
+                    [Icons.volume_off_rounded, Icons.volume_up_rounded],
                     globals.playAudio, (int i) {
                   setState(() {
-                    globals.playAudio = i == 0;
+                    globals.playAudio = i == 1;
                     UI.dataStore(globals.keyVolume, globals.playAudio);
                   });
                 }, context),
@@ -49,10 +49,10 @@ class _SettingsPageState extends State<SettingsPage> {
                 //MUSIC
                 UI.settingsEntry(
                     globals.keyMusic,
-                    [Icons.music_note_rounded, Icons.music_off_rounded],
+                    [Icons.music_off_rounded, Icons.music_note_rounded],
                     globals.playMusic, (int i) {
                   setState(() {
-                    globals.playMusic = i == 0;
+                    globals.playMusic = i == 1;
                     UI.dataStore(globals.keyMusic, globals.playMusic);
                   });
                 }, context),

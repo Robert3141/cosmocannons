@@ -96,7 +96,7 @@ class UI {
             Container(
               width: screenWidth(context) / 2,
               child: AutoSizeText(
-                titleText,
+                globals.popup ? "" : titleText,
                 maxFontSize: globals.largeTextSize,
                 minFontSize: globals.smallTextSize,
                 maxLines: 1,
@@ -565,7 +565,7 @@ class UI {
       ]));
     return Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        backgroundColor: globals.disabledBorder,
+        backgroundColor: Color(0x1A1A1A).withOpacity(1),
         child: RawKeyboardListener(
           autofocus: true,
           focusNode: popupKeyboard,
@@ -582,6 +582,13 @@ class UI {
             }
           },
           child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: globals.buttonBorderSize,
+                color: globals.buttonBorder,
+              ),
+              borderRadius: BorderRadius.circular(globals.buttonClipSize),
+            ),
             width: screenWidth(context) * getHalfWidth(context),
             child: ListView(
               //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -628,7 +635,7 @@ class UI {
               onTap: onTap,
               height: globals.iconSize * 2,
               context: context,
-              selectedBool: !variable)
+              selectedBool: variable)
         ],
       );
 }
