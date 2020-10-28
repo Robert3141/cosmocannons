@@ -94,7 +94,7 @@ const double blastDamage = -20;
 const double defaultPlayerHealth = 100;
 
 const List<double> locationInvisible = [-1, -1];
-const List<double> defaultFireSetup = [30, 135];
+const List<double> defaultFireSetup = [30, 90];
 
 const List<List<double>> terrainMaps = [
   [0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69],

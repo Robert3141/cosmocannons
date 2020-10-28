@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,11 +10,12 @@ class GamePainter extends CustomPainter {
   Size canvasSize;
   List<List<double>> currentPlayerPos;
   List<double> currentProjectilePos;
+  List<List<double>> playerShootSetup;
   List<int> playerTeams;
   int currentPlayer;
 
   //constructor
-  GamePainter(this.currentPlayer, this.playerTeams);
+  GamePainter(this.currentPlayer, this.playerTeams, this.playerShootSetup);
 
   Offset relativePos(double x, double y) {
     //takes x & y between 0 and 1
@@ -29,25 +31,42 @@ class GamePainter extends CustomPainter {
     return Offset(pos.dx * canvasSize.width, (1 - pos.dy) * canvasSize.height);
   }
 
-  void drawPlayer(int colour, List<double> pos, Canvas canvas, int playerNo) {
+  void drawPlayer(int colour, List<double> pos, Canvas canvas, int playerHealth,
+      double angle) {
     //define locals
     const double drawRadius = 10;
+    double drawAngleRadians = angle * globals.degreesToRadians;
+    Offset translate = Offset(-cos(drawAngleRadians) * drawRadius,
+        -sin(drawAngleRadians) * drawRadius);
     Offset position = relPos(Offset(pos[0], pos[1]));
+    Offset cannonStart = position.translate(translate.dx, translate.dy);
+    Offset cannonEnd = position.translate(2 * translate.dx, 2 * translate.dy);
 
     //define paints
-    final TextPainter playerHealth = globals.defaultTextPaint
-      ..text = TextSpan(
-          text: globals.playerHealth[playerNo].round().toString(),
-          style: UI.defaultText())
+    final TextPainter playerHealthText = globals.defaultTextPaint
+      ..text = TextSpan(text: playerHealth.toString(), style: UI.defaultText())
       ..layout();
     final Paint playerCircle = globals.defaultDrawPaint
       ..color = globals.teamColors[colour];
+    final Paint playerGun = playerCircle..strokeWidth = 5;
 
     //draw paints
-    canvas.drawCircle(
-        position.translate(0, -drawRadius), drawRadius, playerCircle);
-    playerHealth.paint(
+    canvas.drawArc(
+        Rect.fromCenter(
+            center: position, height: 2 * drawRadius, width: 2 * drawRadius),
+        0,
+        -pi,
+        true,
+        playerCircle);
+    canvas.drawLine(cannonStart, cannonEnd, playerGun);
+    playerHealthText.paint(
         canvas, position.translate(-drawRadius, -drawRadius * 4));
+  }
+
+  List<double> getPlayerAnglesArray(List<List<double>> list) {
+    List<double> newList = List.empty(growable: true);
+    for (int i = 0; i < list.length; i++) newList.add(list[i][1]);
+    return newList;
   }
 
   void spawnInPlayers(
@@ -70,7 +89,11 @@ class GamePainter extends CustomPainter {
       }
       currentPlayerPos = globals.playerPos;
       drawPlayer(
-          playerColours[players], globals.playerPos[players], canvas, players);
+          playerColours[players],
+          globals.playerPos[players],
+          canvas,
+          globals.playerHealth[players].round(),
+          getPlayerAnglesArray(playerShootSetup)[players]);
     }
   }
 

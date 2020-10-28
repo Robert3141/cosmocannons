@@ -80,7 +80,7 @@ class _MainGamePageState extends State<MainGamePage> {
         : playerX < 0
             ? 0
             : playerX;
-    playerY = GamePainter(currentPlayer, playerTeams)
+    playerY = GamePainter(currentPlayer, playerTeams, lastFireSetup)
             .calcNearestHeight(gameMap, playerX) +
         globals.playerPadding;
     setState(() {
@@ -142,7 +142,9 @@ class _MainGamePageState extends State<MainGamePage> {
             },
             (String text) {
               angle = double.tryParse(text) ?? 0;
-              lastFireSetup[currentPlayer][1] = angle;
+              setState(() {
+                lastFireSetup[currentPlayer][1] = angle;
+              });
             },
           ],
           dataTitle: globals.shootOptions,
@@ -208,7 +210,7 @@ class _MainGamePageState extends State<MainGamePage> {
       });
 
       //stop when done
-      terrainHeight = GamePainter(currentPlayer, playerTeams)
+      terrainHeight = GamePainter(currentPlayer, playerTeams, lastFireSetup)
           .calcNearestHeight(gameMap, sX);
       if (terrainHeight >= sY) {
         timer.cancel();
@@ -432,7 +434,8 @@ class _MainGamePageState extends State<MainGamePage> {
                 child: CustomPaint(
                   size: Size(
                       UI.screenWidth(context) * zoom, UI.screenHeight(context)),
-                  painter: GamePainter(currentPlayer, playerTeams),
+                  painter:
+                      GamePainter(currentPlayer, playerTeams, lastFireSetup),
                 ),
               ),
             ),
