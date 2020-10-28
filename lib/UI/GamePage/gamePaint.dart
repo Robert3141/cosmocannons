@@ -40,15 +40,15 @@ class GamePainter extends CustomPainter {
         -sin(drawAngleRadians) * drawRadius);
     Offset position = relPos(Offset(pos[0], pos[1]));
     Offset cannonStart = position.translate(translate.dx, translate.dy);
-    Offset cannonEnd = position.translate(2 * translate.dx, 2 * translate.dy);
-
+    Offset cannonEnd = cannonStart.translate(translate.dx, translate.dy);
     //define paints
     final TextPainter playerHealthText = globals.defaultTextPaint
       ..text = TextSpan(text: playerHealth.toString(), style: UI.defaultText())
       ..layout();
     final Paint playerCircle = globals.defaultDrawPaint
-      ..color = globals.teamColors[colour];
-    final Paint playerGun = playerCircle..strokeWidth = 5;
+      ..color = globals.teamColors[colour]
+      ..strokeWidth = drawRadius / 2
+      ..strokeCap = StrokeCap.square;
 
     //draw paints
     canvas.drawArc(
@@ -58,7 +58,7 @@ class GamePainter extends CustomPainter {
         -pi,
         true,
         playerCircle);
-    canvas.drawLine(cannonStart, cannonEnd, playerGun);
+    canvas.drawPoints(PointMode.lines, [cannonStart, cannonEnd], playerCircle);
     playerHealthText.paint(
         canvas, position.translate(-drawRadius, -drawRadius * 4));
   }
