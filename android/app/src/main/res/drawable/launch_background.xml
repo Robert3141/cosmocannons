@@ -4,9 +4,9 @@
     <item android:drawable="@color/backgroundBlack" />
 
     <!-- Splash screen launch asset -->
-    <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@mipmap/ic_launcher" />
-    </item>
+    <item
+        android:height="72px"
+        android:width="488px"
+        android:drawable="@drawable/loading"
+        android:gravity="center" />
 </layer-list>

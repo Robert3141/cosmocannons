@@ -117,70 +117,70 @@ class UI {
 
   // This is the widget for the standard button used within the app.
   static GestureDetector largeButton(
-          {@required Function onTap,
-          @required BuildContext context,
-          String text = "",
-          double width,
-          double height,
-          Color buttonFill = globals.buttonFill,
-          bool enabled = true,
-          bool textField = false,
-          bool numericTextField = false,
-          bool numericData = false,
-          IconData icon,
-          TextEditingController controller}) =>
-      GestureDetector(
-        onTap: enabled
-            ? textField
-                ? () {}
-                : onTap
-            : () {},
-        child: Container(
-          width: screenWidth(context) * (width ?? getHalfWidth(context)),
-          height: screenHeight(context) * (height ?? getHalfHeight(context)),
-          decoration: BoxDecoration(
-              border: Border.all(
-                  width: globals.buttonBorderSize,
-                  color:
-                      enabled ? globals.buttonBorder : globals.disabledBorder),
-              borderRadius: BorderRadius.circular(globals.buttonClipSize),
-              color: enabled ? buttonFill : globals.buttonFill),
-          alignment: Alignment.center,
-          child: textField
-              ? TextField(
-                  keyboardType: numericData
-                      ? TextInputType.numberWithOptions(decimal: true)
-                      : TextInputType.text,
-                  inputFormatters: [
-                    numericData
-                        ? FilteringTextInputFormatter.digitsOnly
-                        : FilteringTextInputFormatter.singleLineFormatter,
-                  ],
-                  onChanged: (String newText) {
-                    newText ??= "";
-                    onTap(newText);
-                  },
-                  controller: controller ?? TextEditingController(text: text),
-                  maxLength: 10,
-                  textAlign: TextAlign.center,
-                  style: defaultText(false, enabled),
-                )
-              : (icon != null)
-                  ? IconButton(
-                      icon: Icon(icon),
-                      onPressed: onTap,
-                      color: globals.textColor,
-                      iconSize: globals.iconSize,
-                    )
-                  : AutoSizeText(
-                      text,
-                      group: globals.buttonTextGroup,
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      style: defaultText(false, enabled),
-                    ),
-        ),
-      );
+      {@required Function onTap,
+      @required BuildContext context,
+      String text = "",
+      double width,
+      double height,
+      Color buttonFill = globals.buttonFill,
+      bool enabled = true,
+      bool textField = false,
+      bool numericTextField = false,
+      bool numericData = false,
+      IconData icon,
+      TextEditingController controller}) {
+    return GestureDetector(
+      onTap: enabled
+          ? textField
+              ? () {}
+              : onTap
+          : () {},
+      child: Container(
+        width: screenWidth(context) * (width ?? getHalfWidth(context)),
+        height: screenHeight(context) * (height ?? getHalfHeight(context)),
+        decoration: BoxDecoration(
+            border: Border.all(
+                width: globals.buttonBorderSize,
+                color: enabled ? globals.buttonBorder : globals.disabledBorder),
+            borderRadius: BorderRadius.circular(globals.buttonClipSize),
+            color: enabled ? buttonFill : globals.buttonFill),
+        alignment: Alignment.center,
+        child: textField
+            ? TextField(
+                keyboardType: numericData
+                    ? TextInputType.numberWithOptions(decimal: true)
+                    : TextInputType.text,
+                inputFormatters: [
+                  numericData
+                      ? FilteringTextInputFormatter.digitsOnly
+                      : FilteringTextInputFormatter.singleLineFormatter,
+                ],
+                onChanged: (String newText) {
+                  newText ??= "";
+                  onTap(newText);
+                },
+                controller: controller ?? TextEditingController(text: text),
+                maxLength: 10,
+                textAlign: TextAlign.center,
+                style: defaultText(false, enabled),
+              )
+            : (icon != null)
+                ? IconButton(
+                    icon: Icon(icon),
+                    onPressed: onTap,
+                    color: globals.textColor,
+                    iconSize: globals.iconSize,
+                  )
+                : AutoSizeText(
+                    text,
+                    group: globals.buttonTextGroup,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    style: defaultText(false, enabled),
+                  ),
+      ),
+    );
+  }
 
   // Quater button
   static GestureDetector halfButton({

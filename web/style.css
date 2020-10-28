@@ -13,7 +13,8 @@
 }
 
 #text {
-    top: 30%;
+    font-size: 45px;
+    /*top: 30%;*/
     font-family: 'AstroSpace';
     color: #B3B3B3;
 }
