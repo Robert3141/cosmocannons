@@ -1,0 +1,23 @@
+.center {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+}
+
+@font-face {
+    font-family: 'AstroSpace';
+    src: url(fonts/AstroSpace.ttf);
+}
+
+#text {
+    top: 30%;
+    font-family: 'AstroSpace';
+    color: #B3B3B3;
+}
+
+body {
+    background-color: #03070C;
+}
