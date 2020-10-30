@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_moretypes/shared_preferences_moretypes.dart';
 
 class UI {
   // simplified methods to get the screen details
@@ -598,31 +599,11 @@ class UI {
         ));
   }
 
-  static Future dataStore(String key, dynamic value) async {
-    //get shared prefs
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    Type type = value.runtimeType;
+  static Future dataStore(String key, dynamic value) async =>
+      ExtendedPrefs().dataStore(key, value);
 
-    //set pref based on type
-    if (type == String) await prefs.setString(key, value);
-    if (type == int) await prefs.setInt(key, value);
-    if (type == double) await prefs.setDouble(key, value);
-    if (type == bool) await prefs.setBool(key, value);
-  }
-
-  static Future<dynamic> dataLoad(String key, Type type) async {
-    //get share prefs
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    dynamic data;
-
-    //set pref based on type
-    if (type == String) data = prefs.getString(key);
-    if (type == int) data = prefs.getInt(key);
-    if (type == double) data = prefs.getDouble(key);
-    if (type == bool) data = prefs.getBool(key);
-
-    return data;
-  }
+  static Future<dynamic> dataLoad(String key, String type) async =>
+      ExtendedPrefs().dataLoad(key, type);
 
   static Row settingsEntry(String key, List<IconData> icons, bool variable,
           Function(int) onTap, BuildContext context) =>

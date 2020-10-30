@@ -64,9 +64,9 @@ class _LauncherPageState extends State<LauncherPage> {
 
   void loadVariables() async {
     globals.playAudio =
-        await UI.dataLoad(globals.keyVolume, bool) ?? globals.playAudio;
+        await UI.dataLoad(globals.keyVolume, "bool") ?? globals.playAudio;
     globals.playMusic =
-        await UI.dataLoad(globals.keyMusic, bool) ?? globals.playMusic;
+        await UI.dataLoad(globals.keyMusic, "bool") ?? globals.playMusic;
   }
 
   void firstBuilder() {

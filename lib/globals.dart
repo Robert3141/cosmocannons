@@ -44,8 +44,9 @@ const String quitWithSave = "Quit without saving";
 const String allDead = "No players survived!";
 const String welcomeBack = "Welcome back";
 
-const String keyMusic = "music";
-const String keyVolume = "volume";
+const String keyMusic = "music"; //bool
+const String keyVolume = "volume"; //bool
+const String keySavedGame = "saved"; //bool
 
 const List<String> defaultTeamNames = ["Red", "Green", "Blue", "Yellow"];
 const List<String> playerAmounts = ["2", "3", "4"];
@@ -171,6 +172,8 @@ List<List<Offset>> terrainCacheLocation;
 
 List<Color> terrainCacheColour;
 
+// Global UI based vars
+
 AutoSizeGroup standardTextGroup = AutoSizeGroup();
 AutoSizeGroup buttonTextGroup = AutoSizeGroup();
 
@@ -178,12 +181,12 @@ ScrollController gameScroller = ScrollController();
 
 FocusNode gameInputs = FocusNode();
 
-TextPainter defaultTextPaint = TextPainter(
+final TextPainter defaultTextPaint = TextPainter(
     text: TextSpan(style: UI.defaultText()),
     textAlign: TextAlign.center,
     textDirection: TextDirection.ltr);
 
-Paint defaultDrawPaint = Paint()
+final Paint defaultDrawPaint = Paint()
   ..strokeWidth = 0
   ..strokeCap = StrokeCap.butt;
 
