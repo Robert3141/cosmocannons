@@ -15,12 +15,14 @@ class MainGamePage extends StatefulWidget {
       {@required this.playerTeams,
       Key key,
       this.title = "",
-      this.type = globals.GameType.multiLocal})
+      this.type = globals.GameType.multiLocal,
+      this.resumed = false})
       : super(key: key);
 
   final String title;
   final globals.GameType type;
   final List<int> playerTeams;
+  final bool resumed;
 
   @override
   _MainGamePageState createState() {
@@ -321,6 +323,10 @@ class _MainGamePageState extends State<MainGamePage> {
         item[1] < hitbox[1] + hitboxRadius;
   }
 
+  void gameResume() {
+    //resume data
+  }
+
   void gameStart() {
     // get data from root
     currentPlayer = widget.type.playerNumber;
@@ -357,7 +363,28 @@ class _MainGamePageState extends State<MainGamePage> {
     globals.gameScroller.jumpTo(newPos);
   }
 
-  void quitWithSaving() {
+  void quitWithSaving() async {
+    //show saving popup
+    setState(() {
+      UI.textDisplayPopup(context, globals.saving);
+    });
+
+    //save the variables
+    await UI.dataStore(globals.keyPlayerPos, globals.playerPos);
+    await UI.dataStore(globals.keyPlayerHealth, globals.playerHealth);
+    await UI.dataStore(globals.keyAmountOfPlayers, amountOfPlayers);
+    await UI.dataStore(globals.keyCurrentPlayer, currentPlayer);
+    await UI.dataStore(globals.keyThisPlayer, thisPlayer);
+    await UI.dataStore(globals.keyPlayerTeams, playerTeams);
+    await UI.dataStore(globals.keyGameMap, gameMap);
+    await UI.dataStore(globals.keyLastFireSetup, lastFireSetup);
+    await UI.dataStore(globals.keyGameType, widget.type.string);
+
+    //close saving popup
+    setState(() {
+      Navigator.of(context).pop();
+    });
+
     //quit without saving
     UI.startNewPage(context, [], newPage: LauncherPage());
   }
@@ -402,7 +429,7 @@ class _MainGamePageState extends State<MainGamePage> {
   //build UI
   @override
   Widget build(BuildContext context) {
-    if (startOfGame) gameStart();
+    if (startOfGame) widget.resumed ? gameResume() : gameStart();
     pageContext = context;
     playersTurn = thisPlayer == currentPlayer;
     Color playerButtonColour =

@@ -39,14 +39,24 @@ const String shootSetup = "Fire!";
 const String shootIntensity = "Intensity";
 const String shootAngle = "Angle";
 const String beginGame = "Begin";
-//TODO: add game save
-const String quitWithSave = "Quit without saving";
+const String quitWithSave = "Save and Quit";
 const String allDead = "No players survived!";
 const String welcomeBack = "Welcome back";
+const String saving = "Saving . . .";
+const String resumeGame = "Resume Game";
 
 const String keyMusic = "music"; //bool
 const String keyVolume = "volume"; //bool
 const String keySavedGame = "saved"; //bool
+const String keyPlayerPos = "playerPos"; //List<List<double>>
+const String keyPlayerHealth = "playerHealth"; //List<double>
+const String keyAmountOfPlayers = "amountOfPlayers"; //int
+const String keyCurrentPlayer = "currentPlayer"; //int
+const String keyThisPlayer = "thisPlayer"; //int
+const String keyPlayerTeams = "playerTeams"; //List<int>
+const String keyGameMap = "gameMap"; //List<double>
+const String keyLastFireSetup = "lastFireSetup"; //List<List<double>>
+const String keyGameType = "gameType"; //GameType
 
 const List<String> defaultTeamNames = ["Red", "Green", "Blue", "Yellow"];
 const List<String> playerAmounts = ["2", "3", "4"];
@@ -73,6 +83,7 @@ const double largeTextSize = 45.0;
 const double smallTextSize = 12.0;
 const double heightMultiplier = 1.5;
 const double halfButton = 0.48;
+const double thirdButton = 0.32;
 const double terrainBottomToMid = 0.5;
 const double terrainMidToTop = 0.5;
 const double terrainOpacity = 1.0;
@@ -210,6 +221,46 @@ extension GameExtension on GameType {
     }
   }
 
+  String get string {
+    switch (this) {
+      case GameType.singlePlayer:
+        return "singlePlayer";
+        break;
+      case GameType.multiLocal:
+        return "multiLocal";
+        break;
+      case GameType.multiHost:
+        return "multiHost";
+        break;
+      case GameType.multiClient:
+        return "multiClient";
+        break;
+      default:
+        return "";
+        break;
+    }
+  }
+
+  bool fromString(String s) {
+    switch (s) {
+      case "singlePlayer":
+        return this == GameType.singlePlayer;
+        break;
+      case "multiLocal":
+        return this == GameType.multiLocal;
+        break;
+      case "multiHost":
+        return this == GameType.multiHost;
+        break;
+      case "multiClient":
+        return this == GameType.multiClient;
+        break;
+      default:
+        return false;
+        break;
+    }
+  }
+
   bool showPlayerUI(int playerNo) {
     switch (this) {
       case GameType.singlePlayer:
@@ -242,5 +293,25 @@ extension GameExtension on GameType {
       default:
         return null;
     }
+  }
+}
+
+GameType gameTypefromString(String s) {
+  switch (s) {
+    case "singlePlayer":
+      return GameType.singlePlayer;
+      break;
+    case "multiLocal":
+      return GameType.multiLocal;
+      break;
+    case "multiHost":
+      return GameType.multiHost;
+      break;
+    case "multiClient":
+      return GameType.multiClient;
+      break;
+    default:
+      return null;
+      break;
   }
 }

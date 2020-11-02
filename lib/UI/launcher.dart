@@ -24,6 +24,7 @@ class LauncherPage extends StatefulWidget {
 class _LauncherPageState extends State<LauncherPage> {
   //locals
   bool firstBuild = true;
+  bool _resumeGame = true;
   int amountOfPlays = 0;
   String _versionString = "Loading . . .";
 
@@ -31,6 +32,16 @@ class _LauncherPageState extends State<LauncherPage> {
 
   void singlePlayer() {
     UI.gotoNewPage(context, SingleplayerPage());
+  }
+
+  void resume() async {
+    //resume with all previous data
+    List<int> playerTeams =
+        await UI.dataLoad(globals.keyPlayerTeams, "List<int>");
+    globals.GameType type = await UI.dataLoad(globals.keyGameType, "String");
+
+    //start
+    UI.startNewPage(context, playerTeams, type: type, resumed: true);
   }
 
   void multiplayer() {
@@ -69,11 +80,20 @@ class _LauncherPageState extends State<LauncherPage> {
         await UI.dataLoad(globals.keyMusic, "bool") ?? globals.playMusic;
   }
 
+  void showResumeGame() async {
+    if (await UI.dataLoad(globals.keySavedGame, "bool") ?? false) {
+      _resumeGame = true;
+      globals.GameType.multiLocal
+          .fromString(await UI.dataLoad(globals.keyGameType, "String"));
+    }
+  }
+
   void firstBuilder() {
     if (firstBuild) {
       firstBuild = false;
       showWinningPopup();
       loadVariables();
+      showResumeGame();
       //getVersionString();
     }
   }
@@ -90,10 +110,20 @@ class _LauncherPageState extends State<LauncherPage> {
           UI.largeButton(
               enabled: false, // TODO: make singleplayer mode
               text: globals.singleplayer,
+              width: _resumeGame ? globals.thirdButton : globals.halfButton,
               onTap: () => singlePlayer(),
               context: context),
+          _resumeGame
+              ? UI.largeButton(
+                  enabled: true,
+                  text: globals.resumeGame,
+                  width: globals.thirdButton,
+                  onTap: () => resume(),
+                  context: context)
+              : Container(),
           UI.largeButton(
               text: globals.multiplayer,
+              width: _resumeGame ? globals.thirdButton : globals.halfButton,
               onTap: () => multiplayer(),
               context: context),
         ],

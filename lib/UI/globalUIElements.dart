@@ -8,7 +8,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_moretypes/shared_preferences_moretypes.dart';
 
 class UI {
@@ -326,10 +325,15 @@ class UI {
 
   //launching game
   static void startNewPage(BuildContext context, List<int> playerTeams,
-      {StatefulWidget newPage, Alignment alignment = Alignment.bottomCenter}) {
+      {StatefulWidget newPage,
+      Alignment alignment = Alignment.bottomCenter,
+      globals.GameType type = globals.GameType.multiLocal,
+      bool resumed = false}) {
     if (newPage == null)
       newPage = MainGamePage(
         playerTeams: playerTeams,
+        type: type,
+        resumed: resumed,
       );
     Navigator.of(context).pushAndRemoveUntil(
         PageTransition(
@@ -423,7 +427,9 @@ class UI {
           ]));
 
   static Future textDisplayPopup(BuildContext context, String text,
-      {Function(bool confirm) onFinish, String title = ""}) {
+      {Function(bool confirm) onFinish,
+      String title = "",
+      bool dismissable = true}) {
     //local vars
     List<Widget> children = [];
 
@@ -462,7 +468,7 @@ class UI {
       barrierDismissible: true,
       context: context,
       builder: (BuildContext context) =>
-          UI.gamePopup(children, context, onFinish, true, []),
+          UI.gamePopup(children, context, onFinish, dismissable, []),
     );
   }
 
@@ -600,10 +606,10 @@ class UI {
   }
 
   static Future dataStore(String key, dynamic value) async =>
-      ExtendedPrefs().dataStore(key, value);
+      await ExtendedPrefs().dataStore(key, value);
 
   static Future<dynamic> dataLoad(String key, String type) async =>
-      ExtendedPrefs().dataLoad(key, type);
+      await ExtendedPrefs().dataLoad(key, type);
 
   static Row settingsEntry(String key, List<IconData> icons, bool variable,
           Function(int) onTap, BuildContext context) =>
