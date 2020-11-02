@@ -608,8 +608,19 @@ class UI {
   static Future dataStore(String key, dynamic value) async =>
       await ExtendedPrefs().dataStore(key, value);
 
-  static Future<dynamic> dataLoad(String key, String type) async =>
-      await ExtendedPrefs().dataLoad(key, type);
+  static Future<dynamic> dataLoad(String key, String type) async {
+    dynamic result = await ExtendedPrefs().dataLoad(key, type);
+    switch (type) {
+      case "List<List<double>>":
+        return List<List<double>>.from(result);
+      case "List<double>":
+        return List<double>.from(result);
+      case "List<int>":
+        return List<int>.from(result);
+      default:
+        return result;
+    }
+  }
 
   static Row settingsEntry(String key, List<IconData> icons, bool variable,
           Function(int) onTap, BuildContext context) =>

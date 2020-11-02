@@ -41,6 +41,7 @@ class _MainGamePageState extends State<MainGamePage> {
   bool startOfGame = true;
   bool paused = false;
   bool playersTurn = true;
+  bool loaded = true;
   BuildContext pageContext;
   List<int> playerTeams;
   List<double> gameMap = globals.terrainMaps[0];
@@ -323,8 +324,32 @@ class _MainGamePageState extends State<MainGamePage> {
         item[1] < hitbox[1] + hitboxRadius;
   }
 
-  void gameResume() {
+  void gameResume() async {
+    setState(() {
+      loaded = false;
+    });
+
     //resume data
+    globals.playerPos =
+        await UI.dataLoad(globals.keyPlayerPos, "List<List<double>>");
+    globals.playerHealth =
+        await UI.dataLoad(globals.keyPlayerHealth, "List<double>");
+    amountOfPlayers = await UI.dataLoad(globals.keyAmountOfPlayers, "int");
+    currentPlayer = await UI.dataLoad(globals.keyCurrentPlayer, "int");
+    thisPlayer = await UI.dataLoad(globals.keyThisPlayer, "int");
+    gameMap = await UI.dataLoad(globals.keyGameMap, "List<double>");
+    lastFireSetup =
+        await UI.dataLoad(globals.keyLastFireSetup, "List<List<double>>");
+    playerTeams = widget.playerTeams;
+
+    //not start
+    startOfGame = false;
+    globals.popup = false;
+
+    //rerender with new setup
+    setState(() {
+      loaded = true;
+    });
   }
 
   void gameStart() {
@@ -370,6 +395,7 @@ class _MainGamePageState extends State<MainGamePage> {
     });
 
     //save the variables
+    await UI.dataStore(globals.keySavedGame, true);
     await UI.dataStore(globals.keyPlayerPos, globals.playerPos);
     await UI.dataStore(globals.keyPlayerHealth, globals.playerHealth);
     await UI.dataStore(globals.keyAmountOfPlayers, amountOfPlayers);
@@ -431,167 +457,186 @@ class _MainGamePageState extends State<MainGamePage> {
   Widget build(BuildContext context) {
     if (startOfGame) widget.resumed ? gameResume() : gameStart();
     pageContext = context;
-    playersTurn = thisPlayer == currentPlayer;
-    Color playerButtonColour =
-        globals.teamColors[playerTeams[currentPlayer]] ?? globals.textColor;
-    Scaffold page = UI.scaffoldWithBackground(children: [
-      Stack(
-        alignment: Alignment.center,
-        children: [
-          //main terrain
-          SingleChildScrollView(
-            controller: globals.gameScroller,
-            scrollDirection: Axis.horizontal,
-            //scrollable based on pause
-            physics: paused
-                ? NeverScrollableScrollPhysics()
-                : AlwaysScrollableScrollPhysics(),
-            child: RawKeyboardListener(
-              autofocus: true,
-              onKey: keyPresses,
-              focusNode: globals.gameInputs,
-              child: GestureDetector(
-                onDoubleTap: () => tapDetails == null ? () {} : doubleTap(),
-                onTapDown: (details) {
-                  tapDetails = details;
-                },
-                onDoubleTapDown: (details) {
-                  tapDetails = details;
-                },
-                child: CustomPaint(
-                  size: Size(
-                      UI.screenWidth(context) * zoom, UI.screenHeight(context)),
-                  painter:
-                      GamePainter(currentPlayer, playerTeams, lastFireSetup),
+    if (loaded) {
+      playersTurn = thisPlayer == currentPlayer;
+      Color playerButtonColour =
+          globals.teamColors[playerTeams[currentPlayer]] ?? globals.textColor;
+      Scaffold page = UI.scaffoldWithBackground(children: [
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            //main terrain
+            SingleChildScrollView(
+              controller: globals.gameScroller,
+              scrollDirection: Axis.horizontal,
+              //scrollable based on pause
+              physics: paused
+                  ? NeverScrollableScrollPhysics()
+                  : AlwaysScrollableScrollPhysics(),
+              child: RawKeyboardListener(
+                autofocus: true,
+                onKey: keyPresses,
+                focusNode: globals.gameInputs,
+                child: GestureDetector(
+                  onDoubleTap: () => tapDetails == null ? () {} : doubleTap(),
+                  onTapDown: (details) {
+                    tapDetails = details;
+                  },
+                  onDoubleTapDown: (details) {
+                    tapDetails = details;
+                  },
+                  child: CustomPaint(
+                    size: Size(UI.screenWidth(context) * zoom,
+                        UI.screenHeight(context)),
+                    painter:
+                        GamePainter(currentPlayer, playerTeams, lastFireSetup),
+                  ),
                 ),
               ),
             ),
-          ),
-          //pause menu
-          (paused && globals.popup)
-              ? Container(
-                  //give a disabled effect
-                  color: globals.disabledBorder,
-                  width: UI.screenWidth(context),
-                  height: UI.screenHeight(context),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Column(
-                      //columnof actual data
-                      children: [
-                        UI.topTitle(
-                            titleText: globals.paused,
-                            context: context,
-                            root: true),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            UI.halfButton(
-                                text: globals.quitWithSave,
-                                onTap: quitWithSaving,
-                                context: context),
-                          ],
-                        ),
-                        Container(
-                          height: UI.getPaddingSize(context),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            UI.halfButton(
-                                icon: globals.playAudio
-                                    ? Icons.volume_up_rounded
-                                    : Icons.volume_off_rounded,
-                                onTap: () {
-                                  setState(() {
-                                    globals.playAudio = !globals.playAudio;
-                                    UI.dataStore(
-                                        globals.keyVolume, globals.playAudio);
-                                  });
-                                },
-                                context: context,
-                                quaterButton: true),
-                            Container(width: UI.getPaddingSize(context)),
-                            UI.halfButton(
-                                icon: globals.playMusic
-                                    ? Icons.music_note_rounded
-                                    : Icons.music_off_rounded,
-                                onTap: () {
-                                  setState(() {
-                                    globals.playMusic = !globals.playMusic;
-                                    UI.dataStore(
-                                        globals.keyMusic, globals.playMusic);
-                                  });
-                                },
-                                context: context,
-                                quaterButton: true),
-                          ],
-                        ),
-                      ],
+            //pause menu
+            (paused && globals.popup)
+                ? Container(
+                    //give a disabled effect
+                    color: globals.disabledBorder,
+                    width: UI.screenWidth(context),
+                    height: UI.screenHeight(context),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        //columnof actual data
+                        children: [
+                          UI.topTitle(
+                              titleText: globals.paused,
+                              context: context,
+                              root: true),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              UI.halfButton(
+                                  text: globals.quitWithSave,
+                                  onTap: quitWithSaving,
+                                  context: context),
+                            ],
+                          ),
+                          Container(
+                            height: UI.getPaddingSize(context),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              UI.halfButton(
+                                  icon: globals.playAudio
+                                      ? Icons.volume_up_rounded
+                                      : Icons.volume_off_rounded,
+                                  onTap: () {
+                                    setState(() {
+                                      globals.playAudio = !globals.playAudio;
+                                      UI.dataStore(
+                                          globals.keyVolume, globals.playAudio);
+                                    });
+                                  },
+                                  context: context,
+                                  quaterButton: true),
+                              Container(width: UI.getPaddingSize(context)),
+                              UI.halfButton(
+                                  icon: globals.playMusic
+                                      ? Icons.music_note_rounded
+                                      : Icons.music_off_rounded,
+                                  onTap: () {
+                                    setState(() {
+                                      globals.playMusic = !globals.playMusic;
+                                      UI.dataStore(
+                                          globals.keyMusic, globals.playMusic);
+                                    });
+                                  },
+                                  context: context,
+                                  quaterButton: true),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                )
-              : Container(),
-          //pause button
-          (globals.popup && paused) || (!globals.popup)
-              ? Positioned(
-                  right: 0.0,
-                  top: 0.0,
-                  child: IconButton(
-                      icon: Icon(
-                          paused
-                              ? Icons.play_arrow_rounded
-                              : Icons.pause_rounded,
-                          color: globals.textColor),
+                  )
+                : Container(),
+            //pause button
+            (globals.popup && paused) || (!globals.popup)
+                ? Positioned(
+                    right: 0.0,
+                    top: 0.0,
+                    child: IconButton(
+                        icon: Icon(
+                            paused
+                                ? Icons.play_arrow_rounded
+                                : Icons.pause_rounded,
+                            color: globals.textColor),
+                        iconSize: globals.iconSize,
+                        onPressed: () {
+                          pausePress();
+                        }),
+                  )
+                : Container(),
+            //player arrow and shoot buttons
+            playersTurn && !globals.popup
+                ? Positioned(
+                    left: 0.0,
+                    bottom: 0.0,
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_back_ios_rounded,
+                          color: playerButtonColour),
                       iconSize: globals.iconSize,
-                      onPressed: () {
-                        pausePress();
-                      }),
-                )
-              : Container(),
-          //player arrow and shoot buttons
-          playersTurn && !globals.popup
-              ? Positioned(
-                  left: 0.0,
-                  bottom: 0.0,
-                  child: IconButton(
-                    icon: Icon(Icons.arrow_back_ios_rounded,
-                        color: playerButtonColour),
-                    iconSize: globals.iconSize,
-                    onPressed: () => playerMove(false),
-                  ),
-                )
-              : Container(),
-          playersTurn && !globals.popup
-              ? Positioned(
-                  //left: 0.0,
-                  //right: 0.0,
-                  bottom: 0.0,
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.bubble_chart_rounded,
-                      color: playerButtonColour,
+                      onPressed: () => playerMove(false),
                     ),
-                    iconSize: globals.iconSize,
-                    onPressed: () => playerShootTap(),
-                  ),
-                )
-              : Container(),
-          playersTurn && !globals.popup
-              ? Positioned(
-                  right: 0.0,
-                  bottom: 0.0,
-                  child: IconButton(
-                    icon: Icon(Icons.arrow_forward_ios_rounded,
-                        color: playerButtonColour),
-                    iconSize: globals.iconSize,
-                    onPressed: () => playerMove(true),
-                  ),
-                )
-              : Container(),
-        ],
-      ),
-    ], context: context, padding: false);
-    return page;
+                  )
+                : Container(),
+            playersTurn && !globals.popup
+                ? Positioned(
+                    //left: 0.0,
+                    //right: 0.0,
+                    bottom: 0.0,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.bubble_chart_rounded,
+                        color: playerButtonColour,
+                      ),
+                      iconSize: globals.iconSize,
+                      onPressed: () => playerShootTap(),
+                    ),
+                  )
+                : Container(),
+            playersTurn && !globals.popup
+                ? Positioned(
+                    right: 0.0,
+                    bottom: 0.0,
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_forward_ios_rounded,
+                          color: playerButtonColour),
+                      iconSize: globals.iconSize,
+                      onPressed: () => playerMove(true),
+                    ),
+                  )
+                : Container(),
+          ],
+        ),
+      ], context: context, padding: false);
+      return page;
+    } else {
+      return UI.scaffoldWithBackground(children: [
+        Flex(
+          direction: Axis.horizontal,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: UI.screenHeight(context) * 0.9,
+            ),
+            Text(
+              globals.loading,
+              style: UI.defaultText(true),
+              textAlign: TextAlign.center,
+            )
+          ],
+        ),
+      ], context: context);
+    }
   }
 }

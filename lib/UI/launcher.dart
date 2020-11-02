@@ -24,7 +24,7 @@ class LauncherPage extends StatefulWidget {
 class _LauncherPageState extends State<LauncherPage> {
   //locals
   bool firstBuild = true;
-  bool _resumeGame = true;
+  bool _resumeGame = false;
   int amountOfPlays = 0;
   String _versionString = "Loading . . .";
 
@@ -38,7 +38,8 @@ class _LauncherPageState extends State<LauncherPage> {
     //resume with all previous data
     List<int> playerTeams =
         await UI.dataLoad(globals.keyPlayerTeams, "List<int>");
-    globals.GameType type = await UI.dataLoad(globals.keyGameType, "String");
+    globals.GameType type = globals
+        .gameTypefromString(await UI.dataLoad(globals.keyGameType, "String"));
 
     //start
     UI.startNewPage(context, playerTeams, type: type, resumed: true);
@@ -81,20 +82,27 @@ class _LauncherPageState extends State<LauncherPage> {
   }
 
   void showResumeGame() async {
-    if (await UI.dataLoad(globals.keySavedGame, "bool") ?? false) {
-      _resumeGame = true;
-      globals.GameType.multiLocal
-          .fromString(await UI.dataLoad(globals.keyGameType, "String"));
-    }
+    String _temp = _versionString;
+    bool _savedGame = false;
+
+    _versionString = "bonk ...";
+
+    _savedGame = await UI.dataLoad(globals.keySavedGame, "bool") ?? false;
+
+    setState(() {
+      _versionString = _temp;
+      _resumeGame = _savedGame;
+    });
   }
 
   void firstBuilder() {
     if (firstBuild) {
       firstBuild = false;
+      globals.popup = false;
       showWinningPopup();
       loadVariables();
-      showResumeGame();
       //getVersionString();
+      showResumeGame();
     }
   }
 
@@ -113,14 +121,13 @@ class _LauncherPageState extends State<LauncherPage> {
               width: _resumeGame ? globals.thirdButton : globals.halfButton,
               onTap: () => singlePlayer(),
               context: context),
-          _resumeGame
-              ? UI.largeButton(
-                  enabled: true,
-                  text: globals.resumeGame,
-                  width: globals.thirdButton,
-                  onTap: () => resume(),
-                  context: context)
-              : Container(),
+          if (_resumeGame)
+            UI.largeButton(
+                enabled: true,
+                text: globals.resumeGame,
+                width: globals.thirdButton,
+                onTap: () => resume(),
+                context: context),
           UI.largeButton(
               text: globals.multiplayer,
               width: _resumeGame ? globals.thirdButton : globals.halfButton,

@@ -43,6 +43,7 @@ const String quitWithSave = "Save and Quit";
 const String allDead = "No players survived!";
 const String welcomeBack = "Welcome back";
 const String saving = "Saving . . .";
+const String loading = "Loading . . .";
 const String resumeGame = "Resume Game";
 
 const String keyMusic = "music"; //bool
@@ -82,8 +83,8 @@ const double buttonClipSize = 8.0;
 const double largeTextSize = 45.0;
 const double smallTextSize = 12.0;
 const double heightMultiplier = 1.5;
-const double halfButton = 0.48;
-const double thirdButton = 0.32;
+const double halfButton = 0.47;
+const double thirdButton = 0.31;
 const double terrainBottomToMid = 0.5;
 const double terrainMidToTop = 0.5;
 const double terrainOpacity = 1.0;
@@ -237,26 +238,6 @@ extension GameExtension on GameType {
         break;
       default:
         return "";
-        break;
-    }
-  }
-
-  bool fromString(String s) {
-    switch (s) {
-      case "singlePlayer":
-        return this == GameType.singlePlayer;
-        break;
-      case "multiLocal":
-        return this == GameType.multiLocal;
-        break;
-      case "multiHost":
-        return this == GameType.multiHost;
-        break;
-      case "multiClient":
-        return this == GameType.multiClient;
-        break;
-      default:
-        return false;
         break;
     }
   }
