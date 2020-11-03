@@ -34,11 +34,12 @@ class GamePainter extends CustomPainter {
   void drawPlayer(int colour, List<double> pos, Canvas canvas, int playerHealth,
       double angle) {
     //define locals
-    const double drawRadius = 10;
+    const double drawRadius = 0.01;
     double drawAngleRadians = angle * globals.degreesToRadians;
-    Offset translate = Offset(-cos(drawAngleRadians) * drawRadius,
-        -sin(drawAngleRadians) * drawRadius);
-    Offset position = relPos(Offset(pos[0], pos[1]));
+    Offset translate = Offset(cos(drawAngleRadians) * drawRadius * 2,
+        sin(drawAngleRadians) * drawRadius * 2);
+    print(translate);
+    Offset position = Offset(pos[0], pos[1]);
     Offset cannonStart = position.translate(translate.dx, translate.dy);
     Offset cannonEnd = cannonStart.translate(translate.dx, translate.dy);
     //define paints
@@ -47,18 +48,24 @@ class GamePainter extends CustomPainter {
       ..layout();
     final Paint playerCircle = globals.defaultDrawPaint
       ..color = globals.teamColors[colour]
-      ..strokeWidth = drawRadius / 2
+      ..strokeWidth = relativePos(drawRadius / 2, 0).dx
       ..strokeCap = StrokeCap.square;
 
     //draw paints
     canvas.drawArc(
         Rect.fromCenter(
-            center: position, height: 2 * drawRadius, width: 2 * drawRadius),
+            center: relPos(position),
+            height: relativePos(drawRadius, 0).dx,
+            width: relativePos(drawRadius, 0).dx),
         0,
         -pi,
         true,
         playerCircle);
-    canvas.drawPoints(PointMode.lines, [cannonStart, cannonEnd], playerCircle);
+    canvas.drawPoints(PointMode.lines, [relPos(cannonStart), relPos(cannonEnd)],
+        playerCircle);
+    print("size $canvasSize");
+    print("$cannonStart $cannonEnd");
+    print("${relPos(cannonStart)} ${relPos(cannonEnd)}");
     playerHealthText.paint(
         canvas, position.translate(-drawRadius, -drawRadius * 4));
   }
