@@ -495,6 +495,11 @@ class _MainGamePageState extends State<MainGamePage> {
                   onDoubleTapDown: (details) {
                     tapDetails = details;
                   },
+                  onPanUpdate: (details) {},
+                  onPanStart: (details) {},
+                  onPanDown: (details) {},
+                  onPanEnd: (details) {}, //TODO continue drag stuff
+                  onPanCancel: () {},
                   child: CustomPaint(
                     size: Size(UI.screenWidth(context) * zoom,
                         UI.screenHeight(context)),
