@@ -42,6 +42,7 @@ class _MainGamePageState extends State<MainGamePage> {
   bool paused = false;
   bool playersTurn = true;
   bool loaded = true;
+  bool movedPlayer = false;
   BuildContext pageContext;
   List<int> playerTeams;
   List<double> gameMap = globals.terrainMaps[0];
@@ -87,6 +88,7 @@ class _MainGamePageState extends State<MainGamePage> {
             .calcNearestHeight(gameMap, playerX) +
         globals.playerPadding;
     setState(() {
+      movedPlayer = true;
       globals.playerPos[currentPlayer] = [playerX, playerY];
     });
   }
@@ -269,6 +271,7 @@ class _MainGamePageState extends State<MainGamePage> {
       playerInt = 0;
     }
 
+    movedPlayer = false;
     currentPlayer = playerInt;
     thisPlayer = widget.type.showPlayerUI(playerInt) ? playerInt : thisPlayer;
   }
@@ -341,6 +344,7 @@ class _MainGamePageState extends State<MainGamePage> {
     lastFireSetup =
         await UI.dataLoad(globals.keyLastFireSetup, "List<List<double>>");
     playerTeams = widget.playerTeams;
+    movedPlayer = await UI.dataLoad(globals.keyMovedPlayer, "bool");
 
     //not start
     startOfGame = false;
@@ -405,6 +409,7 @@ class _MainGamePageState extends State<MainGamePage> {
     await UI.dataStore(globals.keyGameMap, gameMap);
     await UI.dataStore(globals.keyLastFireSetup, lastFireSetup);
     await UI.dataStore(globals.keyGameType, widget.type.string);
+    await UI.dataStore(globals.keyMovedPlayer, movedPlayer);
 
     //close saving popup
     setState(() {
@@ -432,11 +437,15 @@ class _MainGamePageState extends State<MainGamePage> {
             moveScroller(globals.scrollAmount);
             break;
         }
-        if (keyPress == LogicalKeyboardKey.arrowLeft && playersTurn) {
+        if (keyPress == LogicalKeyboardKey.arrowLeft &&
+            playersTurn &&
+            !movedPlayer) {
           //move left
           playerMove(false);
         }
-        if (keyPress == LogicalKeyboardKey.arrowRight && playersTurn) {
+        if (keyPress == LogicalKeyboardKey.arrowRight &&
+            playersTurn &&
+            !movedPlayer) {
           //move right
           playerMove(true);
         }
@@ -577,7 +586,7 @@ class _MainGamePageState extends State<MainGamePage> {
                   )
                 : Container(),
             //player arrow and shoot buttons
-            playersTurn && !globals.popup
+            playersTurn && !globals.popup && !movedPlayer
                 ? Positioned(
                     left: 0.0,
                     bottom: 0.0,
@@ -604,7 +613,7 @@ class _MainGamePageState extends State<MainGamePage> {
                     ),
                   )
                 : Container(),
-            playersTurn && !globals.popup
+            playersTurn && !globals.popup && !movedPlayer
                 ? Positioned(
                     right: 0.0,
                     bottom: 0.0,

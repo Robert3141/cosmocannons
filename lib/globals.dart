@@ -58,6 +58,7 @@ const String keyPlayerTeams = "playerTeams"; //List<int>
 const String keyGameMap = "gameMap"; //List<double>
 const String keyLastFireSetup = "lastFireSetup"; //List<List<double>>
 const String keyGameType = "gameType"; //GameType
+const String keyMovedPlayer = "movedPlayer"; //bool
 
 const List<String> defaultTeamNames = ["Red", "Green", "Blue", "Yellow"];
 const List<String> playerAmounts = ["2", "3", "4"];
