@@ -389,7 +389,8 @@ class _MainGamePageState extends State<MainGamePage> {
             ? newPos
             : maxPos
         : 0;
-    globals.gameScroller.jumpTo(newPos);
+    globals.gameScroller.animateTo(newPos,
+        duration: Duration(milliseconds: 5), curve: Curves.ease);
   }
 
   void quitWithSaving() async {
