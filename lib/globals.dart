@@ -105,6 +105,7 @@ const double playerPadding = 0.001;
 const double blastRadius = 0.01;
 const double blastDamage = -20;
 const double defaultPlayerHealth = 100;
+const double playerRadius = 10;
 
 const List<double> locationInvisible = [-1, -1];
 const List<double> defaultFireSetup = [30, 90];
@@ -176,6 +177,7 @@ bool playMusic = true;
 bool playAudio = true;
 
 List<List<double>> playerPos;
+List<List<double>> turretPos;
 
 List<double> projectilePos;
 List<double> playerHealth;

@@ -178,8 +178,8 @@ class _MainGamePageState extends State<MainGamePage> {
     double aY = globals.Ay;
     double sY = 0;
     double terrainHeight = 0;
-    double playerX = globals.playerPos[playerInt][0];
-    double playerY = globals.playerPos[playerInt][1] + 0.01;
+    double startX = globals.turretPos[playerInt][0];
+    double startY = globals.turretPos[playerInt][1];
     double timeSec = 0;
     /*double t;
     List<double> levelTime;*/
@@ -205,9 +205,9 @@ class _MainGamePageState extends State<MainGamePage> {
       setState(() {
         // s = ut + 0.5att
         sX = (uX * timeSec + 0.5 * aX * timeSec * timeSec) * globals.xSF +
-            playerX;
+            startX;
         sY = (uY * timeSec + 0.5 * aY * timeSec * timeSec) * globals.ySF +
-            playerY;
+            startY;
 
         globals.projectilePos = [sX, sY];
       });

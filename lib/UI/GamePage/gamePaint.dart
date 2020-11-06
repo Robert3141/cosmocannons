@@ -31,41 +31,43 @@ class GamePainter extends CustomPainter {
     return Offset(pos.dx * canvasSize.width, (1 - pos.dy) * canvasSize.height);
   }
 
+  Offset actualPos(Offset pos) {
+    // takes x & y from game size and returns between 1 & 0
+    return Offset(pos.dx / canvasSize.width, 1 - (pos.dy / canvasSize.height));
+  }
+
   void drawPlayer(int colour, List<double> pos, Canvas canvas, int playerHealth,
-      double angle) {
+      double angle, int player) {
     //define locals
-    const double drawRadius = 0.01;
+    const double drawRadius = globals.playerRadius;
     double drawAngleRadians = angle * globals.degreesToRadians;
-    Offset translate = Offset(cos(drawAngleRadians) * drawRadius * 2,
-        sin(drawAngleRadians) * drawRadius * 2);
-    print(translate);
-    Offset position = Offset(pos[0], pos[1]);
+    Offset translate = Offset(-cos(drawAngleRadians) * drawRadius,
+        -sin(drawAngleRadians) * drawRadius);
+    Offset position = relPos(Offset(pos[0], pos[1]));
     Offset cannonStart = position.translate(translate.dx, translate.dy);
     Offset cannonEnd = cannonStart.translate(translate.dx, translate.dy);
+    Offset turretActual = actualPos(cannonEnd);
     //define paints
     final TextPainter playerHealthText = globals.defaultTextPaint
       ..text = TextSpan(text: playerHealth.toString(), style: UI.defaultText())
       ..layout();
     final Paint playerCircle = globals.defaultDrawPaint
       ..color = globals.teamColors[colour]
-      ..strokeWidth = relativePos(drawRadius / 2, 0).dx
+      ..strokeWidth = drawRadius / 2
       ..strokeCap = StrokeCap.square;
+
+    // set turretPos
+    globals.turretPos[player] = [turretActual.dx, turretActual.dy];
 
     //draw paints
     canvas.drawArc(
         Rect.fromCenter(
-            center: relPos(position),
-            height: relativePos(drawRadius, 0).dx,
-            width: relativePos(drawRadius, 0).dx),
+            center: position, height: 2 * drawRadius, width: 2 * drawRadius),
         0,
         -pi,
         true,
         playerCircle);
-    canvas.drawPoints(PointMode.lines, [relPos(cannonStart), relPos(cannonEnd)],
-        playerCircle);
-    print("size $canvasSize");
-    print("$cannonStart $cannonEnd");
-    print("${relPos(cannonStart)} ${relPos(cannonEnd)}");
+    canvas.drawPoints(PointMode.lines, [cannonStart, cannonEnd], playerCircle);
     playerHealthText.paint(
         canvas, position.translate(-drawRadius, -drawRadius * 4));
   }
@@ -84,23 +86,21 @@ class GamePainter extends CustomPainter {
     //empty only on first render
     if (globals.firstRender) {
       globals.playerPos = new List.filled(amountOfPlayers, [0, 0]);
+      globals.turretPos = new List.filled(amountOfPlayers, [0, 0]);
     }
 
     for (int players = 0; players < amountOfPlayers; players++) {
+      //vars
+      double playerShootAngle = getPlayerAnglesArray(playerShootSetup)[players];
       //place in player on firstRender calculate pos
       if (globals.firstRender) {
         playerX = (players + 1) / (amountOfPlayers + 1);
-        playerY =
-            calcNearestHeight(terrainHeights, playerX) + globals.playerPadding;
+        playerY = calcNearestHeight(terrainHeights, playerX);
         globals.playerPos[players] = [playerX, playerY];
       }
       currentPlayerPos = globals.playerPos;
-      drawPlayer(
-          playerColours[players],
-          globals.playerPos[players],
-          canvas,
-          globals.playerHealth[players].round(),
-          getPlayerAnglesArray(playerShootSetup)[players]);
+      drawPlayer(playerColours[players], globals.playerPos[players], canvas,
+          globals.playerHealth[players].round(), playerShootAngle, players);
     }
   }
 
