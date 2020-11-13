@@ -183,301 +183,356 @@ class _MainGamePageState extends State<MainGamePage> {
   ///
 
   Future<void> playerShoot(double intensity, double angleDegrees) async {
-    //set locals
-    List<double> impactPos;
-    int playerInt = currentPlayer;
-    bool oneOrLessPlayers;
-    int winningPlayer;
+    try {
+      //set locals
+      List<double> impactPos;
+      int playerInt = currentPlayer;
+      bool oneOrLessPlayers;
+      int winningPlayer;
 
-    setState(() {
-      //disable shoot UI
-      thisPlayer = -1;
-    });
-
-    //shoot projectile
-    impactPos = await animateProjectile(intensity, angleDegrees, playerInt);
-
-    //take damage
-    oneOrLessPlayers = takeDamage(impactPos, playerInt);
-
-    //game dictates on player health
-    if (oneOrLessPlayers) {
-      //find winning player
-      winningPlayer = -2; //signifies draw
-
-      for (int i = 0; i < amountOfPlayers; i++) {
-        if (globals.playerHealth[i] > 0) winningPlayer = i;
-      }
-
-      //exit to main menu with popup
-      UI.startNewPage(context, [],
-          newPage: LauncherPage(
-            winner: winningPlayer,
-            playerTeams: playerTeams,
-          ));
-    } else {
-      //set next player
       setState(() {
-        nextPlayer(playerInt);
+        //disable shoot UI
+        thisPlayer = -1;
       });
+
+      //shoot projectile
+      impactPos = await animateProjectile(intensity, angleDegrees, playerInt);
+
+      //take damage
+      oneOrLessPlayers = takeDamage(impactPos, playerInt);
+
+      //game dictates on player health
+      if (oneOrLessPlayers) {
+        //find winning player
+        winningPlayer = -2; //signifies draw
+
+        for (int i = 0; i < amountOfPlayers; i++) {
+          if (globals.playerHealth[i] > 0) winningPlayer = i;
+        }
+
+        //exit to main menu with popup
+        UI.startNewPage(context, [],
+            newPage: LauncherPage(
+              winner: winningPlayer,
+              playerTeams: playerTeams,
+            ));
+      } else {
+        //set next player
+        setState(() {
+          nextPlayer(playerInt);
+        });
+      }
+    } catch (e) {
+      outputError(e);
     }
   }
 
   void pausePress() {
-    setState(() {
-      paused = !paused;
-      globals.popup = paused;
-      //based on paused or unpaused
-      if (paused) {
-        //paused
-      } else {
-        //unpaused
-      }
-    });
+    try {
+      setState(() {
+        paused = !paused;
+        globals.popup = paused;
+        //based on paused or unpaused
+        if (paused) {
+          //paused
+        } else {
+          //unpaused
+        }
+      });
+    } catch (e) {
+      outputError(e);
+    }
   }
 
   void moveScrollerToRelativePosition(List<double> pos) {
-    double offsetX = globals.gameScroller.position.maxScrollExtent * pos[0];
-    setState(() {
-      globals.gameScroller.animateTo(offsetX,
-          curve: Curves.bounceIn,
-          duration: Duration(milliseconds: globals.animationSpeed.round()));
-    });
+    try {
+      double offsetX = globals.gameScroller.position.maxScrollExtent * pos[0];
+      setState(() {
+        globals.gameScroller.animateTo(offsetX,
+            curve: Curves.bounceIn,
+            duration: Duration(milliseconds: globals.animationSpeed.round()));
+      });
+    } catch (e) {
+      outputError(e);
+    }
   }
 
   void playerMove(bool right) {
-    double playerX = globals.playerPos[currentPlayer][0];
-    double playerY;
-    playerX = right
-        ? playerX + globals.movementAmount
-        : playerX - globals.movementAmount;
-    //make sure playerX is always between 0 and 1
-    playerX = playerX > 1
-        ? 1
-        : playerX < 0
-            ? 0
-            : playerX;
-    playerY = GamePainter(currentPlayer, playerTeams, lastFireSetup)
-            .calcNearestHeight(gameMap, playerX) +
-        globals.playerPadding;
-    setState(() {
-      movedPlayer = true;
-      globals.playerPos[currentPlayer] = [playerX, playerY];
-    });
+    try {
+      double playerX = globals.playerPos[currentPlayer][0];
+      double playerY;
+      playerX = right
+          ? playerX + globals.movementAmount
+          : playerX - globals.movementAmount;
+      //make sure playerX is always between 0 and 1
+      playerX = playerX > 1
+          ? 1
+          : playerX < 0
+              ? 0
+              : playerX;
+      playerY = GamePainter(currentPlayer, playerTeams, lastFireSetup)
+              .calcNearestHeight(gameMap, playerX) +
+          globals.playerPadding;
+      setState(() {
+        movedPlayer = true;
+        globals.playerPos[currentPlayer] = [playerX, playerY];
+      });
+    } catch (e) {
+      outputError(e);
+    }
   }
 
   void doubleTap() {
-    //get positions
-    double tapX = tapDetails.localPosition.dx;
-    double tapY = UI.screenHeight(context) - tapDetails.localPosition.dy;
-    double playerX;
-    double playerY;
-    int player = currentPlayer;
+    try {
+      //get positions
+      double tapX = tapDetails.localPosition.dx;
+      double tapY = UI.screenHeight(context) - tapDetails.localPosition.dy;
+      double playerX;
+      double playerY;
+      int player = currentPlayer;
 
-    //set player locations
-    playerX = globals.playerPos[player][0] *
-        UI.screenWidth(context) *
-        globals.defaultZoom;
-    playerY = globals.playerPos[player][1] * UI.screenHeight(context);
+      //set player locations
+      playerX = globals.playerPos[player][0] *
+          UI.screenWidth(context) *
+          globals.defaultZoom;
+      playerY = globals.playerPos[player][1] * UI.screenHeight(context);
 
-    //check near player
-    if (checkInRadius(
-            [tapX, tapY], [playerX, playerY], globals.tapNearPlayer) &&
-        playersTurn &&
-        !globals.popup) {
-      playerShootTap();
+      //check near player
+      if (checkInRadius(
+              [tapX, tapY], [playerX, playerY], globals.tapNearPlayer) &&
+          playersTurn &&
+          !globals.popup) {
+        playerShootTap();
+      }
+    } catch (e) {
+      outputError(e);
     }
   }
 
   void playerShootTap() {
-    //local variables
-    double intensity = lastFireSetup[currentPlayer][0];
-    double angle = lastFireSetup[currentPlayer][1];
-    List<String> fireSetupString = [
-      intensity.round().toString(),
-      angle.round().toString()
-    ];
+    try {
+      //local variables
+      double intensity = lastFireSetup[currentPlayer][0];
+      double angle = lastFireSetup[currentPlayer][1];
+      List<String> fireSetupString = [
+        intensity.round().toString(),
+        angle.round().toString()
+      ];
 
-    //show popup
-    setState(() {
-      UI.dataInputPopup(
-          context,
-          [
-            (String text) {
-              intensity = double.tryParse(text) ?? 0;
-              lastFireSetup[currentPlayer][0] = intensity;
-            },
-            (String text) {
-              angle = double.tryParse(text) ?? 0;
-              setState(() {
-                lastFireSetup[currentPlayer][1] = angle;
-              });
-            },
-          ],
-          dataTitle: globals.shootOptions,
-          title: globals.shootSetup,
-          data: fireSetupString,
-          numericData: [true, true],
-          barrierDismissable: false, onFinish: (bool confirm) {
-        //code after player finished
-        setState(() {
-          globals.popup = false;
+      //show popup
+      setState(() {
+        UI.dataInputPopup(
+            context,
+            [
+              (String text) {
+                intensity = double.tryParse(text) ?? 0;
+                lastFireSetup[currentPlayer][0] = intensity;
+              },
+              (String text) {
+                angle = double.tryParse(text) ?? 0;
+                setState(() {
+                  lastFireSetup[currentPlayer][1] = angle;
+                });
+              },
+            ],
+            dataTitle: globals.shootOptions,
+            title: globals.shootSetup,
+            data: fireSetupString,
+            numericData: [true, true],
+            barrierDismissable: false, onFinish: (bool confirm) {
+          //code after player finished
+          setState(() {
+            globals.popup = false;
+          });
+          if (confirm) playerShoot(intensity, angle);
         });
-        if (confirm) playerShoot(intensity, angle);
-      });
 
-      //move terrain to player
-      moveScrollerToRelativePosition(globals.playerPos[currentPlayer]);
-    });
+        //move terrain to player
+        moveScrollerToRelativePosition(globals.playerPos[currentPlayer]);
+      });
+    } catch (e) {
+      outputError(e);
+    }
   }
 
   void nextPlayer(int playerInt) {
-    //next player
-    playerInt++;
+    try {
+      //next player
+      playerInt++;
 
-    //check for overflow
-    if (playerInt == playerTeams.length) {
-      playerInt = 0;
+      //check for overflow
+      if (playerInt == playerTeams.length) {
+        playerInt = 0;
+      }
+
+      movedPlayer = false;
+      currentPlayer = playerInt;
+      thisPlayer = widget.type.showPlayerUI(playerInt) ? playerInt : thisPlayer;
+    } catch (e) {
+      outputError(e);
     }
-
-    movedPlayer = false;
-    currentPlayer = playerInt;
-    thisPlayer = widget.type.showPlayerUI(playerInt) ? playerInt : thisPlayer;
   }
 
   void gameResume() async {
-    setState(() {
-      loaded = false;
-    });
+    try {
+      setState(() {
+        loaded = false;
+      });
 
-    //resume data
-    globals.playerPos =
-        await UI.dataLoad(globals.keyPlayerPos, "List<List<double>>");
-    globals.playerHealth =
-        await UI.dataLoad(globals.keyPlayerHealth, "List<double>");
-    amountOfPlayers = await UI.dataLoad(globals.keyAmountOfPlayers, "int");
-    currentPlayer = await UI.dataLoad(globals.keyCurrentPlayer, "int");
-    thisPlayer = await UI.dataLoad(globals.keyThisPlayer, "int");
-    gameMap = await UI.dataLoad(globals.keyGameMap, "List<double>");
-    lastFireSetup =
-        await UI.dataLoad(globals.keyLastFireSetup, "List<List<double>>");
-    playerTeams = widget.playerTeams;
-    movedPlayer = await UI.dataLoad(globals.keyMovedPlayer, "bool");
+      //resume data
+      globals.playerPos =
+          await UI.dataLoad(globals.keyPlayerPos, "List<List<double>>");
+      globals.playerHealth =
+          await UI.dataLoad(globals.keyPlayerHealth, "List<double>");
+      amountOfPlayers = await UI.dataLoad(globals.keyAmountOfPlayers, "int");
+      currentPlayer = await UI.dataLoad(globals.keyCurrentPlayer, "int");
+      thisPlayer = await UI.dataLoad(globals.keyThisPlayer, "int");
+      gameMap = await UI.dataLoad(globals.keyGameMap, "List<double>");
+      lastFireSetup =
+          await UI.dataLoad(globals.keyLastFireSetup, "List<List<double>>");
+      playerTeams = widget.playerTeams;
+      movedPlayer = await UI.dataLoad(globals.keyMovedPlayer, "bool");
 
-    //not start
-    startOfGame = false;
-    globals.popup = false;
+      //not start
+      startOfGame = false;
+      globals.popup = false;
 
-    //rerender with new setup
-    setState(() {
-      loaded = true;
-    });
+      //rerender with new setup
+      setState(() {
+        loaded = true;
+      });
+    } catch (e) {
+      outputError(e);
+    }
   }
 
   void gameStart() {
-    // get data from root
-    currentPlayer = widget.type.playerNumber;
-    playerTeams = widget.playerTeams;
-    thisPlayer = currentPlayer;
+    try {
+      // get data from root
+      currentPlayer = widget.type.playerNumber;
+      playerTeams = widget.playerTeams;
+      thisPlayer = currentPlayer;
 
-    //not start anymore
-    startOfGame = false;
+      //not start anymore
+      startOfGame = false;
 
-    //set amount of players
-    amountOfPlayers = playerTeams.length;
+      //set amount of players
+      amountOfPlayers = playerTeams.length;
 
-    //reset health and fire setups
-    globals.playerHealth = List.empty(growable: true);
-    lastFireSetup = List.empty(growable: true);
-    for (int i = 0; i < amountOfPlayers; i++) {
-      globals.playerHealth.add(globals.defaultPlayerHealth);
-      lastFireSetup.add(globals.defaultFireSetup.toList());
+      //reset health and fire setups
+      globals.playerHealth = List.empty(growable: true);
+      lastFireSetup = List.empty(growable: true);
+      for (int i = 0; i < amountOfPlayers; i++) {
+        globals.playerHealth.add(globals.defaultPlayerHealth);
+        lastFireSetup.add(globals.defaultFireSetup.toList());
+      }
+
+      //cancel popup
+      globals.popup = false;
+    } catch (e) {
+      outputError(e);
     }
-
-    //cancel popup
-    globals.popup = false;
   }
 
   void moveScroller(double increase) {
-    double currentPos = globals.gameScroller.offset;
-    double newPos = currentPos + increase;
-    double maxPos = UI.screenWidth(context) * zoom * 0.5;
-    newPos = newPos >= 0
-        ? newPos < maxPos
-            ? newPos
-            : maxPos
-        : 0;
-    globals.gameScroller.animateTo(newPos,
-        duration: Duration(milliseconds: 5), curve: Curves.ease);
+    try {
+      double currentPos = globals.gameScroller.offset;
+      double newPos = currentPos + increase;
+      double maxPos = UI.screenWidth(context) * zoom * 0.5;
+      newPos = newPos >= 0
+          ? newPos < maxPos
+              ? newPos
+              : maxPos
+          : 0;
+      globals.gameScroller.animateTo(newPos,
+          duration: Duration(milliseconds: 5), curve: Curves.ease);
+    } catch (e) {
+      outputError(e);
+    }
   }
 
   void quitWithSaving() async {
-    //show saving popup
-    setState(() {
-      UI.textDisplayPopup(context, globals.saving);
-    });
+    try {
+      //show saving popup
+      setState(() {
+        UI.textDisplayPopup(context, globals.saving);
+      });
 
-    //save the variables
-    await UI.dataStore(globals.keySavedGame, true);
-    await UI.dataStore(globals.keyPlayerPos, globals.playerPos);
-    await UI.dataStore(globals.keyPlayerHealth, globals.playerHealth);
-    await UI.dataStore(globals.keyAmountOfPlayers, amountOfPlayers);
-    await UI.dataStore(globals.keyCurrentPlayer, currentPlayer);
-    await UI.dataStore(globals.keyThisPlayer, thisPlayer);
-    await UI.dataStore(globals.keyPlayerTeams, playerTeams);
-    await UI.dataStore(globals.keyGameMap, gameMap);
-    await UI.dataStore(globals.keyLastFireSetup, lastFireSetup);
-    await UI.dataStore(globals.keyGameType, widget.type.string);
-    await UI.dataStore(globals.keyMovedPlayer, movedPlayer);
+      //save the variables
+      await UI.dataStore(globals.keySavedGame, true);
+      await UI.dataStore(globals.keyPlayerPos, globals.playerPos);
+      await UI.dataStore(globals.keyPlayerHealth, globals.playerHealth);
+      await UI.dataStore(globals.keyAmountOfPlayers, amountOfPlayers);
+      await UI.dataStore(globals.keyCurrentPlayer, currentPlayer);
+      await UI.dataStore(globals.keyThisPlayer, thisPlayer);
+      await UI.dataStore(globals.keyPlayerTeams, playerTeams);
+      await UI.dataStore(globals.keyGameMap, gameMap);
+      await UI.dataStore(globals.keyLastFireSetup, lastFireSetup);
+      await UI.dataStore(globals.keyGameType, widget.type.string);
+      await UI.dataStore(globals.keyMovedPlayer, movedPlayer);
 
-    //close saving popup
-    setState(() {
-      Navigator.of(context).pop();
-    });
+      //close saving popup
+      setState(() {
+        Navigator.of(context).pop();
+      });
 
-    //quit without saving
-    UI.startNewPage(context, [], newPage: LauncherPage());
+      //quit without saving
+      UI.startNewPage(context, [], newPage: LauncherPage());
+    } catch (e) {
+      outputError(e);
+    }
   }
 
   void keyPresses(RawKeyEvent key) {
-    //only take key down events not key up as well
-    if (key.runtimeType == RawKeyDownEvent) {
-      //only take most inputs when not paused
-      if (!paused) {
-        String keyChar = key.data.keyLabel ?? "";
-        KeyboardKey keyPress = key.logicalKey;
-        switch (keyChar) {
-          case "a":
+    try {
+      //only take key down events not key up as well
+      if (key.runtimeType == RawKeyDownEvent) {
+        //only take most inputs when not paused
+        if (!paused) {
+          String keyChar = key.data.keyLabel ?? "";
+          KeyboardKey keyPress = key.logicalKey;
+          switch (keyChar) {
+            case "a":
+              //move left
+              moveScroller(-globals.scrollAmount);
+              break;
+            case "d":
+              //move right
+              moveScroller(globals.scrollAmount);
+              break;
+          }
+          if (keyPress == LogicalKeyboardKey.arrowLeft &&
+              playersTurn &&
+              !movedPlayer) {
             //move left
-            moveScroller(-globals.scrollAmount);
-            break;
-          case "d":
+            playerMove(false);
+          }
+          if (keyPress == LogicalKeyboardKey.arrowRight &&
+              playersTurn &&
+              !movedPlayer) {
             //move right
-            moveScroller(globals.scrollAmount);
-            break;
+            playerMove(true);
+          }
+          if (keyPress == LogicalKeyboardKey.enter) {
+            //fire!!
+            playerShootTap();
+          }
         }
-        if (keyPress == LogicalKeyboardKey.arrowLeft &&
-            playersTurn &&
-            !movedPlayer) {
-          //move left
-          playerMove(false);
-        }
-        if (keyPress == LogicalKeyboardKey.arrowRight &&
-            playersTurn &&
-            !movedPlayer) {
-          //move right
-          playerMove(true);
-        }
-        if (keyPress == LogicalKeyboardKey.enter) {
-          //fire!!
-          playerShootTap();
+        //always on keyboard controls
+        if (key.logicalKey == LogicalKeyboardKey.escape) {
+          pausePress();
         }
       }
-      //always on keyboard controls
-      if (key.logicalKey == LogicalKeyboardKey.escape) {
-        pausePress();
-      }
+    } catch (e) {
+      outputError(e);
     }
+  }
+
+  void outputError(Exception e) {
+    String output = globals.errorOccurred + e.toString();
+    setState(() {
+      UI.textDisplayPopup(context, output);
+    });
   }
 
   //build UI
@@ -690,16 +745,6 @@ class _MainGamePageState extends State<MainGamePage> {
             ],
           ),
         ], context: context);
-      } else {
-        page = Scaffold(
-            body: Stack(
-          children: [
-            UI.topTitle(
-                titleText: globals.errorOccurred + e.toString(),
-                context: context),
-            page.body
-          ],
-        ));
       }
       print("Erorr: $e");
     }
