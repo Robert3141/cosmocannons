@@ -45,7 +45,7 @@ const String welcomeBack = "Welcome back";
 const String saving = "Saving . . .";
 const String loading = "Loading . . .";
 const String resumeGame = "Resume Game";
-const String errorOccurred = "An error occurred! Details: ";
+const String errorOccurred = "An error occurred!\n Details: ";
 
 const String keyMusic = "music"; //bool
 const String keyVolume = "volume"; //bool

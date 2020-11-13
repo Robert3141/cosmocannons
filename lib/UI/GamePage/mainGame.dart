@@ -528,7 +528,7 @@ class _MainGamePageState extends State<MainGamePage> {
     }
   }
 
-  void outputError(Exception e) {
+  void outputError(dynamic e) {
     String output = globals.errorOccurred + e.toString();
     setState(() {
       UI.textDisplayPopup(context, output);
