@@ -14,8 +14,15 @@ class GamePainter extends CustomPainter {
   List<int> playerTeams;
   int currentPlayer;
 
-  //constructor
+  ///
+  /// CONSTRUCTORS
+  ///
+
   GamePainter(this.currentPlayer, this.playerTeams, this.playerShootSetup);
+
+  ///
+  /// FUNCTIONS
+  ///
 
   Offset relativePos(double x, double y) {
     //takes x & y between 0 and 1
@@ -35,6 +42,31 @@ class GamePainter extends CustomPainter {
     // takes x & y from game size and returns between 1 & 0
     return Offset(pos.dx / canvasSize.width, 1 - (pos.dy / canvasSize.height));
   }
+
+  List<double> getPlayerAnglesArray(List<List<double>> list) {
+    List<double> newList = List.empty(growable: true);
+    for (int i = 0; i < list.length; i++) newList.add(list[i][1]);
+    return newList;
+  }
+
+  double calcNearestHeight(List<double> terrainHeights, double relPos) {
+    //return nearest index int
+    double blockWidth = 1 / terrainHeights.length;
+    double blockRight;
+    int nearestIndex = 0;
+    for (int x = 0; x < terrainHeights.length; x++) {
+      blockRight = (x) * blockWidth;
+      if (relPos > blockRight) {
+        //located on left of block x+1
+        nearestIndex = x;
+      }
+    }
+    return terrainHeights[nearestIndex];
+  }
+
+  ///
+  /// SUBROUTINES
+  ///
 
   void drawPlayer(int colour, List<double> pos, Canvas canvas, int playerHealth,
       double angle, int player) {
@@ -70,12 +102,6 @@ class GamePainter extends CustomPainter {
     canvas.drawPoints(PointMode.lines, [cannonStart, cannonEnd], playerCircle);
     playerHealthText.paint(
         canvas, position.translate(-drawRadius, -drawRadius * 4));
-  }
-
-  List<double> getPlayerAnglesArray(List<List<double>> list) {
-    List<double> newList = List.empty(growable: true);
-    for (int i = 0; i < list.length; i++) newList.add(list[i][1]);
-    return newList;
   }
 
   void spawnInPlayers(
@@ -131,21 +157,6 @@ class GamePainter extends CustomPainter {
               : sY;
       drawProjectile(currentPlayer, [sX, sY], canvas);
     }
-  }
-
-  double calcNearestHeight(List<double> terrainHeights, double relPos) {
-    //return nearest index int
-    double blockWidth = 1 / terrainHeights.length;
-    double blockRight;
-    int nearestIndex = 0;
-    for (int x = 0; x < terrainHeights.length; x++) {
-      blockRight = (x) * blockWidth;
-      if (relPos > blockRight) {
-        //located on left of block x+1
-        nearestIndex = x;
-      }
-    }
-    return terrainHeights[nearestIndex];
   }
 
   void generateTerrain(List<double> terrainHeights, Canvas canvas) {
