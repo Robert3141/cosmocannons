@@ -104,7 +104,7 @@ const double ySF = 1 / 1000;
 const double animationSpeed = 3;
 const double playerPadding = 0.001;
 const double blastRadius = 0.01;
-const double blastDamage = -20;
+const double blastDamage = -40;
 const double defaultPlayerHealth = 100;
 const double playerRadius = 10;
 
@@ -143,7 +143,7 @@ const int defualtPlayerAmount = 2;
 const int terrainRowsToRender = 50;
 const int terrainColumnsToRender = 50;
 const int frameLengthMs = 16;
-const int maxFlightLength = 10;
+const int maxFlightLength = 20;
 const int checkDoneMs = 100;
 
 const List<int> playerTeams = [0, 1, 2, 3];

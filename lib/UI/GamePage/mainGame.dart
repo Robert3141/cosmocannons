@@ -172,9 +172,13 @@ class _MainGamePageState extends State<MainGamePage> {
     double startX = globals.turretPos[playerInt][0];
     double startY = globals.turretPos[playerInt][1];
     double timeSec = 0;
+    double distanceToPlayer = 1;
+    double distanceToPlayerX;
+    double distanceToPlayerY;
     bool hitPlayer = false;
     Timer animationTimer;
     List<double> impactPos = globals.locationInvisible;
+    List<double> playerCenter;
 
     //render correct amount of time
     animationTimer =
@@ -201,8 +205,20 @@ class _MainGamePageState extends State<MainGamePage> {
       //hit player?
       hitPlayer = false;
       for (int p = 0; p < amountOfPlayers; p++) {
-        if (checkInRadius([sX, sY], globals.playerPos[p], globals.blastRadius))
-          hitPlayer = true;
+        playerCenter = globals.playerPos[p].toList();
+        playerCenter[1] += globals.blastRadius;
+        if (checkInRadius([sX, sY], playerCenter, globals.blastRadius)) {
+          distanceToPlayerX = playerCenter[0] - sX;
+          distanceToPlayerY = playerCenter[1] - sY;
+          if (distanceToPlayer >
+              sqrt(distanceToPlayerX * distanceToPlayerX +
+                  distanceToPlayerY * distanceToPlayerY)) {
+            distanceToPlayer = sqrt(distanceToPlayerX * distanceToPlayerX +
+                distanceToPlayerY * distanceToPlayerY);
+          } else {
+            hitPlayer = true;
+          }
+        }
       }
 
       //stop when done
@@ -236,17 +252,17 @@ class _MainGamePageState extends State<MainGamePage> {
     for (int i = 0; i < amountOfPlayers; i++) {
       //only check for players not in team
       if (playerTeams[i] != currentPlayerTeam) {
-        if (checkInRadius(
-            impactPos, globals.playerPos[i], globals.blastRadius)) {
-          //centre of player
-          centreOfPlayer = globals.playerPos[i];
-          centreOfPlayer[1] += globals.blastRadius;
+        //centre of player
+        centreOfPlayer = globals.playerPos[i].toList();
+        centreOfPlayer[1] += globals.blastRadius;
 
+        if (checkInRadius(impactPos, centreOfPlayer, globals.blastRadius)) {
           //distance from blast radius
           dx = centreOfPlayer[0] - impactPos[0];
           dy = centreOfPlayer[1] - impactPos[1];
           distanceOfRadius =
-              1 - (sqrt(dx * dx + dy * dy) / globals.blastRadius);
+              1 - (sqrt(dx * dx + dy * dy) / (globals.blastRadius * 2));
+          print(distanceOfRadius);
 
           //reduce player health
           globals.playerHealth[i] += globals.blastDamage * distanceOfRadius;
@@ -321,8 +337,8 @@ class _MainGamePageState extends State<MainGamePage> {
       List<double> item, List<double> hitbox, double hitboxRadius) {
     return item[0] > hitbox[0] - hitboxRadius &&
         item[0] < hitbox[0] + hitboxRadius &&
-        item[1] > hitbox[1] &&
-        item[1] < hitbox[1] + 2 * hitboxRadius;
+        item[1] > hitbox[1] - hitboxRadius &&
+        item[1] < hitbox[1] + hitboxRadius;
   }
 
   void gameResume() async {
