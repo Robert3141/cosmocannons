@@ -116,17 +116,6 @@ class _MainGamePageState extends State<MainGamePage> {
     }
   }
 
-  List<double> solveQuadratic(double a, double b, double c) {
-    double discriminant = b * b - (4 * a * c);
-    if (discriminant >= 0) {
-      double x1 = (-b + sqrt(discriminant)) / (2 * a);
-      double x2 = (-b - sqrt(discriminant)) / (2 * a);
-      return [x1, x2];
-    } else {
-      return null;
-    }
-  }
-
   void playerShootTap() {
     //local variables
     double intensity = lastFireSetup[currentPlayer][0];
@@ -183,18 +172,9 @@ class _MainGamePageState extends State<MainGamePage> {
     double startX = globals.turretPos[playerInt][0];
     double startY = globals.turretPos[playerInt][1];
     double timeSec = 0;
-    /*double t;
-    List<double> levelTime;*/
+    bool hitPlayer = false;
     Timer animationTimer;
     List<double> impactPos = globals.locationInvisible;
-
-    //calulate time taken for level firing
-    /*levelTime = solveQuadratic(0.5 * aY, uY, -sY) ?? [0, 0];
-    t = levelTime[0] <= 0
-        ? levelTime[1] <= 0
-            ? 0
-            : levelTime[1]
-        : levelTime[0];*/
 
     //render correct amount of time
     animationTimer =
@@ -214,17 +194,21 @@ class _MainGamePageState extends State<MainGamePage> {
         globals.projectilePos = [sX, sY];
       });
 
-      //stop when done
+      //hit terrain?
       terrainHeight = GamePainter(currentPlayer, playerTeams, lastFireSetup)
           .calcNearestHeight(gameMap, sX);
-      if (terrainHeight >= sY) {
+
+      //hit player?
+      hitPlayer = false;
+      for (int p = 0; p < amountOfPlayers; p++) {
+        if (checkInRadius([sX, sY], globals.playerPos[p], globals.blastRadius))
+          hitPlayer = true;
+      }
+
+      //stop when done
+      if (terrainHeight >= sY || hitPlayer) {
         timer.cancel();
       }
-      // stop if going to take too long!
-      /*if (t > globals.maxFlightLength) {
-        globals.projectilePos = globals.locationInvisible;
-        timer.cancel();
-      }*/
     });
 
     //wait until flight over or long flight
@@ -243,6 +227,10 @@ class _MainGamePageState extends State<MainGamePage> {
     //local vars
     int currentPlayerTeam = playerTeams[playerInt];
     int amountRemaining = 0;
+    double dx;
+    double dy;
+    double distanceOfRadius;
+    List<double> centreOfPlayer;
 
     //check for all players
     for (int i = 0; i < amountOfPlayers; i++) {
@@ -250,8 +238,18 @@ class _MainGamePageState extends State<MainGamePage> {
       if (playerTeams[i] != currentPlayerTeam) {
         if (checkInRadius(
             impactPos, globals.playerPos[i], globals.blastRadius)) {
+          //centre of player
+          centreOfPlayer = globals.playerPos[i];
+          centreOfPlayer[1] += globals.blastRadius;
+
+          //distance from blast radius
+          dx = centreOfPlayer[0] - impactPos[0];
+          dy = centreOfPlayer[1] - impactPos[1];
+          distanceOfRadius =
+              1 - (sqrt(dx * dx + dy * dy) / globals.blastRadius);
+
           //reduce player health
-          globals.playerHealth[i] += globals.blastDamage;
+          globals.playerHealth[i] += globals.blastDamage * distanceOfRadius;
         }
       }
 
@@ -323,8 +321,8 @@ class _MainGamePageState extends State<MainGamePage> {
       List<double> item, List<double> hitbox, double hitboxRadius) {
     return item[0] > hitbox[0] - hitboxRadius &&
         item[0] < hitbox[0] + hitboxRadius &&
-        item[1] > hitbox[1] - hitboxRadius &&
-        item[1] < hitbox[1] + hitboxRadius;
+        item[1] > hitbox[1] &&
+        item[1] < hitbox[1] + 2 * hitboxRadius;
   }
 
   void gameResume() async {
