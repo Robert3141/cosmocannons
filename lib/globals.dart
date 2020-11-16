@@ -66,6 +66,7 @@ const List<String> playerAmounts = ["2", "3", "4"];
 const List<String> shootOptions = [shootIntensity, shootAngle];
 const List<String> winningPlayerIs = ["The winner is player ", " from team "];
 const List<String> playerNames = [host, client, client, client];
+const List<String> mapNames = ["Hills", "Desert", "Moon"];
 
 List<AssetImage> backgrounds = [
   AssetImage("assets/images/1.png"),
@@ -113,8 +114,8 @@ const List<double> locationInvisible = [-1, -1];
 const List<double> defaultFireSetup = [30, 90];
 
 const List<List<double>> terrainMaps = [
-  [0.47, 0.50, 0.52, 0.58, 0.67, 0.72, 0.69],
-  /*[
+  [
+    // Hills
     0.47,
     0.48,
     0.48,
@@ -136,7 +137,30 @@ const List<List<double>> terrainMaps = [
     0.69,
     0.69,
     0.53
-  ]*/
+  ],
+  [
+    // Desert
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5
+  ]
 ];
 
 const int maxLANPlayers = 4;
@@ -183,6 +207,7 @@ List<List<double>> turretPos;
 
 List<double> projectilePos;
 List<double> playerHealth;
+List<double> currentMap;
 
 List<List<Offset>> terrainCacheLocation;
 

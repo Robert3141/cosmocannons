@@ -16,13 +16,15 @@ class MainGamePage extends StatefulWidget {
       Key key,
       this.title = "",
       this.type = globals.GameType.multiLocal,
-      this.resumed = false})
+      this.resumed = false,
+      this.mapNo = 0})
       : super(key: key);
 
   final String title;
   final globals.GameType type;
   final List<int> playerTeams;
   final bool resumed;
+  final int mapNo;
 
   @override
   _MainGamePageState createState() {
@@ -45,7 +47,6 @@ class _MainGamePageState extends State<MainGamePage> {
   bool movedPlayer = false;
   BuildContext pageContext;
   List<int> playerTeams;
-  List<double> gameMap = globals.terrainMaps[0];
   List<List<double>> lastFireSetup;
   TapDownDetails tapDetails;
 
@@ -95,7 +96,7 @@ class _MainGamePageState extends State<MainGamePage> {
 
       //hit terrain?
       terrainHeight = GamePainter(currentPlayer, playerTeams, lastFireSetup)
-          .calcNearestHeight(gameMap, sX);
+          .calcNearestHeight(globals.currentMap, sX);
 
       //hit player?
       hitPlayer = false;
@@ -271,7 +272,7 @@ class _MainGamePageState extends State<MainGamePage> {
               ? 0
               : playerX;
       playerY = GamePainter(currentPlayer, playerTeams, lastFireSetup)
-              .calcNearestHeight(gameMap, playerX) +
+              .calcNearestHeight(globals.currentMap, playerX) +
           globals.playerPadding;
       setState(() {
         movedPlayer = true;
@@ -387,7 +388,8 @@ class _MainGamePageState extends State<MainGamePage> {
       amountOfPlayers = await UI.dataLoad(globals.keyAmountOfPlayers, "int");
       currentPlayer = await UI.dataLoad(globals.keyCurrentPlayer, "int");
       thisPlayer = await UI.dataLoad(globals.keyThisPlayer, "int");
-      gameMap = await UI.dataLoad(globals.keyGameMap, "List<double>");
+      globals.currentMap =
+          await UI.dataLoad(globals.keyGameMap, "List<double>");
       lastFireSetup =
           await UI.dataLoad(globals.keyLastFireSetup, "List<List<double>>");
       playerTeams = widget.playerTeams;
@@ -412,6 +414,7 @@ class _MainGamePageState extends State<MainGamePage> {
       currentPlayer = widget.type.playerNumber;
       playerTeams = widget.playerTeams;
       thisPlayer = currentPlayer;
+      globals.currentMap = globals.terrainMaps[widget.mapNo];
 
       //not start anymore
       startOfGame = false;
@@ -466,7 +469,7 @@ class _MainGamePageState extends State<MainGamePage> {
       await UI.dataStore(globals.keyCurrentPlayer, currentPlayer);
       await UI.dataStore(globals.keyThisPlayer, thisPlayer);
       await UI.dataStore(globals.keyPlayerTeams, playerTeams);
-      await UI.dataStore(globals.keyGameMap, gameMap);
+      await UI.dataStore(globals.keyGameMap, globals.currentMap);
       await UI.dataStore(globals.keyLastFireSetup, lastFireSetup);
       await UI.dataStore(globals.keyGameType, widget.type.string);
       await UI.dataStore(globals.keyMovedPlayer, movedPlayer);

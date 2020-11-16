@@ -245,7 +245,7 @@ class GamePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     canvasSize = size;
-    List<double> gameMap = globals.terrainMaps[0];
+    List<double> gameMap = globals.currentMap;
 
     //render terrain
     if (globals.firstRender) {
