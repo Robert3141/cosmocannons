@@ -159,14 +159,14 @@ class GamePainter extends CustomPainter {
     }
   }
 
-  void generateTerrain(List<double> terrainHeights, Canvas canvas) {
+  void generateTerrain(List<double> terrainHeights, Canvas canvas, int mapNo) {
     int xAmount = terrainHeights.length;
     int yAmount = globals.terrainColumnsToRender;
     int red;
     int blue;
     int green;
     int minFractionFloor;
-    List<Color> colors = globals.terrainColors;
+    List<Color> colors = globals.terrainColors[mapNo];
     Color blockColor;
     Color colorAbove;
     Color colorBelow;
@@ -249,7 +249,7 @@ class GamePainter extends CustomPainter {
 
     //render terrain
     if (globals.firstRender) {
-      generateTerrain(gameMap, canvas);
+      generateTerrain(gameMap, canvas, globals.mapNo);
     } else {
       //use dirty canvas:
       for (int i = 0; i < globals.terrainCacheLocation.length; i++) {

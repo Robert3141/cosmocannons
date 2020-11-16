@@ -17,7 +17,7 @@ class MainGamePage extends StatefulWidget {
       this.title = "",
       this.type = globals.GameType.multiLocal,
       this.resumed = false,
-      this.mapNo = 0})
+      this.mapNo = globals.defaultMap})
       : super(key: key);
 
   final String title;
@@ -35,7 +35,6 @@ class MainGamePage extends StatefulWidget {
 
 class _MainGamePageState extends State<MainGamePage> {
   //locals
-  //int currentPlayer = 0;
   double zoom = globals.defaultZoom;
   int amountOfPlayers;
   int currentPlayer;
@@ -385,6 +384,7 @@ class _MainGamePageState extends State<MainGamePage> {
           await UI.dataLoad(globals.keyPlayerPos, "List<List<double>>");
       globals.playerHealth =
           await UI.dataLoad(globals.keyPlayerHealth, "List<double>");
+      globals.mapNo = await UI.dataLoad(globals.keyMapNo, "int");
       amountOfPlayers = await UI.dataLoad(globals.keyAmountOfPlayers, "int");
       currentPlayer = await UI.dataLoad(globals.keyCurrentPlayer, "int");
       thisPlayer = await UI.dataLoad(globals.keyThisPlayer, "int");
@@ -414,6 +414,7 @@ class _MainGamePageState extends State<MainGamePage> {
       currentPlayer = widget.type.playerNumber;
       playerTeams = widget.playerTeams;
       thisPlayer = currentPlayer;
+      globals.mapNo = widget.mapNo;
       globals.currentMap = globals.terrainMaps[widget.mapNo];
 
       //not start anymore
@@ -465,6 +466,7 @@ class _MainGamePageState extends State<MainGamePage> {
       await UI.dataStore(globals.keySavedGame, true);
       await UI.dataStore(globals.keyPlayerPos, globals.playerPos);
       await UI.dataStore(globals.keyPlayerHealth, globals.playerHealth);
+      await UI.dataStore(globals.keyMapNo, globals.mapNo);
       await UI.dataStore(globals.keyAmountOfPlayers, amountOfPlayers);
       await UI.dataStore(globals.keyCurrentPlayer, currentPlayer);
       await UI.dataStore(globals.keyThisPlayer, thisPlayer);

@@ -16,6 +16,7 @@ class LocalMultiPage extends StatefulWidget {
 class _LocalMultiPageState extends State<LocalMultiPage> {
   //locals
   int amountOfPlayers = globals.defualtPlayerAmount;
+  int mapSelected = globals.defaultMap;
   List<int> playerTeams = globals.playerTeams;
   //functions
   void beginGame() {
@@ -24,7 +25,7 @@ class _LocalMultiPageState extends State<LocalMultiPage> {
     for (int i = 0; i < amountOfPlayers; i++) {
       playerTeams.add(i);
     }
-    UI.startNewPage(context, playerTeams);
+    UI.startNewPage(context, playerTeams, chosenMap: mapSelected);
   }
 
   //build UI
@@ -48,7 +49,16 @@ class _LocalMultiPageState extends State<LocalMultiPage> {
                     });
                   },
                   context: context),
-              UI.halfButton(onTap: () {}, context: context, enabled: false)
+              UI.optionToggle(
+                  title: globals.mapChosen,
+                  selectedInt: mapSelected,
+                  items: globals.mapNames,
+                  onTap: (int selected) {
+                    setState(() {
+                      mapSelected = selected;
+                    });
+                  },
+                  context: context)
             ],
           ),
           Container(

@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:cosmocannons/mapData.dart' as maps;
 import 'package:cosmocannons/UI/globalUIElements.dart';
 
 /// CONSTANTS
@@ -46,6 +47,7 @@ const String saving = "Saving . . .";
 const String loading = "Loading . . .";
 const String resumeGame = "Resume Game";
 const String errorOccurred = "An error occurred!\n Details: ";
+const String mapChosen = "Selected Map";
 
 const String keyMusic = "music"; //bool
 const String keyVolume = "volume"; //bool
@@ -60,6 +62,7 @@ const String keyGameMap = "gameMap"; //List<double>
 const String keyLastFireSetup = "lastFireSetup"; //List<List<double>>
 const String keyGameType = "gameType"; //GameType
 const String keyMovedPlayer = "movedPlayer"; //bool
+const String keyMapNo = "mapNo"; //int
 
 const List<String> defaultTeamNames = ["Red", "Green", "Blue", "Yellow"];
 const List<String> playerAmounts = ["2", "3", "4"];
@@ -113,55 +116,7 @@ const double playerRadius = 10;
 const List<double> locationInvisible = [-1, -1];
 const List<double> defaultFireSetup = [30, 90];
 
-const List<List<double>> terrainMaps = [
-  [
-    // Hills
-    0.47,
-    0.48,
-    0.48,
-    0.50,
-    0.51,
-    0.52,
-    0.52,
-    0.54,
-    0.56,
-    0.58,
-    0.61,
-    0.64,
-    0.67,
-    0.69,
-    0.70,
-    0.72,
-    0.71,
-    0.72,
-    0.69,
-    0.69,
-    0.53
-  ],
-  [
-    // Desert
-    0.5,
-    0.5,
-    0.5,
-    0.5,
-    0.5,
-    0.5,
-    0.5,
-    0.5,
-    0.5,
-    0.5,
-    0.5,
-    0.5,
-    0.5,
-    0.5,
-    0.5,
-    0.5,
-    0.5,
-    0.5,
-    0.5,
-    0.5
-  ]
-];
+const List<List<double>> terrainMaps = [maps.hills, maps.desert, maps.moon];
 
 const int maxLANPlayers = 4;
 const int defualtPlayerAmount = 2;
@@ -170,6 +125,7 @@ const int terrainColumnsToRender = 50;
 const int frameLengthMs = 16;
 const int maxFlightLength = 20;
 const int checkDoneMs = 100;
+const int defaultMap = 0;
 
 const List<int> playerTeams = [0, 1, 2, 3];
 
@@ -189,10 +145,27 @@ const List<Color> teamColors = [
   Colors.blue,
   Colors.yellow
 ];
-const List<Color> terrainColors = [
-  Color.fromRGBO(33, 33, 33, terrainOpacity), //grey
-  Color.fromRGBO(101, 67, 33, terrainOpacity), //brown
-  Color.fromRGBO(0, 128, 0, terrainOpacity) //green
+const List<List<Color>> terrainColors = [
+  [
+    // hills
+    Color.fromRGBO(33, 33, 33, terrainOpacity), //grey
+    Color.fromRGBO(101, 67, 33, terrainOpacity), //brown
+    Color.fromRGBO(0, 128, 0, terrainOpacity) //green
+  ],
+  [
+    // desert
+    Color.fromRGBO(193, 154, 107, terrainOpacity), //camel
+    Color.fromRGBO(194, 178, 128, terrainOpacity), //sand
+    Color.fromRGBO(236, 226, 198, terrainOpacity) //pearl lusta
+  ],
+  [
+    // moon
+    Color.fromRGBO(125, 126, 126, terrainOpacity), //grey
+    Color.fromRGBO(161, 132, 132, terrainOpacity), //maroon
+    Color.fromRGBO(191, 139, 139, terrainOpacity), //pink
+    Color.fromRGBO(204, 142, 127, terrainOpacity), //orange
+    Color.fromRGBO(193, 140, 122, terrainOpacity), //brown
+  ],
 ];
 
 /// VARIABLES
@@ -201,6 +174,8 @@ bool firstRender = true;
 bool popup = false;
 bool playMusic = true;
 bool playAudio = true;
+
+int mapNo;
 
 List<List<double>> playerPos;
 List<List<double>> turretPos;

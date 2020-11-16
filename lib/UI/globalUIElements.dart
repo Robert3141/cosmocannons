@@ -328,12 +328,14 @@ class UI {
       {StatefulWidget newPage,
       Alignment alignment = Alignment.bottomCenter,
       globals.GameType type = globals.GameType.multiLocal,
-      bool resumed = false}) {
+      bool resumed = false,
+      chosenMap = globals.defaultMap}) {
     if (newPage == null)
       newPage = MainGamePage(
         playerTeams: playerTeams,
         type: type,
         resumed: resumed,
+        mapNo: chosenMap,
       );
     Navigator.of(context).pushAndRemoveUntil(
         PageTransition(
