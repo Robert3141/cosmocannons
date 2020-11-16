@@ -463,19 +463,26 @@ class _MainGamePageState extends State<MainGamePage> {
       });
 
       //save the variables
-      await UI.dataStore(globals.keySavedGame, true);
-      await UI.dataStore(globals.keyPlayerPos, globals.playerPos);
-      await UI.dataStore(globals.keyPlayerHealth, globals.playerHealth);
-      await UI.dataStore(globals.keyMapNo, globals.mapNo);
-      await UI.dataStore(globals.keyAmountOfPlayers, amountOfPlayers);
-      await UI.dataStore(globals.keyCurrentPlayer, currentPlayer);
-      await UI.dataStore(globals.keyThisPlayer, thisPlayer);
-      await UI.dataStore(globals.keyPlayerTeams, playerTeams);
-      await UI.dataStore(globals.keyGameMap, globals.currentMap);
-      await UI.dataStore(globals.keyLastFireSetup, lastFireSetup);
-      await UI.dataStore(globals.keyGameType, widget.type.string);
-      await UI.dataStore(globals.keyMovedPlayer, movedPlayer);
-
+      try {
+        await UI.dataStore(globals.keySavedGame, true);
+        await UI.dataStore(globals.keyPlayerPos, globals.playerPos);
+        await UI.dataStore(globals.keyPlayerHealth, globals.playerHealth);
+        await UI.dataStore(globals.keyMapNo, globals.mapNo);
+        await UI.dataStore(globals.keyAmountOfPlayers, amountOfPlayers);
+        await UI.dataStore(globals.keyCurrentPlayer, currentPlayer);
+        await UI.dataStore(globals.keyThisPlayer, thisPlayer);
+        await UI.dataStore(globals.keyPlayerTeams, playerTeams);
+        await UI.dataStore(globals.keyGameMap, globals.currentMap);
+        await UI.dataStore(globals.keyLastFireSetup, lastFireSetup);
+        await UI.dataStore(globals.keyGameType, widget.type.string);
+        await UI.dataStore(globals.keyMovedPlayer, movedPlayer);
+      } on ArgumentError catch (e) {
+        if (e.name == "minified") {
+          await UI.dataStore(globals.keySavedGame, false);
+        } else {
+          throw ("One of data being stored is not correct type");
+        }
+      }
       //close saving popup
       setState(() {
         Navigator.of(context).pop();
@@ -536,7 +543,8 @@ class _MainGamePageState extends State<MainGamePage> {
   void outputError(dynamic e) {
     String output = globals.errorOccurred + e.toString();
     setState(() {
-      UI.textDisplayPopup(context, output);
+      UI.textDisplayPopup(context, output,
+          style: TextStyle(color: globals.textColor));
     });
   }
 

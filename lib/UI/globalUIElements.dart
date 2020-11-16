@@ -436,7 +436,8 @@ class UI {
   static Future textDisplayPopup(BuildContext context, String text,
       {Function(bool confirm) onFinish,
       String title = "",
-      bool dismissable = true}) {
+      bool dismissable = true,
+      TextStyle style}) {
     //local vars
     List<Widget> children = [];
 
@@ -466,7 +467,7 @@ class UI {
         padding: EdgeInsets.symmetric(vertical: UI.getPaddingSize(context)),
         child: Text(
           text,
-          style: UI.defaultText(false),
+          style: style ?? UI.defaultText(false),
           textAlign: TextAlign.center,
         )));
 
@@ -612,11 +613,13 @@ class UI {
         ));
   }
 
-  static Future dataStore(String key, dynamic value) async =>
-      await ExtendedPrefs().dataStore(key, value);
+  static Future dataStore(String key, dynamic value) async {
+    await ExtendedPrefs(debug: true).dataStore(key, value);
+  }
 
   static Future<dynamic> dataLoad(String key, String type) async {
-    dynamic result = await ExtendedPrefs().dataLoad(key, type);
+    dynamic result = await ExtendedPrefs(debug: true).dataLoad(key, type);
+    print("key: $key type: " + result.runtimeType.toString() + " val: $result");
     switch (type) {
       case "List<List<double>>":
         return List<List<double>>.from(result);
