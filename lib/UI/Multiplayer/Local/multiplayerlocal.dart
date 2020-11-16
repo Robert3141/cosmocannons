@@ -58,6 +58,8 @@ class _LocalMultiPageState extends State<LocalMultiPage> {
                       mapSelected = selected;
                     });
                   },
+                  fillColors: List<Color>.generate(globals.terrainColors.length,
+                      (index) => globals.terrainColors[index].last),
                   context: context)
             ],
           ),

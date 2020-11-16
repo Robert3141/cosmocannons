@@ -349,6 +349,7 @@ class UI {
     @required Function(int) onTap,
     @required BuildContext context,
     List<dynamic> items,
+    List<Color> fillColors,
     double width,
     double height,
     double heightMultiplier = 1,
@@ -404,11 +405,15 @@ class UI {
                                   ? items.length == 2
                                       //choose boolean input
                                       ? selectedBool == (selectedItem == 1)
-                                          ? selectedItemFill
+                                          ? fillColors != null
+                                              ? fillColors[selectedItem]
+                                              : selectedItemFill
                                           : defaultFill
                                       //choose integer input
                                       : selectedItem == selectedInt
-                                          ? selectedItemFill
+                                          ? fillColors != null
+                                              ? fillColors[selectedItem]
+                                              : selectedItemFill
                                           : defaultFill
                                   : globals.buttonFill),
                           child: items[selectedItem].runtimeType == String
