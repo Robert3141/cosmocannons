@@ -480,6 +480,7 @@ class _MainGamePageState extends State<MainGamePage> {
         if (e.name == "minified") {
           await UI.dataStore(globals.keySavedGame, false);
         } else {
+          print("$e");
           throw ("One of data being stored is not correct type");
         }
       }

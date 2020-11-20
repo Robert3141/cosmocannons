@@ -37,10 +37,10 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
   @override
   Widget build(BuildContext context) {
     //locals
-    var platform = Theme.of(context).platform;
-    bool kIsAndroid = platform == TargetPlatform.android;
-    bool kIsIOS = platform == TargetPlatform.iOS;
-    bool kIsMobile = kIsAndroid || kIsIOS;
+    //var platform = Theme.of(context).platform;
+    //bool kIsAndroid = platform == TargetPlatform.android;
+    //bool kIsIOS = platform == TargetPlatform.iOS;
+    bool kIsMobile = false; //kIsAndroid || kIsIOS; TODO: Multiplayer LAN
 
     Scaffold page = UI.scaffoldWithBackground(
       context: context,

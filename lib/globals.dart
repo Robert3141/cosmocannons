@@ -48,6 +48,8 @@ const String loading = "Loading . . .";
 const String resumeGame = "Resume Game";
 const String errorOccurred = "An error occurred!\n Details: ";
 const String mapChosen = "Selected Map";
+const String warningMapOverwrite =
+    "WARNING! About to overwite previous save data";
 
 const String keyMusic = "music"; //bool
 const String keyVolume = "volume"; //bool

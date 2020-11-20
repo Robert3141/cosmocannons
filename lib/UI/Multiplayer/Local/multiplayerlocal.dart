@@ -19,6 +19,23 @@ class _LocalMultiPageState extends State<LocalMultiPage> {
   int mapSelected = globals.defaultMap;
   List<int> playerTeams = globals.playerTeams;
   //functions
+  void checkStartGame() async {
+    //check save
+    bool savedGame = await UI.dataLoad(globals.keySavedGame, "bool") ?? false;
+
+    if (savedGame) {
+      setState(() {
+        UI.dataInputPopup(context, [null],
+            notInput: true,
+            data: [globals.warningMapOverwrite], onFinish: (bool b) {
+          if (b) beginGame();
+        });
+      });
+    } else {
+      beginGame();
+    }
+  }
+
   void beginGame() {
     //add players to player teams
     playerTeams = List.empty(growable: true);
@@ -67,7 +84,7 @@ class _LocalMultiPageState extends State<LocalMultiPage> {
             height: UI.getPaddingSize(context),
           ),
           UI.halfButton(
-              text: globals.beginGame, onTap: beginGame, context: context),
+              text: globals.beginGame, onTap: checkStartGame, context: context),
         ],
       ),
     ], context: context, backgroundNo: 3);

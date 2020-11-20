@@ -434,22 +434,12 @@ class UI {
           ]));
 
   static Future textDisplayPopup(BuildContext context, String text,
-      {Function(bool confirm) onFinish,
-      String title = "",
-      bool dismissable = true,
-      TextStyle style}) {
+      {String title = "", bool dismissable = true, TextStyle style}) {
     //local vars
     List<Widget> children = [];
 
     //popup
     globals.popup = true;
-
-    //make sure suitable
-    Function tempFinish = onFinish ?? (bool confirm) {};
-    onFinish = (bool confirm) {
-      globals.popup = false;
-      tempFinish(confirm);
-    };
 
     //title
     children.add(Container(
@@ -470,13 +460,14 @@ class UI {
           style: style ?? UI.defaultText(false),
           textAlign: TextAlign.center,
         )));
-
     return showDialog(
       barrierColor: globals.disabledBorder,
       barrierDismissible: true,
       context: context,
       builder: (BuildContext context) =>
-          UI.gamePopup(children, context, onFinish, dismissable, []),
+          UI.gamePopup(children, context, (bool b) {
+        return;
+      }, dismissable, []),
     );
   }
 
@@ -486,6 +477,7 @@ class UI {
       List<bool> numericData = const [false],
       List<String> data = const [""],
       String title = "",
+      bool notInput = false,
       bool barrierDismissable = true,
       Function(bool confirm) onFinish}) {
     List<Widget> children = [];
@@ -519,14 +511,16 @@ class UI {
       children.add(Column(
         children: [
           UI.textWidget(dataTitle[i]),
-          UI.largeButton(
-            numericData: numericData[i],
-            height: globals.smallHeight,
-            text: data[i],
-            onTap: dataChange[i],
-            context: context,
-            textField: true,
-          ),
+          notInput
+              ? UI.textWidget(data[i])
+              : UI.largeButton(
+                  numericData: numericData[i],
+                  height: globals.smallHeight,
+                  text: data[i],
+                  onTap: dataChange[i],
+                  context: context,
+                  textField: !notInput,
+                ),
           Container(
             height: UI.getPaddingSize(context),
           )
