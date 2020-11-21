@@ -88,7 +88,6 @@ class _LauncherPageState extends State<LauncherPage> {
     _versionString = "bonk ...";
 
     _savedGame = await UI.dataLoad(globals.keySavedGame, "bool") ?? false;
-
     setState(() {
       _versionString = _temp;
       _resumeGame = _savedGame;

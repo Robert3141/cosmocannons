@@ -608,22 +608,12 @@ class UI {
   }
 
   static Future dataStore(String key, dynamic value) async {
-    await ExtendedPrefs(debug: true).dataStore(key, value);
+    await ExtendedPrefs(debug: false).dataStore(key, value);
+    return;
   }
 
   static Future<dynamic> dataLoad(String key, String type) async {
-    dynamic result = await ExtendedPrefs(debug: true).dataLoad(key, type);
-    print("key: $key type: " + result.runtimeType.toString() + " val: $result");
-    switch (type) {
-      case "List<List<double>>":
-        return List<List<double>>.from(result);
-      case "List<double>":
-        return List<double>.from(result);
-      case "List<int>":
-        return List<int>.from(result);
-      default:
-        return result;
-    }
+    return await ExtendedPrefs(debug: false).dataLoad(key, type);
   }
 
   static Row settingsEntry(String key, List<IconData> icons, bool variable,
