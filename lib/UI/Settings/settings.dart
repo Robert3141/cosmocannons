@@ -35,27 +35,40 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 //VOLUME
                 UI.settingsEntry(
-                    globals.keyVolume,
-                    [Icons.volume_off_rounded, Icons.volume_up_rounded],
-                    globals.playAudio, (int i) {
-                  setState(() {
-                    globals.playAudio = i == 1;
-                    UI.dataStore(globals.keyVolume, globals.playAudio);
-                  });
-                }, context),
+                  globals.keyVolume,
+                  (int i) {
+                    setState(() {
+                      globals.playAudio = i == 1;
+                      UI.dataStore(globals.keyVolume, globals.playAudio);
+                    });
+                  },
+                  context,
+                  icons: [Icons.volume_off_rounded, Icons.volume_up_rounded],
+                  boolVar: globals.playAudio,
+                ),
                 Container(
                   height: UI.getPaddingSize(context),
                 ),
                 //MUSIC
-                UI.settingsEntry(
-                    globals.keyMusic,
-                    [Icons.music_off_rounded, Icons.music_note_rounded],
-                    globals.playMusic, (int i) {
+                UI.settingsEntry(globals.keyMusic, (int i) {
                   setState(() {
                     globals.playMusic = i == 1;
                     UI.dataStore(globals.keyMusic, globals.playMusic);
                   });
-                }, context),
+                }, context,
+                    icons: [Icons.music_off_rounded, Icons.music_note_rounded],
+                    boolVar: globals.playMusic),
+                //RENDER HEIGHT
+                UI.settingsEntry(globals.keyRenderHeight, (int i) {
+                  setState(() {
+                    globals.terrainColumnsToRender = globals.mapQualitySizes[i];
+                    UI.dataStore(globals.keyRenderHeight,
+                        globals.terrainColumnsToRender);
+                  });
+                }, context,
+                    texts: globals.mapQualityString,
+                    ints: globals.mapQualitySizes,
+                    intVar: globals.terrainColumnsToRender)
               ],
             ),
           ),

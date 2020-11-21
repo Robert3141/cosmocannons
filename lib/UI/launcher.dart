@@ -79,6 +79,11 @@ class _LauncherPageState extends State<LauncherPage> {
         await UI.dataLoad(globals.keyVolume, "bool") ?? globals.playAudio;
     globals.playMusic =
         await UI.dataLoad(globals.keyMusic, "bool") ?? globals.playMusic;
+    try {
+      globals.terrainColumnsToRender =
+          await UI.dataLoad(globals.keyRenderHeight, "int") ??
+              globals.terrainColumnsToRender;
+    } catch (e) {}
   }
 
   void showResumeGame() async {

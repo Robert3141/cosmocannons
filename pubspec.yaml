@@ -30,7 +30,9 @@ dependencies:
   client_server_lan: ^1.1.0
   wifi: ^0.1.5
   shared_preferences: ^0.5.12+2
-  shared_preferences_moretypes: ^2.3.0
+  shared_preferences_moretypes: ^2.3.1
+  #shared_preferences_moretypes:
+  #  path: ../shared_preferences_moretypes
 
 dev_dependencies:
   flutter_test:

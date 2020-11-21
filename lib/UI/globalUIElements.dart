@@ -612,22 +612,39 @@ class UI {
     return;
   }
 
-  static Future<dynamic> dataLoad(String key, String type) async {
-    return await ExtendedPrefs(debug: false).dataLoad(key, type);
+  static Future<dynamic> dataLoad(String key, String type) async =>
+      await ExtendedPrefs(debug: false).dataLoad(key, type);
+
+  static int _position(List<int> list, int value) {
+    if (list != null) {
+      for (int i = 0; i < list.length; i++) {
+        if (list[i] == value) {
+          return i;
+        }
+      }
+      return 0;
+    } else
+      return 0;
   }
 
-  static Row settingsEntry(String key, List<IconData> icons, bool variable,
-          Function(int) onTap, BuildContext context) =>
+  static Row settingsEntry(
+          String key, Function(int) onTap, BuildContext context,
+          {List<IconData> icons,
+          bool boolVar,
+          List<String> texts,
+          List<int> ints,
+          int intVar}) =>
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           UI.textWidget(key),
           UI.optionToggle(
-              items: icons,
+              items: icons == null ? texts : icons,
               onTap: onTap,
               height: globals.iconSize * 2,
               context: context,
-              selectedBool: variable)
+              selectedBool: boolVar,
+              selectedInt: _position(ints, intVar))
         ],
       );
 }

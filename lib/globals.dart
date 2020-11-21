@@ -65,6 +65,7 @@ const String keyLastFireSetup = "lastFireSetup"; //List<List<double>>
 const String keyGameType = "gameType"; //GameType
 const String keyMovedPlayer = "movedPlayer"; //bool
 const String keyMapNo = "mapNo"; //int
+const String keyRenderHeight = "renderHeight"; //int
 
 const List<String> defaultTeamNames = ["Red", "Green", "Blue", "Yellow"];
 const List<String> playerAmounts = ["2", "3", "4"];
@@ -72,6 +73,7 @@ const List<String> shootOptions = [shootIntensity, shootAngle];
 const List<String> winningPlayerIs = ["The winner is player ", " from team "];
 const List<String> playerNames = [host, client, client, client];
 const List<String> mapNames = ["Hills", "Desert", "Moon"];
+const List<String> mapQualityString = ["Low", "Medium", "High"];
 
 List<AssetImage> backgrounds = [
   AssetImage("assets/images/1.png"),
@@ -123,13 +125,13 @@ const List<List<double>> terrainMaps = [maps.hills, maps.desert, maps.moon];
 const int maxLANPlayers = 4;
 const int defualtPlayerAmount = 2;
 const int terrainRowsToRender = 50;
-const int terrainColumnsToRender = 50;
 const int frameLengthMs = 16;
 const int maxFlightLength = 20;
 const int checkDoneMs = 100;
 const int defaultMap = 0;
 
 const List<int> playerTeams = [0, 1, 2, 3];
+const List<int> mapQualitySizes = [5, 25, 50];
 
 const Color buttonFill = Colors.black54;
 const Color buttonBorder = Colors.white38;
@@ -178,6 +180,7 @@ bool playMusic = true;
 bool playAudio = true;
 
 int mapNo;
+int terrainColumnsToRender = mapQualitySizes[1];
 
 List<List<double>> playerPos;
 List<List<double>> turretPos;
