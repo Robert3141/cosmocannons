@@ -2,11 +2,11 @@ library cosmocannons.globals;
 
 import 'dart:ui';
 import 'dart:math';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/mapData.dart' as maps;
 import 'package:cosmocannons/UI/globalUIElements.dart';
+import 'package:just_audio/just_audio.dart';
 
 /// CONSTANTS
 
@@ -172,6 +172,8 @@ const List<List<Color>> terrainColors = [
   ],
 ];
 
+const List<AudioSource>//TODO continue
+
 /// VARIABLES
 
 bool firstRender = true;
@@ -210,6 +212,8 @@ final TextPainter defaultTextPaint = TextPainter(
 final Paint defaultDrawPaint = Paint()
   ..strokeWidth = 0
   ..strokeCap = StrokeCap.butt;
+
+final player = AudioPlayer();
 
 /// DATA TYPES
 

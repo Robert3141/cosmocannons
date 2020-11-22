@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cosmocannons/UI/GamePage/mainGame.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cosmocannons/globals.dart' as globals;
@@ -647,4 +646,6 @@ class UI {
               selectedInt: _position(ints, intVar))
         ],
       );
+
+  static void startMusic() async {}
 }
