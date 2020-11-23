@@ -6,7 +6,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/mapData.dart' as maps;
 import 'package:cosmocannons/UI/globalUIElements.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 
 /// CONSTANTS
 
@@ -82,6 +82,15 @@ List<AssetImage> backgrounds = [
   AssetImage("assets/images/4.png"),
   AssetImage("assets/images/5.png"),
   AssetImage("assets/images/6.png"),
+];
+
+List<Audio> songs = [
+  Audio("assets/music/1.ogg"),
+  Audio("assets/music/2.ogg"),
+  Audio("assets/music/3.ogg"),
+  Audio("assets/music/4.ogg"),
+  Audio("assets/music/5.ogg"),
+  Audio("assets/music/6.ogg")
 ];
 
 const double smallWidth = 0.2;
@@ -172,8 +181,6 @@ const List<List<Color>> terrainColors = [
   ],
 ];
 
-const List<AudioSource>//TODO continue
-
 /// VARIABLES
 
 bool firstRender = true;
@@ -213,7 +220,7 @@ final Paint defaultDrawPaint = Paint()
   ..strokeWidth = 0
   ..strokeCap = StrokeCap.butt;
 
-final player = AudioPlayer();
+final AssetsAudioPlayer musicPlayer = AssetsAudioPlayer();
 
 /// DATA TYPES
 
