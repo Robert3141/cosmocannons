@@ -399,6 +399,9 @@ class _MainGamePageState extends State<MainGamePage> {
       startOfGame = false;
       globals.popup = false;
 
+      //play music
+      UI.playMusic();
+
       //rerender with new setup
       setState(() {
         loaded = true;
@@ -408,7 +411,7 @@ class _MainGamePageState extends State<MainGamePage> {
     }
   }
 
-  void gameStart() {
+  void gameStart() async {
     try {
       // get data from root
       currentPlayer = widget.type.playerNumber;
@@ -430,6 +433,9 @@ class _MainGamePageState extends State<MainGamePage> {
         globals.playerHealth.add(globals.defaultPlayerHealth);
         lastFireSetup.add(globals.defaultFireSetup.toList());
       }
+
+      //play music
+      UI.playMusic();
 
       //cancel popup
       globals.popup = false;
@@ -484,6 +490,10 @@ class _MainGamePageState extends State<MainGamePage> {
           throw ("One of data being stored is not correct type");
         }
       }
+
+      //stop music
+      await UI.stopMusic();
+
       //close saving popup
       setState(() {
         Navigator.of(context).pop();
@@ -547,6 +557,15 @@ class _MainGamePageState extends State<MainGamePage> {
       UI.textDisplayPopup(context, output,
           style: TextStyle(color: globals.textColor));
     });
+  }
+
+  @override
+  void dispose() {
+    //stop music
+    UI.stopMusic();
+
+    //dispose UI
+    super.dispose();
   }
 
   //build UI
@@ -650,6 +669,9 @@ class _MainGamePageState extends State<MainGamePage> {
                                     onTap: () {
                                       setState(() {
                                         globals.playMusic = !globals.playMusic;
+                                        globals.playMusic
+                                            ? UI.playMusic()
+                                            : UI.stopMusic();
                                         UI.dataStore(globals.keyMusic,
                                             globals.playMusic);
                                       });

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:math';
 import 'package:cosmocannons/UI/GamePage/mainGame.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cosmocannons/globals.dart' as globals;
@@ -8,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:shared_preferences_moretypes/shared_preferences_moretypes.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 
 class UI {
   // simplified methods to get the screen details
@@ -647,5 +650,40 @@ class UI {
         ],
       );
 
-  static void startMusic() async {}
+  static bool _supportedMusicPlatform = kIsWeb || Platform.isAndroid;
+
+  static Future playMusic() async {
+    if (_supportedMusicPlatform) {
+      globals.playMusic = await UI.dataLoad(globals.keyMusic, "bool") ?? true;
+      if (globals.playMusic && !globals.musicPlayer.isPlaying.value) {
+        globals.musicTrack = await UI.dataLoad(globals.keyMusicIndex, "int") ??
+            Random().nextInt(globals.songs.length - 1);
+        globals.musicSeek = await UI.dataLoad(globals.keyMusicSeek, "int") ?? 0;
+        await globals.musicPlayer.open(
+            Playlist(audios: globals.songs, startIndex: globals.musicTrack),
+            autoStart: false,
+            loopMode: LoopMode.playlist,
+            showNotification: false,
+            playInBackground: PlayInBackground.disabledPause,
+            respectSilentMode: true,
+            seek: Duration(milliseconds: globals.musicSeek));
+        await globals.musicPlayer.play();
+      } else
+        stopMusic();
+    }
+  }
+
+  static Future stopMusic() async {
+    if (_supportedMusicPlatform) {
+      if (globals.musicPlayer.isPlaying.value) {
+        globals.musicSeek =
+            globals.musicPlayer.currentPosition.value.inMilliseconds;
+        globals.musicTrack = globals.musicPlayer.current.value.index;
+        await UI.dataStore(globals.keyMusicSeek, globals.musicSeek);
+        await UI.dataStore(globals.keyMusicIndex, globals.musicTrack);
+      }
+      globals.musicPlayer.stop();
+      globals.musicPlayer = AssetsAudioPlayer();
+    }
+  }
 }

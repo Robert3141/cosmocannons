@@ -2,6 +2,7 @@ library cosmocannons.globals;
 
 import 'dart:ui';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/mapData.dart' as maps;
@@ -66,6 +67,8 @@ const String keyGameType = "gameType"; //GameType
 const String keyMovedPlayer = "movedPlayer"; //bool
 const String keyMapNo = "mapNo"; //int
 const String keyRenderHeight = "renderHeight"; //int
+const String keyMusicIndex = "musicIndex"; //int
+const String keyMusicSeek = "musicSeek"; //int
 
 const List<String> defaultTeamNames = ["Red", "Green", "Blue", "Yellow"];
 const List<String> playerAmounts = ["2", "3", "4"];
@@ -189,7 +192,9 @@ bool playMusic = true;
 bool playAudio = true;
 
 int mapNo;
-int terrainColumnsToRender = mapQualitySizes[1];
+int terrainColumnsToRender = kIsWeb ? mapQualitySizes[0] : mapQualitySizes[1];
+int musicSeek = 0;
+int musicTrack = Random().nextInt(songs.length - 1);
 
 List<List<double>> playerPos;
 List<List<double>> turretPos;
@@ -211,6 +216,8 @@ ScrollController gameScroller = ScrollController();
 
 FocusNode gameInputs = FocusNode();
 
+AssetsAudioPlayer musicPlayer = AssetsAudioPlayer();
+
 final TextPainter defaultTextPaint = TextPainter(
     text: TextSpan(style: UI.defaultText()),
     textAlign: TextAlign.center,
@@ -219,8 +226,6 @@ final TextPainter defaultTextPaint = TextPainter(
 final Paint defaultDrawPaint = Paint()
   ..strokeWidth = 0
   ..strokeCap = StrokeCap.butt;
-
-final AssetsAudioPlayer musicPlayer = AssetsAudioPlayer();
 
 /// DATA TYPES
 

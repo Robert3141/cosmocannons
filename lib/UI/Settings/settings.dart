@@ -58,6 +58,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 }, context,
                     icons: [Icons.music_off_rounded, Icons.music_note_rounded],
                     boolVar: globals.playMusic),
+                Container(
+                  height: UI.getPaddingSize(context),
+                ),
                 //RENDER HEIGHT
                 UI.settingsEntry(globals.keyRenderHeight, (int i) {
                   setState(() {
@@ -68,7 +71,10 @@ class _SettingsPageState extends State<SettingsPage> {
                 }, context,
                     texts: globals.mapQualityString,
                     ints: globals.mapQualitySizes,
-                    intVar: globals.terrainColumnsToRender)
+                    intVar: globals.terrainColumnsToRender),
+                Container(
+                  height: UI.getPaddingSize(context),
+                ),
               ],
             ),
           ),
