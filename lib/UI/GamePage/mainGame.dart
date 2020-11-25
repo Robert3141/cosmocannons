@@ -94,7 +94,7 @@ class _MainGamePageState extends State<MainGamePage> {
       });
 
       //hit terrain?
-      terrainHeight = GamePainter(currentPlayer, playerTeams, lastFireSetup)
+      terrainHeight = GlobalPainter(currentPlayer, playerTeams, lastFireSetup)
           .calcNearestHeight(globals.currentMap, sX);
 
       //hit player?
@@ -270,7 +270,7 @@ class _MainGamePageState extends State<MainGamePage> {
           : playerX < 0
               ? 0
               : playerX;
-      playerY = GamePainter(currentPlayer, playerTeams, lastFireSetup)
+      playerY = GlobalPainter(currentPlayer, playerTeams, lastFireSetup)
               .calcNearestHeight(globals.currentMap, playerX) +
           globals.playerPadding;
       setState(() {
@@ -579,6 +579,8 @@ class _MainGamePageState extends State<MainGamePage> {
         playersTurn = thisPlayer == currentPlayer;
         Color playerButtonColour =
             globals.teamColors[playerTeams[currentPlayer]] ?? globals.textColor;
+        Size canvasSize =
+            Size(UI.screenWidth(context) * zoom, UI.screenHeight(context));
         page = UI.scaffoldWithBackground(children: [
           Stack(
             alignment: Alignment.center,
@@ -608,11 +610,21 @@ class _MainGamePageState extends State<MainGamePage> {
                   onPanDown: (details) {},
                   onPanEnd: (details) {}, //TODO continue drag stuff
                   onPanCancel: () {},*/
-                    child: CustomPaint(
-                      size: Size(UI.screenWidth(context) * zoom,
-                          UI.screenHeight(context)),
-                      painter: GamePainter(
-                          currentPlayer, playerTeams, lastFireSetup),
+                    child: Stack(
+                      children: [
+                        //players and projectiles
+                        CustomPaint(
+                          size: canvasSize,
+                          painter: ObjectPainter(
+                              currentPlayer, playerTeams, lastFireSetup),
+                        ),
+                        //terrain
+                        CustomPaint(
+                          size: canvasSize,
+                          painter: GamePainter(
+                              currentPlayer, playerTeams, lastFireSetup),
+                        )
+                      ],
                     ),
                   ),
                 ),

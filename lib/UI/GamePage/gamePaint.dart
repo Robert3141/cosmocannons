@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:cosmocannons/UI/globalUIElements.dart';
 
-class GamePainter extends CustomPainter {
+class GlobalPainter extends CustomPainter {
   //locals
   Size canvasSize;
   List<List<double>> currentPlayerPos;
@@ -18,7 +18,7 @@ class GamePainter extends CustomPainter {
   /// CONSTRUCTORS
   ///
 
-  GamePainter(this.currentPlayer, this.playerTeams, this.playerShootSetup);
+  GlobalPainter(this.currentPlayer, this.playerTeams, this.playerShootSetup);
 
   ///
   /// FUNCTIONS
@@ -63,6 +63,37 @@ class GamePainter extends CustomPainter {
     }
     return terrainHeights[nearestIndex];
   }
+
+  ///
+  /// BUILD
+  ///
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvasSize = size;
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
+  }
+}
+
+class ObjectPainter extends GlobalPainter {
+  //locals
+  Size canvasSize;
+  List<List<double>> currentPlayerPos;
+  List<double> currentProjectilePos;
+  List<List<double>> playerShootSetup;
+  List<int> playerTeams;
+  int currentPlayer;
+
+  ///
+  /// CONSTRUCTORS
+  ///
+
+  ObjectPainter(this.currentPlayer, this.playerTeams, this.playerShootSetup)
+      : super(currentPlayer, playerTeams, playerShootSetup);
 
   ///
   /// SUBROUTINES
@@ -159,6 +190,39 @@ class GamePainter extends CustomPainter {
     }
   }
 
+  @override
+  void paint(Canvas canvas, Size size) {
+    super.paint(canvas, size);
+    List<double> gameMap = globals.currentMap;
+
+    spawnInPlayers(playerTeams, gameMap, canvas);
+    spawnProjectile(canvas);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return currentPlayerPos == globals.playerPos &&
+        currentProjectilePos == globals.projectilePos;
+  }
+}
+
+class GamePainter extends GlobalPainter {
+  ///
+  /// CONSTRUCTORS
+  ///
+
+  GamePainter(int currentPlayer, List<int> playerTeams,
+      List<List<double>> playerShootSetup)
+      : super(currentPlayer, playerTeams, playerShootSetup);
+
+  ///
+  /// FUNCTIONS
+  ///
+
+  ///
+  /// SUBROUTINES
+  ///
+
   void generateTerrain(List<double> terrainHeights, Canvas canvas, int mapNo) {
     int xAmount = terrainHeights.length;
     int yAmount = globals.terrainColumnsToRender;
@@ -244,7 +308,7 @@ class GamePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvasSize = size;
+    super.paint(canvas, size);
     List<double> gameMap = globals.currentMap;
 
     //render terrain
@@ -265,8 +329,6 @@ class GamePainter extends CustomPainter {
     }
 
     //place in characters
-    spawnInPlayers(playerTeams, gameMap, canvas);
-    spawnProjectile(canvas);
     globals.firstRender = false;
   }
 
