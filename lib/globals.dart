@@ -66,7 +66,7 @@ const String keyLastFireSetup = "lastFireSetup"; //List<List<double>>
 const String keyGameType = "gameType"; //GameType
 const String keyMovedPlayer = "movedPlayer"; //bool
 const String keyMapNo = "mapNo"; //int
-const String keyRenderHeight = "renderHeight"; //int
+const String keyRenderHeight = "graphics"; //int
 const String keyMusicIndex = "musicIndex"; //int
 const String keyMusicSeek = "musicSeek"; //int
 
