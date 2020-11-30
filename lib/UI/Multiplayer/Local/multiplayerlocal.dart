@@ -49,7 +49,10 @@ class _LocalMultiPageState extends State<LocalMultiPage> {
   @override
   Widget build(BuildContext context) {
     Scaffold page = UI.scaffoldWithBackground(children: [
-      UI.topTitle(titleText: globals.localMulti, context: context),
+      UI.topTitle(
+          titleText: globals.localMulti,
+          context: context,
+          helpText: globals.helpMultiplayerLocal),
       Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [

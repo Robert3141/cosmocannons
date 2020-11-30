@@ -22,7 +22,10 @@ class _SingleplayerPageState extends State<SingleplayerPage> {
   @override
   Widget build(BuildContext context) {
     Scaffold page = UI.scaffoldWithBackground(children: [
-      UI.topTitle(titleText: globals.singleplayer, context: context),
+      UI.topTitle(
+          titleText: globals.singleplayer,
+          context: context,
+          helpText: globals.helpSinglePlayer),
     ], context: context, backgroundNo: 2);
 
     return page;

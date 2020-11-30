@@ -22,7 +22,10 @@ class _AchievementsPageState extends State<AchievementsPage> {
   @override
   Widget build(BuildContext context) {
     Scaffold page = UI.scaffoldWithBackground(children: [
-      UI.topTitle(titleText: globals.achievements, context: context,),
+      UI.topTitle(
+          titleText: globals.achievements,
+          context: context,
+          helpText: globals.helpAchievements),
       Row(),
     ], context: context, backgroundNo: 2);
 

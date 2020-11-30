@@ -47,7 +47,10 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
       backgroundNo: 2,
       children: [
         UI.topTitle(
-            titleText: globals.multiplayer, context: context, root: false),
+            titleText: globals.multiplayer,
+            context: context,
+            root: false,
+            helpText: globals.helpMultiplayerHome),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

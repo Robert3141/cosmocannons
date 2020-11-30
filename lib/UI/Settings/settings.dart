@@ -22,7 +22,10 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     Scaffold page = UI.scaffoldWithBackground(children: [
-      UI.topTitle(titleText: globals.settings, context: context),
+      UI.topTitle(
+          titleText: globals.settings,
+          context: context,
+          helpText: globals.helpSettings),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [

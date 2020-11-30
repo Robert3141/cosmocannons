@@ -31,7 +31,10 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
   @override
   Widget build(BuildContext context) {
     Scaffold page = UI.scaffoldWithBackground(children: [
-      UI.topTitle(titleText: globals.clientMulti, context: context),
+      UI.topTitle(
+          titleText: globals.clientMulti,
+          context: context,
+          helpText: globals.helpMultiplayerClient),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
