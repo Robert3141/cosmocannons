@@ -70,6 +70,13 @@ const String keyRenderHeight = "graphics"; //int
 const String keyMusicIndex = "musicIndex"; //int
 const String keyMusicSeek = "musicSeek"; //int
 
+const String helpMultiplayerHome = "";
+const String helpMultiplayerLocal = "";
+const String helpMultiplayerHost = "";
+const String helpMultiplayerClient = "";
+const String helpSettings = "";
+const String helpAchievements = "";
+
 const List<String> defaultTeamNames = ["Red", "Green", "Blue", "Yellow"];
 const List<String> playerAmounts = ["2", "3", "4"];
 const List<String> shootOptions = [shootIntensity, shootAngle];

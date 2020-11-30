@@ -79,6 +79,7 @@ class UI {
   static Container topTitle(
           {@required String titleText,
           @required BuildContext context,
+          String helpText = "",
           bool root = false}) =>
       Container(
         width: screenWidth(context),
@@ -110,9 +111,10 @@ class UI {
                 ? Container()
                 : smallButton(
                     text: globals.help,
-                    onTap: null,
+                    onTap: () => UI.textDisplayPopup(
+                        context, helpText), //TODO add help text for all pages
                     context: context,
-                    enabled: false),
+                    enabled: helpText == ""),
           ],
         ),
       );
