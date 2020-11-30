@@ -210,6 +210,9 @@ class _MainGamePageState extends State<MainGamePage> {
           if (globals.playerHealth[i] > 0) winningPlayer = i;
         }
 
+        //remove save data
+        UI.dataStore(globals.keySavedGame, false);
+
         //exit to main menu with popup
         UI.startNewPage(context, [],
             newPage: LauncherPage(
@@ -606,10 +609,10 @@ class _MainGamePageState extends State<MainGamePage> {
                       tapDetails = details;
                     },
                     /*onPanUpdate: (details) {},
-                  onPanStart: (details) {},
-                  onPanDown: (details) {},
-                  onPanEnd: (details) {}, //TODO continue drag stuff
-                  onPanCancel: () {},*/
+                    onPanStart: (details) {},
+                    onPanDown: (details) {},
+                    onPanEnd: (details) {}, //TODO continue drag stuff
+                    onPanCancel: () {},*/
                     child: Stack(
                       children: [
                         //players and projectiles
