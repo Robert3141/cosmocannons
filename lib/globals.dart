@@ -74,6 +74,7 @@ const String helpMultiplayerHome = "";
 const String helpMultiplayerLocal = "";
 const String helpMultiplayerHost = "";
 const String helpMultiplayerClient = "";
+const String helpSinglePlayer = "";
 const String helpSettings = "";
 const String helpAchievements = "";
 
