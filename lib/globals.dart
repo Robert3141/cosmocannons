@@ -196,8 +196,8 @@ const List<List<Color>> terrainColors = [
 
 bool firstRender = true;
 bool popup = false;
-bool playMusic = true;
-bool playAudio = true;
+bool playMusic = false;
+bool playAudio = false;
 
 int mapNo;
 int terrainColumnsToRender = kIsWeb ? mapQualitySizes[0] : mapQualitySizes[1];
