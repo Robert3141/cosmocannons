@@ -112,7 +112,9 @@ class ObjectPainter extends GlobalPainter {
     Offset turretActual = actualPos(cannonEnd);
     //define paints
     final TextPainter playerHealthText = globals.defaultTextPaint
-      ..text = TextSpan(text: playerHealth.toString(), style: UI.defaultText())
+      ..text = TextSpan(
+          text: (playerHealth <= 0 ? 0 : playerHealth).toString(),
+          style: UI.defaultText())
       ..layout();
     final Paint playerCircle = globals.defaultDrawPaint
       ..color = globals.teamColors[colour]
