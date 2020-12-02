@@ -90,7 +90,7 @@ class _LocalMultiPageState extends State<LocalMultiPage> {
               text: globals.beginGame, onTap: checkStartGame, context: context),
         ],
       ),
-    ], context: context, backgroundNo: 3);
+    ], context: context, backgroundNo: mapSelected + 7);
 
     return page;
   }

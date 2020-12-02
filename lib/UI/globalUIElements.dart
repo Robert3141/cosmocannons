@@ -114,7 +114,7 @@ class UI {
                     onTap: () => UI.textDisplayPopup(
                         context, helpText), //TODO add help text for all pages
                     context: context,
-                    enabled: helpText == ""),
+                    enabled: helpText != ""),
           ],
         ),
       );

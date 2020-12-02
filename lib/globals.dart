@@ -47,13 +47,13 @@ const String welcomeBack = "Welcome back";
 const String saving = "Saving . . .";
 const String loading = "Loading . . .";
 const String resumeGame = "Resume Game";
-const String errorOccurred = "An error occurred!\n Details: ";
+const String errorOccurred = "An error occurred!\nDetails: ";
 const String mapChosen = "Selected Map";
 const String warningMapOverwrite =
     "WARNING! About to overwite previous save data";
 
 const String keyMusic = "music"; //bool
-const String keyVolume = "volume"; //bool
+const String keyVolume = "sound"; //bool
 const String keySavedGame = "saved"; //bool
 const String keyPlayerPos = "playerPos"; //List<List<double>>
 const String keyPlayerHealth = "playerHealth"; //List<double>
@@ -70,12 +70,15 @@ const String keyRenderHeight = "graphics"; //int
 const String keyMusicIndex = "musicIndex"; //int
 const String keyMusicSeek = "musicSeek"; //int
 
-const String helpMultiplayerHome = "";
-const String helpMultiplayerLocal = "";
+const String helpMultiplayerHome =
+    "On local device is currently the only supported. Multiplayer on the same Wifi Network is coming soon...";
+const String helpMultiplayerLocal =
+    "Betweeen 2 and 4 players can be selected and the choice of map can be chosen.\nThe Hills map is one large hill in the centre.\nThe Desert map is a flat landscape good for practicing shooting and learning the game.\nThe moon is a funky map with a few different sized hills";
 const String helpMultiplayerHost = "";
 const String helpMultiplayerClient = "";
 const String helpSinglePlayer = "";
-const String helpSettings = "";
+const String helpSettings =
+    "The toggles on the right allow different settings to be changed.";
 const String helpAchievements = "";
 
 const List<String> defaultTeamNames = ["Red", "Green", "Blue", "Yellow"];
@@ -93,6 +96,10 @@ List<AssetImage> backgrounds = [
   AssetImage("assets/images/4.png"),
   AssetImage("assets/images/5.png"),
   AssetImage("assets/images/6.png"),
+  //maps
+  AssetImage("assets/images/hills.png"),
+  AssetImage("assets/images/desert.png"),
+  AssetImage("assets/images/moon.png"),
 ];
 
 List<Audio> songs = [
