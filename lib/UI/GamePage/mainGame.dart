@@ -608,11 +608,35 @@ class _MainGamePageState extends State<MainGamePage> {
                     onDoubleTapDown: (details) {
                       tapDetails = details;
                     },
-                    /*onPanUpdate: (details) {},
-                    onPanStart: (details) {},
-                    onPanDown: (details) {},
-                    onPanEnd: (details) {}, //TODO continue drag stuff
-                    onPanCancel: () {},*/
+                    //drag based shooting
+                    onPanStart: (details) {
+                      Offset tapRelative = GlobalPainter(0, [], [])
+                          .relPos(details.localPosition);
+                      if (checkInRadius(
+                          [tapRelative.dx, tapRelative.dy],
+                          globals.playerPos[currentPlayer],
+                          globals.playerRadius)) globals.dragGhost = true;
+                    },
+                    onPanUpdate: (details) {
+                      //define positions
+                      Offset tapRelative = GlobalPainter(0, [], [])
+                          .relPos(details.localPosition);
+                      Offset playerRelative = Offset(
+                          globals.playerPos[currentPlayer][0],
+                          globals.playerPos[currentPlayer][1]);
+                      Offset arrowRelative =
+                          playerRelative - tapRelative + playerRelative;
+
+                      //set arrowPos
+                      setState(() {
+                        globals.arrowTop = arrowRelative;
+                      });
+                    },
+                    onPanEnd: (details) {
+                      setState(() {
+                        globals.dragGhost = false;
+                      });
+                    },
                     child: Stack(
                       children: [
                         //players and projectiles

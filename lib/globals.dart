@@ -205,6 +205,7 @@ bool firstRender = true;
 bool popup = false;
 bool playMusic = false;
 bool playAudio = false;
+bool dragGhost = false;
 
 int mapNo;
 int terrainColumnsToRender = kIsWeb ? mapQualitySizes[0] : mapQualitySizes[1];
@@ -221,6 +222,8 @@ List<double> currentMap;
 List<List<Offset>> terrainCacheLocation;
 
 List<Color> terrainCacheColour;
+
+Offset arrowTop = Offset(0, 0);
 
 // Global UI based vars
 

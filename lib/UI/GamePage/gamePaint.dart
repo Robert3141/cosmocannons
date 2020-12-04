@@ -87,6 +87,8 @@ class ObjectPainter extends GlobalPainter {
   List<List<double>> playerShootSetup;
   List<int> playerTeams;
   int currentPlayer;
+  Offset arrowTop;
+  bool dragGhost;
 
   ///
   /// CONSTRUCTORS
@@ -110,6 +112,7 @@ class ObjectPainter extends GlobalPainter {
     Offset cannonStart = position.translate(translate.dx, translate.dy);
     Offset cannonEnd = cannonStart.translate(translate.dx, translate.dy);
     Offset turretActual = actualPos(cannonEnd);
+
     //define paints
     final TextPainter playerHealthText = globals.defaultTextPaint
       ..text = TextSpan(
@@ -192,19 +195,25 @@ class ObjectPainter extends GlobalPainter {
     }
   }
 
+  void drawAimArrow() {}
+
   @override
   void paint(Canvas canvas, Size size) {
     super.paint(canvas, size);
     List<double> gameMap = globals.currentMap;
+    arrowTop = globals.arrowTop;
 
     spawnInPlayers(playerTeams, gameMap, canvas);
     spawnProjectile(canvas);
+    drawAimArrow();
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return currentPlayerPos == globals.playerPos &&
-        currentProjectilePos == globals.projectilePos;
+    return currentPlayerPos != globals.playerPos ||
+        currentProjectilePos != globals.projectilePos ||
+        arrowTop != globals.arrowTop ||
+        dragGhost != globals.dragGhost;
   }
 }
 
