@@ -611,7 +611,7 @@ class _MainGamePageState extends State<MainGamePage> {
                     //drag based shooting
                     onPanStart: (details) {
                       Offset tapRelative = GlobalPainter(0, [], [])
-                          .relPos(details.localPosition);
+                          .actualPos(details.localPosition, canvasSize);
                       if (checkInRadius(
                           [tapRelative.dx, tapRelative.dy],
                           globals.playerPos[currentPlayer],
@@ -620,7 +620,7 @@ class _MainGamePageState extends State<MainGamePage> {
                     onPanUpdate: (details) {
                       //define positions
                       Offset tapRelative = GlobalPainter(0, [], [])
-                          .relPos(details.localPosition);
+                          .actualPos(details.localPosition, canvasSize);
                       Offset playerRelative = Offset(
                           globals.playerPos[currentPlayer][0],
                           globals.playerPos[currentPlayer][1]);

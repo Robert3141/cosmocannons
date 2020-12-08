@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:cosmocannons/UI/globalUIElements.dart';
+import 'package:draw_arrow/draw_arrow.dart';
 
 class GlobalPainter extends CustomPainter {
   //locals
@@ -32,13 +33,15 @@ class GlobalPainter extends CustomPainter {
     return Offset(newX, newY);
   }
 
-  Offset relPos(Offset pos) {
+  Offset relPos(Offset pos, [Size size]) {
+    canvasSize = size ?? canvasSize;
     // takes x and y between 0 and 1
     // return size based on screen
     return Offset(pos.dx * canvasSize.width, (1 - pos.dy) * canvasSize.height);
   }
 
-  Offset actualPos(Offset pos) {
+  Offset actualPos(Offset pos, [Size size]) {
+    canvasSize = size ?? canvasSize;
     // takes x & y from game size and returns between 1 & 0
     return Offset(pos.dx / canvasSize.width, 1 - (pos.dy / canvasSize.height));
   }
@@ -195,7 +198,11 @@ class ObjectPainter extends GlobalPainter {
     }
   }
 
-  void drawAimArrow() {}
+  void drawAimArrow(Canvas canvas, Offset endPos) {
+    List<double> playerPos = currentPlayerPos[currentPlayer];
+    canvas.drawArrow(
+        relPos(Offset(playerPos[0], playerPos[1])), relPos(endPos));
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -205,7 +212,7 @@ class ObjectPainter extends GlobalPainter {
 
     spawnInPlayers(playerTeams, gameMap, canvas);
     spawnProjectile(canvas);
-    drawAimArrow();
+    drawAimArrow(canvas, arrowTop);
   }
 
   @override
