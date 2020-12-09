@@ -184,6 +184,9 @@ class _MainGamePageState extends State<MainGamePage> {
 
   Future<void> playerShoot(double intensity, double angleDegrees) async {
     try {
+      //set fire setups
+      lastFireSetup[currentPlayer] = [intensity, angleDegrees];
+
       //set locals
       List<double> impactPos;
       int playerInt = currentPlayer;
@@ -613,29 +616,55 @@ class _MainGamePageState extends State<MainGamePage> {
                       Offset tapRelative = GlobalPainter(0, [], [])
                           .actualPos(details.localPosition, canvasSize);
                       if (checkInRadius(
-                          [tapRelative.dx, tapRelative.dy],
-                          globals.playerPos[currentPlayer],
-                          globals.playerRadius)) globals.dragGhost = true;
+                              [tapRelative.dx, tapRelative.dy],
+                              globals.playerPos[currentPlayer],
+                              globals.playerRadius) &&
+                          !globals.popup) {
+                        globals.dragGhost = true;
+                      }
                     },
                     onPanUpdate: (details) {
                       //define positions
-                      Offset tapRelative = GlobalPainter(0, [], [])
-                          .actualPos(details.localPosition, canvasSize);
-                      Offset playerRelative = Offset(
-                          globals.playerPos[currentPlayer][0],
-                          globals.playerPos[currentPlayer][1]);
-                      Offset arrowRelative =
-                          playerRelative - tapRelative + playerRelative;
+                      if (globals.dragGhost) {
+                        Offset tapRelative = GlobalPainter(0, [], [])
+                            .actualPos(details.localPosition, canvasSize);
+                        Offset playerRelative = Offset(
+                            globals.playerPos[currentPlayer][0],
+                            globals.playerPos[currentPlayer][1]);
+                        Offset arrowRelative =
+                            playerRelative - tapRelative + playerRelative;
 
-                      //set arrowPos
-                      setState(() {
-                        globals.arrowTop = arrowRelative;
-                      });
+                        //set arrowPos
+                        setState(() {
+                          globals.arrowTop = arrowRelative;
+                        });
+                      }
                     },
-                    onPanEnd: (details) {
-                      setState(() {
+                    onPanCancel: () {
+                      if (globals.dragGhost) {
+                        setState(() {
+                          globals.dragGhost = false;
+                        });
+                      }
+                    },
+                    onPanEnd: (details) async {
+                      if (globals.dragGhost) {
                         globals.dragGhost = false;
-                      });
+                        globals.popup = true;
+
+                        //shoot
+                        Offset playerPos = Offset(
+                            globals.playerPos[currentPlayer][0],
+                            globals.playerPos[currentPlayer][1]);
+                        Offset arrow = Offset(
+                            -(globals.arrowTop.dx - playerPos.dx),
+                            globals.arrowTop.dy - playerPos.dy);
+                        double angle = (arrow.direction * 180) / pi;
+                        double intensity =
+                            arrow.distance * 500; // TODO: continue
+                        await playerShoot(intensity, angle);
+                        globals.popup = false;
+                      }
                     },
                     child: Stack(
                       children: [

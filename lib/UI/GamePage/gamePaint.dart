@@ -199,9 +199,11 @@ class ObjectPainter extends GlobalPainter {
   }
 
   void drawAimArrow(Canvas canvas, Offset endPos) {
-    List<double> playerPos = currentPlayerPos[currentPlayer];
-    canvas.drawArrow(
-        relPos(Offset(playerPos[0], playerPos[1])), relPos(endPos));
+    if (globals.dragGhost) {
+      List<double> playerPos = currentPlayerPos[currentPlayer];
+      canvas.drawArrow(
+          relPos(Offset(playerPos[0], playerPos[1])), relPos(endPos));
+    }
   }
 
   @override
