@@ -618,7 +618,7 @@ class _MainGamePageState extends State<MainGamePage> {
                       if (checkInRadius(
                               [tapRelative.dx, tapRelative.dy],
                               globals.playerPos[currentPlayer],
-                              globals.playerRadius) &&
+                              globals.blastRadius) &&
                           !globals.popup) {
                         globals.dragGhost = true;
                       }

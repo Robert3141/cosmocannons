@@ -199,10 +199,14 @@ class ObjectPainter extends GlobalPainter {
   }
 
   void drawAimArrow(Canvas canvas, Offset endPos) {
+    Paint painter = Paint()
+      ..blendMode = BlendMode.plus
+      ..color = globals.teamColors[playerTeams[currentPlayer]];
     if (globals.dragGhost) {
       List<double> playerPos = currentPlayerPos[currentPlayer];
       canvas.drawArrow(
-          relPos(Offset(playerPos[0], playerPos[1])), relPos(endPos));
+          relPos(Offset(playerPos[0], playerPos[1])), relPos(endPos),
+          painter: painter);
     }
   }
 
