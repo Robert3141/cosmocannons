@@ -500,6 +500,9 @@ class _MainGamePageState extends State<MainGamePage> {
       //stop music
       await UI.stopMusic();
 
+      //disable pause menu
+      globals.popup = false;
+
       //close saving popup
       setState(() {
         Navigator.of(context).pop();
