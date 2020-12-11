@@ -8,6 +8,7 @@ import 'package:cosmocannons/UI/globalUIElements.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:cosmocannons/UI/GamePage/gamePaint.dart';
 import 'package:flutter/services.dart';
+import 'package:simple_animations/simple_animations.dart';
 
 class MainGamePage extends StatefulWidget {
   //constructor of class
@@ -44,9 +45,11 @@ class _MainGamePageState extends State<MainGamePage> {
   bool playersTurn = true;
   bool loaded = true;
   bool movedPlayer = false;
+  bool firing = false;
   BuildContext pageContext;
   List<int> playerTeams;
   List<List<double>> lastFireSetup;
+  List<double> previousProjectilePos;
   TapDownDetails tapDetails;
 
   ///
@@ -83,13 +86,16 @@ class _MainGamePageState extends State<MainGamePage> {
       timeSec = (globals.frameLengthMs * tick * globals.animationSpeed) / 1000;
 
       //rebuild with new location
-      setState(() {
-        // s = ut + 0.5att
-        sX = (uX * timeSec + 0.5 * aX * timeSec * timeSec) * globals.xSF +
-            startX;
-        sY = (uY * timeSec + 0.5 * aY * timeSec * timeSec) * globals.ySF +
-            startY;
+      // s = ut + 0.5att
+      sX = (uX * timeSec + 0.5 * aX * timeSec * timeSec) * globals.xSF + startX;
+      sY = (uY * timeSec + 0.5 * aY * timeSec * timeSec) * globals.ySF + startY;
 
+      if (!firing)
+        setState(() {
+          firing = true;
+        });
+      setState(() {
+        previousProjectilePos = globals.projectilePos;
         globals.projectilePos = [sX, sY];
       });
 
@@ -129,6 +135,7 @@ class _MainGamePageState extends State<MainGamePage> {
 
     //cancel ticker and remove projectile from UI
     animationTimer.cancel();
+    firing = false;
     impactPos = globals.projectilePos ?? globals.locationInvisible;
     globals.projectilePos = globals.locationInvisible;
     return impactPos;
@@ -671,7 +678,31 @@ class _MainGamePageState extends State<MainGamePage> {
                     },
                     child: Stack(
                       children: [
-                        //players and projectiles
+                        //projectiles
+                        firing &&
+                                globals.projectilePos != null &&
+                                (previousProjectilePos ??
+                                        globals.playerPos[currentPlayer]) !=
+                                    null
+                            ? PlayAnimation<List<double>>(
+                                builder: (BuildContext context, widget,
+                                        List<double> pos) =>
+                                    CustomPaint(
+                                        size: canvasSize,
+                                        painter: ProjectilePainter(
+                                            currentPlayer,
+                                            playerTeams,
+                                            lastFireSetup,
+                                            pos)),
+                                duration: Duration(
+                                    milliseconds: globals.frameLengthMs),
+                                tween: Tween<List<double>>(
+                                    begin: previousProjectilePos ??
+                                        globals.playerPos[currentPlayer],
+                                    end: globals.projectilePos),
+                              )
+                            : Container(),
+                        //players
                         CustomPaint(
                           size: canvasSize,
                           painter: ObjectPainter(
