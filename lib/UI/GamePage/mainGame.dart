@@ -43,6 +43,7 @@ class _MainGamePageState extends State<MainGamePage> {
   bool paused = false;
   bool playersTurn = true;
   bool loaded = true;
+  bool firing = false;
   bool movedPlayer = false;
   BuildContext pageContext;
   List<int> playerTeams;
@@ -74,6 +75,7 @@ class _MainGamePageState extends State<MainGamePage> {
     Timer animationTimer;
     List<double> impactPos = globals.locationInvisible;
     List<double> playerCenter;
+    firing = true;
 
     //render correct amount of time
     animationTimer =
@@ -128,6 +130,7 @@ class _MainGamePageState extends State<MainGamePage> {
     }
 
     //cancel ticker and remove projectile from UI
+    firing = false;
     animationTimer.cancel();
     impactPos = globals.projectilePos ?? globals.locationInvisible;
     globals.projectilePos = globals.locationInvisible;
@@ -520,7 +523,7 @@ class _MainGamePageState extends State<MainGamePage> {
       //only take key down events not key up as well
       if (key.runtimeType == RawKeyDownEvent) {
         //only take most inputs when not paused
-        if (!paused) {
+        if (!paused & !firing) {
           String keyChar = key.data.keyLabel ?? "";
           KeyboardKey keyPress = key.logicalKey;
           switch (keyChar) {
@@ -662,19 +665,28 @@ class _MainGamePageState extends State<MainGamePage> {
                         Offset arrow = Offset(
                             -(globals.arrowTop.dx - playerPos.dx),
                             globals.arrowTop.dy - playerPos.dy);
-                        double angle = (arrow.direction * 180) / pi;
+                        double angle =
+                            arrow.direction * globals.radiansToDegrees;
+                        print(angle);
                         double intensity =
-                            arrow.distance * 500; // TODO: continue
+                            arrow.distance * globals.shootSF; // TODO: continue
                         await playerShoot(intensity, angle);
                         globals.popup = false;
                       }
                     },
                     child: Stack(
                       children: [
-                        //players and projectiles
+                        //projectiles
+                        CustomPaint(
+                          willChange: firing ?? false,
+                          size: canvasSize,
+                          painter: ShootPainter(
+                              currentPlayer, playerTeams, lastFireSetup),
+                        ),
+                        //players
                         CustomPaint(
                           size: canvasSize,
-                          painter: ObjectPainter(
+                          painter: CharacterPainter(
                               currentPlayer, playerTeams, lastFireSetup),
                         ),
                         //terrain
@@ -757,7 +769,7 @@ class _MainGamePageState extends State<MainGamePage> {
                     )
                   : Container(),
               //pause button
-              (globals.popup && paused) || (!globals.popup)
+              (globals.popup && paused) || (!globals.popup & !firing)
                   ? Positioned(
                       right: 0.0,
                       top: 0.0,

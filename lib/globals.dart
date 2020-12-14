@@ -133,6 +133,7 @@ const double tapNearPlayer = 50;
 const double mediumWidth = 0.5;
 const double mediumHeight = 0.5;
 const double degreesToRadians = pi / 180;
+const double radiansToDegrees = 180 / pi;
 const double Ax = 0;
 const double Ay = -9.81;
 const double xSF = 1 / 1000;
@@ -156,6 +157,7 @@ const int frameLengthMs = 16;
 const int maxFlightLength = 20;
 const int checkDoneMs = 100;
 const int defaultMap = 0;
+const int shootSF = 500;
 
 const List<int> playerTeams = [0, 1, 2, 3];
 const List<int> mapQualitySizes = [5, 25, 50];

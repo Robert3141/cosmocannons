@@ -82,7 +82,78 @@ class GlobalPainter extends CustomPainter {
   }
 }
 
-class ObjectPainter extends GlobalPainter {
+class ShootPainter extends GlobalPainter {
+  //locals
+  int currentPlayer;
+  List<int> playerTeams;
+  List<List<double>> currentPlayerPos;
+  Offset arrowTop;
+  bool dragGhost;
+
+  ShootPainter(
+      this.currentPlayer, this.playerTeams, List<List<double>> playerShootSetup)
+      : super(currentPlayer, playerTeams, playerShootSetup);
+
+  void drawProjectile(int colour, List<double> pos, Canvas canvas) {
+    //define vars
+    Offset position = Offset(pos[0], pos[1]);
+    final paint = globals.defaultDrawPaint..color = globals.teamColors[colour];
+
+    //draw projectile
+    canvas.drawCircle(relPos(position).translate(0, -3), 3, paint);
+  }
+
+  void spawnProjectile(Canvas canvas) {
+    if (globals.projectilePos != null) {
+      double sX = globals.projectilePos[0];
+      double sY = globals.projectilePos[1];
+
+      // make between 1 & 0
+      sX = sX > 1
+          ? 1
+          : sX < 0
+              ? 0
+              : sX;
+      sY = sY > 1
+          ? 1
+          : sY < 0
+              ? 0
+              : sY;
+      drawProjectile(currentPlayer, [sX, sY], canvas);
+    }
+  }
+
+  void drawAimArrow(Canvas canvas, Offset endPos) {
+    Paint painter = Paint()
+      ..blendMode = BlendMode.plus
+      ..color = globals.teamColors[playerTeams[currentPlayer]];
+    if (dragGhost) {
+      List<double> playerPos = currentPlayerPos[currentPlayer];
+      canvas.drawArrow(
+          relPos(Offset(playerPos[0], playerPos[1])), relPos(endPos),
+          painter: painter);
+    }
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    super.paint(canvas, size);
+    arrowTop = globals.arrowTop;
+    dragGhost = globals.dragGhost;
+    currentPlayerPos = globals.playerPos;
+
+    spawnProjectile(canvas);
+    drawAimArrow(canvas, arrowTop);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    // TODO: implement shouldRepaint
+    return arrowTop != globals.arrowTop || dragGhost != globals.dragGhost;
+  }
+}
+
+class CharacterPainter extends GlobalPainter {
   //locals
   Size canvasSize;
   List<List<double>> currentPlayerPos;
@@ -90,14 +161,12 @@ class ObjectPainter extends GlobalPainter {
   List<List<double>> playerShootSetup;
   List<int> playerTeams;
   int currentPlayer;
-  Offset arrowTop;
-  bool dragGhost;
 
   ///
   /// CONSTRUCTORS
   ///
 
-  ObjectPainter(this.currentPlayer, this.playerTeams, this.playerShootSetup)
+  CharacterPainter(this.currentPlayer, this.playerTeams, this.playerShootSetup)
       : super(currentPlayer, playerTeams, playerShootSetup);
 
   ///
@@ -163,50 +232,8 @@ class ObjectPainter extends GlobalPainter {
         playerY = calcNearestHeight(terrainHeights, playerX);
         globals.playerPos[players] = [playerX, playerY];
       }
-      currentPlayerPos = globals.playerPos;
       drawPlayer(playerColours[players], globals.playerPos[players], canvas,
           globals.playerHealth[players].round(), playerShootAngle, players);
-    }
-  }
-
-  void drawProjectile(int colour, List<double> pos, Canvas canvas) {
-    //define vars
-    Offset position = Offset(pos[0], pos[1]);
-    final paint = globals.defaultDrawPaint..color = globals.teamColors[colour];
-
-    //draw projectile
-    canvas.drawCircle(relPos(position).translate(0, -3), 3, paint);
-  }
-
-  void spawnProjectile(Canvas canvas) {
-    if (globals.projectilePos != null) {
-      double sX = globals.projectilePos[0];
-      double sY = globals.projectilePos[1];
-
-      // make between 1 & 0
-      sX = sX > 1
-          ? 1
-          : sX < 0
-              ? 0
-              : sX;
-      sY = sY > 1
-          ? 1
-          : sY < 0
-              ? 0
-              : sY;
-      drawProjectile(currentPlayer, [sX, sY], canvas);
-    }
-  }
-
-  void drawAimArrow(Canvas canvas, Offset endPos) {
-    Paint painter = Paint()
-      ..blendMode = BlendMode.plus
-      ..color = globals.teamColors[playerTeams[currentPlayer]];
-    if (globals.dragGhost) {
-      List<double> playerPos = currentPlayerPos[currentPlayer];
-      canvas.drawArrow(
-          relPos(Offset(playerPos[0], playerPos[1])), relPos(endPos),
-          painter: painter);
     }
   }
 
@@ -214,19 +241,15 @@ class ObjectPainter extends GlobalPainter {
   void paint(Canvas canvas, Size size) {
     super.paint(canvas, size);
     List<double> gameMap = globals.currentMap;
-    arrowTop = globals.arrowTop;
+    currentPlayerPos = globals.playerPos;
 
     spawnInPlayers(playerTeams, gameMap, canvas);
-    spawnProjectile(canvas);
-    drawAimArrow(canvas, arrowTop);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return currentPlayerPos != globals.playerPos ||
-        currentProjectilePos != globals.projectilePos ||
-        arrowTop != globals.arrowTop ||
-        dragGhost != globals.dragGhost;
+        currentProjectilePos != globals.projectilePos;
   }
 }
 
