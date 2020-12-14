@@ -169,6 +169,35 @@ class ObjectPainter extends GlobalPainter {
     }
   }
 
+  void drawProjectile(int colour, List<double> pos, Canvas canvas) {
+    //define vars
+    Offset position = Offset(pos[0], pos[1]);
+    final paint = globals.defaultDrawPaint..color = globals.teamColors[colour];
+
+    //draw projectile
+    canvas.drawCircle(relPos(position).translate(0, -3), 3, paint);
+  }
+
+  void spawnProjectile(Canvas canvas) {
+    if (globals.projectilePos != null) {
+      double sX = globals.projectilePos[0];
+      double sY = globals.projectilePos[1];
+
+      // make between 1 & 0
+      sX = sX > 1
+          ? 1
+          : sX < 0
+              ? 0
+              : sX;
+      sY = sY > 1
+          ? 1
+          : sY < 0
+              ? 0
+              : sY;
+      drawProjectile(currentPlayer, [sX, sY], canvas);
+    }
+  }
+
   void drawAimArrow(Canvas canvas, Offset endPos) {
     Paint painter = Paint()
       ..blendMode = BlendMode.plus
@@ -188,67 +217,16 @@ class ObjectPainter extends GlobalPainter {
     arrowTop = globals.arrowTop;
 
     spawnInPlayers(playerTeams, gameMap, canvas);
+    spawnProjectile(canvas);
     drawAimArrow(canvas, arrowTop);
   }
 
   @override
-  bool shouldRepaint(covariant ObjectPainter old) {
-    return old.currentPlayerPos != globals.playerPos ||
-        old.arrowTop != globals.arrowTop ||
-        old.dragGhost != globals.dragGhost;
-  }
-}
-
-class ProjectilePainter extends GlobalPainter {
-  //locals
-  List<double> pos;
-
-  //constructor
-  ProjectilePainter(int currentPlayer, List<int> playerTeams,
-      List<List<double>> playerShootSetup, List<double> _pos)
-      : super(currentPlayer, playerTeams, playerShootSetup) {
-    pos = _pos;
-  }
-
-  void drawProjectile(int colour, List<double> pos, Canvas canvas) {
-    //define vars
-    Offset position = Offset(pos[0], pos[1]);
-    final paint = globals.defaultDrawPaint..color = globals.teamColors[colour];
-
-    //draw projectile
-    canvas.drawCircle(relPos(position).translate(0, -3), 3, paint);
-  }
-
-  void spawnProjectile(Canvas canvas, List<double> pos) {
-    if (globals.projectilePos != null) {
-      double sX = pos[0];
-      double sY = pos[1];
-
-      // make between 1 & 0
-      sX = sX > 1
-          ? 1
-          : sX < 0
-              ? 0
-              : sX;
-      sY = sY > 1
-          ? 1
-          : sY < 0
-              ? 0
-              : sY;
-      drawProjectile(currentPlayer, [sX, sY], canvas);
-    }
-  }
-
-  //paint
-  @override
-  void paint(Canvas canvas, Size size) {
-    super.paint(canvas, size);
-    spawnProjectile(canvas, pos);
-  }
-
-  @override
-  bool shouldRepaint(covariant ProjectilePainter old) {
-    return old.currentProjectilePos != globals.projectilePos;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return currentPlayerPos != globals.playerPos ||
+        currentProjectilePos != globals.projectilePos ||
+        arrowTop != globals.arrowTop ||
+        dragGhost != globals.dragGhost;
   }
 }
 

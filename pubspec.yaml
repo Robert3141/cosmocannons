@@ -33,7 +33,6 @@ dependencies:
   shared_preferences: ^0.5.12+2
   shared_preferences_moretypes: ^2.3.2
   draw_arrow: ^1.0.0
-  simple_animations: ^2.4.2
   #shared_preferences_moretypes:
   #  path: ../shared_preferences_moretypes
 
