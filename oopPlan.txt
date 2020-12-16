@@ -1,0 +1,27 @@
+object
+	public double relativeX
+	public double relativeY
+	public int team
+	private bool visible
+
+	new(team)
+	
+	public double getActualX
+	public double getActualY
+
+projectile inherits object
+	public int team
+	private int intensity
+	private double angleRadians
+
+	new(team,intensity,angleRadians)
+
+	private double getAngleDegrees
+
+player inherits object	
+	public double health
+	public int lastIntensity
+	public double lastAngleRadians
+
+	new(team,health,position)
+	
