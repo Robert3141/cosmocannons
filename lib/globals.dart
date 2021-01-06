@@ -227,6 +227,8 @@ List<Color> terrainCacheColour;
 
 Offset arrowTop = Offset(0, 0);
 
+Size canvasSize;
+
 // Global UI based vars
 
 AutoSizeGroup standardTextGroup = AutoSizeGroup();
