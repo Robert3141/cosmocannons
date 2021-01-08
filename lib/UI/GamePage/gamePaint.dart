@@ -1,31 +1,45 @@
 import 'dart:math';
 import 'dart:ui';
+import 'package:cosmocannons/UI/GamePage/gameObjects.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:cosmocannons/UI/globalUIElements.dart';
 import 'package:draw_arrow/draw_arrow.dart';
 
+extension OffsetExtender on Offset {
+  /// Take values between 0 and 1 and convert to between 0 and globals.canvasSize
+  Offset toRelative() {
+    double newX = this.dx * globals.canvasSize.width;
+    double newY = (1 - this.dy) * globals.canvasSize.height;
+    return Offset(newX, newY);
+  }
+
+  /// Take values between 0 and globals.canvasSize and convert to between 0 and 1
+  Offset toActual() {
+    double newX = this.dx / globals.canvasSize.width;
+    double newY = 1 - (this.dy / globals.canvasSize.height);
+    return Offset(newX, newY);
+  }
+}
+
 class GlobalPainter extends CustomPainter {
   //locals
   Size canvasSize;
   List<List<double>> currentPlayerPos;
   List<double> currentProjectilePos;
-  List<List<double>> playerShootSetup;
-  List<int> playerTeams;
-  int currentPlayer;
 
   ///
   /// CONSTRUCTORS
   ///
 
-  GlobalPainter(this.currentPlayer, this.playerTeams, this.playerShootSetup);
+  GlobalPainter();
 
   ///
   /// FUNCTIONS
   ///
 
-  Offset relativePos(double x, double y) {
+  /*Offset relativePos(double x, double y) {
     //takes x & y between 0 and 1
     //returns size based on screen
     double newX = x * canvasSize.width;
@@ -44,7 +58,7 @@ class GlobalPainter extends CustomPainter {
     canvasSize = size ?? canvasSize;
     // takes x & y from game size and returns between 1 & 0
     return Offset(pos.dx / canvasSize.width, 1 - (pos.dy / canvasSize.height));
-  }
+  }*/
 
   List<double> getPlayerAnglesArray(List<List<double>> list) {
     List<double> newList = List.empty(growable: true);
@@ -90,36 +104,58 @@ class ShootPainter extends GlobalPainter {
   Offset arrowTop;
   bool dragGhost;
 
-  ShootPainter(
-      this.currentPlayer, this.playerTeams, List<List<double>> playerShootSetup)
-      : super(currentPlayer, playerTeams, playerShootSetup);
+  ShootPainter();
 
-  void drawProjectile(int colour, List<double> pos, Canvas canvas) {
+  void drawProjectile(Projectile projectile, Canvas canvas) {
     //define vars
-    Offset position = Offset(pos[0], pos[1]);
-    final paint = globals.defaultDrawPaint..color = globals.teamColors[colour];
+    final paint = globals.defaultDrawPaint..color = projectile.teamColour;
 
     //draw projectile
-    canvas.drawCircle(relPos(position).translate(0, -3), 3, paint);
+    canvas.drawCircle(projectile.rPos, 3, paint);
   }
 
   void spawnProjectile(Canvas canvas) {
-    if (globals.projectilePos != null) {
-      double sX = globals.projectilePos[0];
-      double sY = globals.projectilePos[1];
+    Projectile p;
+    Offset start;
+    Offset end;
+    for (int i = 0; i < globals.projectiles.length; i++) {
+      //draw projectile
+      p = globals.projectiles[i];
+      final paint = globals.defaultDrawPaint..color = p.teamColour;
+      drawProjectile(p, canvas);
 
-      // make between 1 & 0
-      sX = sX > 1
-          ? 1
-          : sX < 0
-              ? 0
-              : sX;
-      sY = sY > 1
-          ? 1
-          : sY < 0
-              ? 0
-              : sY;
-      drawProjectile(currentPlayer, [sX, sY], canvas);
+      //draw arrow if its out of range
+      if (p.aX < 0) {
+        if (p.aY > 1) {
+          //arrow top left corner
+          start =
+              Offset(1 - globals.rangeArrowStart, 1 - globals.rangeArrowStart)
+                  .toRelative();
+          end = Offset(1 - globals.rangeArrowEnd, 1 - globals.rangeArrowEnd)
+              .toRelative();
+          canvas.drawArrow(start, end, painter: paint);
+        } else {
+          //arrow left side
+          start = Offset(1 - globals.rangeArrowStart, p.aY).toRelative();
+          end = Offset(1 - globals.rangeArrowEnd, p.aY).toRelative();
+          canvas.drawArrow(start, end, painter: paint);
+        }
+      } else if (p.aX > 1) {
+        if (p.aY > 1) {
+          //arrow top right corner
+        } else {
+          //arrow right side
+          start = Offset(globals.rangeArrowStart, p.aY).toRelative();
+          end = Offset(globals.rangeArrowEnd, p.aY).toRelative();
+          canvas.drawArrow(start, end, painter: paint);
+        }
+      } else if (p.aY > 1) {
+        //arrow top
+        start = Offset(p.aX, globals.rangeArrowStart).toRelative();
+        end = Offset(p.aX, globals.rangeArrowEnd).toRelative();
+        canvas.drawArrow(start, end, painter: paint);
+      }
+    }
     }
   }
 
@@ -166,8 +202,7 @@ class CharacterPainter extends GlobalPainter {
   /// CONSTRUCTORS
   ///
 
-  CharacterPainter(this.currentPlayer, this.playerTeams, this.playerShootSetup)
-      : super(currentPlayer, playerTeams, playerShootSetup);
+  CharacterPainter();
 
   ///
   /// SUBROUTINES
@@ -258,9 +293,7 @@ class GamePainter extends GlobalPainter {
   /// CONSTRUCTORS
   ///
 
-  GamePainter(int currentPlayer, List<int> playerTeams,
-      List<List<double>> playerShootSetup)
-      : super(currentPlayer, playerTeams, playerShootSetup);
+  GamePainter();
 
   ///
   /// FUNCTIONS

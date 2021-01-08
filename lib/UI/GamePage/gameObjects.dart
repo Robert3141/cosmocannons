@@ -10,6 +10,7 @@ import 'dart:async';
 class GameObject {
   // VARIABLES
 
+  int _team;
   double aX; // x pos between 0 and 1 (left to right)
   double aY; // y pos between 0 and 1 (bottom to top)
 
@@ -19,6 +20,8 @@ class GameObject {
   double get rY => (1 - aY) * globals.canvasSize.height;
   Offset get aPos => Offset(aX, aY);
   Offset get rPos => Offset(rX, rY);
+  int get team => _team;
+  Color get teamColour => globals.teamColors[team];
 
   // SETTERS
 
@@ -37,12 +40,10 @@ class GameObject {
 
 class Player extends GameObject {
   // attributes
-  int _team;
   bool updated = false;
   double health;
 
   //getters
-  int get team => _team;
 
   //setters
 
@@ -100,10 +101,12 @@ class Projectile extends GameObject {
   }*/
   Projectile.radians(double intensity, double angleRadians, int player) {
     _player = player;
+    _team = playerObj.team;
     _projectileRadians(intensity, angleRadians);
   }
   Projectile.degrees(double intensity, double angleDegrees, int player) {
     _player = player;
+    _team = playerObj.team;
     _projectileRadians(intensity, angleDegrees * globals.degreesToRadians);
   }
 

@@ -472,12 +472,26 @@ class _MainGamePageState extends State<MainGamePage> {
   }
 
   //TODO: reference in code
-  Future<bool> savePlayerData(List<Player> playerData) async {
+  Future<bool> savePlayerData(List<Player> playerData,
+      {int saveAttempt = 0}) async {
     //locals
     bool savedCorrectly = true;
+    int length = globals.players.length;
 
     //save data
-    savedCorrectly &= await UI
+    savedCorrectly &= await UI.dataStore(globals.keyPlayerPosX,
+        List<double>.generate(length, (index) => playerData[index].aX));
+    savedCorrectly &= await UI.dataStore(globals.keyPlayerPosY,
+        List<double>.generate(length, (index) => playerData[index].aY));
+    savedCorrectly &= await UI.dataStore(globals.keyPlayerHealth,
+        List<double>.generate(length, (index) => playerData[index].health));
+    savedCorrectly &= await UI.dataStore(globals.keyPlayerTeams,
+        List<int>.generate(length, (index) => playerData[index].team));
+
+    // only report as saved if saving worked
+    savedCorrectly &= await UI.dataStore(globals.keySavedGame, savedCorrectly);
+
+    return savedCorrectly;
   }
 
   void quitWithSaving() async {

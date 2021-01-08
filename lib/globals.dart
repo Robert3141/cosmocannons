@@ -2,6 +2,7 @@ library cosmocannons.globals;
 
 import 'dart:ui';
 import 'dart:math';
+import 'package:cosmocannons/UI/GamePage/gameObjects.dart';
 import 'package:flutter/foundation.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -144,6 +145,8 @@ const double blastRadius = 0.01;
 const double blastDamage = -40;
 const double defaultPlayerHealth = 100;
 const double playerRadius = 10;
+const double rangeArrowStart = 0.95;
+const double rangeArrowEnd = 0.99;
 
 const List<double> locationInvisible = [-1, -1];
 const List<double> defaultFireSetup = [30, 90];
@@ -228,6 +231,9 @@ List<Color> terrainCacheColour;
 Offset arrowTop = Offset(0, 0);
 
 Size canvasSize;
+
+List<Player> players;
+List<Projectile> projectiles;
 
 // Global UI based vars
 

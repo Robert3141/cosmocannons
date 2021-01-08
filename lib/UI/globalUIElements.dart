@@ -611,9 +611,8 @@ class UI {
         ));
   }
 
-  static Future dataStore(String key, dynamic value) async {
-    await ExtendedPrefs(debug: false).dataStore(key, value);
-    return;
+  static Future<bool> dataStore(String key, dynamic value) async {
+    return await ExtendedPrefs(debug: false).dataStore(key, value);
   }
 
   static Future<dynamic> dataLoad(String key, String type) async =>
