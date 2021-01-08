@@ -612,7 +612,7 @@ class _MainGamePageState extends State<MainGamePage> {
         Color playerButtonColour =
             globals.players[globals.currentPlayer].teamColour ??
                 globals.textColor;
-        Size canvasSize =
+        globals.canvasSize =
             Size(UI.screenWidth(context) * zoom, UI.screenHeight(context));
         page = UI.scaffoldWithBackground(children: [
           Stack(
@@ -694,17 +694,17 @@ class _MainGamePageState extends State<MainGamePage> {
                         //projectiles
                         CustomPaint(
                           willChange: firing ?? false,
-                          size: canvasSize,
+                          size: globals.canvasSize,
                           painter: ShootPainter(),
                         ),
                         //players
                         CustomPaint(
-                          size: canvasSize,
+                          size: globals.canvasSize,
                           painter: CharacterPainter(),
                         ),
                         //terrain
                         CustomPaint(
-                          size: canvasSize,
+                          size: globals.canvasSize,
                           painter: GamePainter(),
                         )
                       ],

@@ -44,33 +44,6 @@ class GlobalPainter extends CustomPainter {
   /// FUNCTIONS
   ///
 
-  /*Offset relativePos(double x, double y) {
-    //takes x & y between 0 and 1
-    //returns size based on screen
-    double newX = x * canvasSize.width;
-    double newY = (1 - y) * canvasSize.height;
-    return Offset(newX, newY);
-  }
-
-  Offset relPos(Offset pos, [Size size]) {
-    canvasSize = size ?? canvasSize;
-    // takes x and y between 0 and 1
-    // return size based on screen
-    return Offset(pos.dx * canvasSize.width, (1 - pos.dy) * canvasSize.height);
-  }
-
-  Offset actualPos(Offset pos, [Size size]) {
-    canvasSize = size ?? canvasSize;
-    // takes x & y from game size and returns between 1 & 0
-    return Offset(pos.dx / canvasSize.width, 1 - (pos.dy / canvasSize.height));
-  }*/
-
-  List<double> getPlayerAnglesArray(List<List<double>> list) {
-    List<double> newList = List.empty(growable: true);
-    for (int i = 0; i < list.length; i++) newList.add(list[i][1]);
-    return newList;
-  }
-
   double calcNearestHeight(List<double> terrainHeights, double relPos) {
     //return nearest index int
     double blockWidth = 1 / terrainHeights.length;
@@ -91,9 +64,7 @@ class GlobalPainter extends CustomPainter {
   ///
 
   @override
-  void paint(Canvas canvas, Size size) {
-    globals.canvasSize = size;
-  }
+  void paint(Canvas canvas, Size size) {}
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
@@ -182,7 +153,8 @@ class ShootPainter extends GlobalPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     // TODO: implement shouldRepaint
-    return arrowTop != globals.arrowTop || dragGhost != globals.dragGhost;
+    //return arrowTop != globals.arrowTop || dragGhost != globals.dragGhost;
+    return false;
   }
 }
 
@@ -201,6 +173,7 @@ class CharacterPainter extends GlobalPainter {
 
   void drawPlayer(Canvas canvas, Player player) {
     //define locals
+    double radius = 10;
 
     //define paints
     final TextPainter playerHealthText = globals.defaultTextPaint
@@ -213,22 +186,22 @@ class CharacterPainter extends GlobalPainter {
       ..strokeWidth = 10
       ..strokeCap = StrokeCap.square;
 
-    // set turretPos
-
     //draw paints
-    playerHealthText.paint(canvas, player.rPos.translate(0, -12));
+    canvas.drawCircle(player.rPos.translate(0, -radius), radius, playerCircle);
+    playerHealthText.paint(canvas,
+        player.rPos.translate(-playerHealthText.width / 2, -radius * 4));
   }
 
   void spawnInPlayers(List<double> terrainHeights, Canvas canvas) {
-    for (int p = 0; p < globals.players.length; p++) {
-      drawPlayer(canvas, globals.players[p]);
-    }
+    if (globals.players.isNotEmpty)
+      for (int p = 0; p < globals.players.length; p++) {
+        drawPlayer(canvas, globals.players[p]);
+      }
   }
 
   @override
   void paint(Canvas canvas, Size size) {
     super.paint(canvas, size);
-    List<double> gameMap = globals.currentMap;
 
     spawnInPlayers(globals.currentMap, canvas);
   }
@@ -368,5 +341,6 @@ class GamePainter extends GlobalPainter {
   @override
   bool shouldRepaint(CustomPainter old) {
     //TODO: FIX THIS
+    return false;
   }
 }

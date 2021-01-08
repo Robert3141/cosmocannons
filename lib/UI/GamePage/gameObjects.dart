@@ -53,13 +53,13 @@ class Player extends GameObject {
   Player(Offset pos, int team) {
     aPos = pos;
     _team = team;
-    health = 0;
+    health = globals.defaultPlayerHealth;
   }
   Player.fromListCreated(int p, int n, int team, List<double> terrainHeights) {
     aX = (p + 1) / (n + 1);
     aY = GamePainter().calcNearestHeight(terrainHeights, aX);
     _team = team;
-    health = 0;
+    health = globals.defaultPlayerHealth;
   }
   Player.withHealth(Offset pos, int team, double h) {
     aPos = pos;
