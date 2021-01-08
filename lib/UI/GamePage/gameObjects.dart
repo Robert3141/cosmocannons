@@ -4,6 +4,7 @@ import 'package:cosmocannons/UI/GamePage/gamePaint.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/globals.dart' as globals;
+import 'package:cosmocannons/UI/globalUIElements.dart';
 import 'dart:async';
 
 class GameObject {
@@ -139,7 +140,7 @@ class Projectile extends GameObject {
 
     //hit player?
     hitPlayer = false;
-    for (int p = 0; p < amountOfPlayers; p++) {
+    for (int p = 0; p < globals.amountOfPlayers; p++) {
       if (checkInRadius(aPos, playerObj.aPos, globals.blastRadius)) {
         //determine new distance to player
         newDistToPlayer = (playerObj.aPos - aPos).distance;
@@ -162,10 +163,19 @@ class Projectile extends GameObject {
   }
 
   void _giveDamage(Offset position) {
+    //locals
+    Offset distanceInRadius;
     //check all players
     for (int i = 0; i < globals.amountOfPlayers; i++) {
-      if (globals.players[i].team) if (checkInRadius(
-          position, globals.players[i].aPos, globals.blastRadius)) {}
+      //check player in team
+      if (globals.players[i].team == playerObj.team) {
+        // check player in blast radius
+        if (checkInRadius(
+            position, globals.players[i].aPos, globals.blastRadius)) {
+          //distance in radius
+          distanceInRadius = globals.players[i].aPos - position;
+        }
+      }
     }
   }
 

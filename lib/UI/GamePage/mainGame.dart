@@ -8,6 +8,7 @@ import 'package:cosmocannons/UI/globalUIElements.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:cosmocannons/UI/GamePage/gamePaint.dart';
 import 'package:flutter/services.dart';
+import 'package:cosmocannons/UI/GamePage/gameObjects.dart';
 
 class MainGamePage extends StatefulWidget {
   //constructor of class
@@ -468,6 +469,15 @@ class _MainGamePageState extends State<MainGamePage> {
     } catch (e) {
       outputError(e);
     }
+  }
+
+  //TODO: reference in code
+  Future<bool> savePlayerData(List<Player> playerData) async {
+    //locals
+    bool savedCorrectly = true;
+
+    //save data
+    savedCorrectly &= await UI
   }
 
   void quitWithSaving() async {
