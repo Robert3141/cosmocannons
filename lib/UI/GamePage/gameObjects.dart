@@ -11,6 +11,7 @@ class GameObject {
   // VARIABLES
 
   int _team;
+  bool updated = false;
   double aX; // x pos between 0 and 1 (left to right)
   double aY; // y pos between 0 and 1 (bottom to top)
 
@@ -40,10 +41,11 @@ class GameObject {
 
 class Player extends GameObject {
   // attributes
-  bool updated = false;
   double health;
+  Offset _lastShot = Offset.zero;
 
   //getters
+  Offset get lastShot => _lastShot;
 
   //setters
 
@@ -51,6 +53,13 @@ class Player extends GameObject {
   Player(Offset pos, int team) {
     aPos = pos;
     _team = team;
+    health = 0;
+  }
+  Player.fromListCreated(int p, int n, int team, List<double> terrainHeights) {
+    aX = (p + 1) / (n + 1);
+    aY = GamePainter().calcNearestHeight(terrainHeights, aX);
+    _team = team;
+    health = 0;
   }
 
   //methods
@@ -74,7 +83,6 @@ class Player extends GameObject {
 }
 
 class Projectile extends GameObject {
-  bool updated = false;
   Offset _u;
   Offset _a;
   Offset _startPos;
@@ -122,6 +130,9 @@ class Projectile extends GameObject {
     impactPos = await _animateProjectile();
 
     _giveDamage(impactPos);
+
+    //destroy now
+    globals.projectiles.remove(this);
   }
 
   void _renderCallback(Timer timer) {
@@ -143,7 +154,7 @@ class Projectile extends GameObject {
 
     //hit player?
     hitPlayer = false;
-    for (int p = 0; p < globals.amountOfPlayers; p++) {
+    for (int p = 0; p < globals.players.length; p++) {
       if (checkInRadius(aPos, playerObj.aPos, globals.blastRadius)) {
         //determine new distance to player
         newDistToPlayer = (playerObj.aPos - aPos).distance;
@@ -169,7 +180,7 @@ class Projectile extends GameObject {
     //locals
     Offset distanceInRadius;
     //check all players
-    for (int i = 0; i < globals.amountOfPlayers; i++) {
+    for (int i = 0; i < globals.players.length; i++) {
       //check player in team
       if (globals.players[i].team == playerObj.team) {
         // check player in blast radius

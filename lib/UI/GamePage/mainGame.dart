@@ -37,8 +37,6 @@ class MainGamePage extends StatefulWidget {
 class _MainGamePageState extends State<MainGamePage> {
   //locals
   double zoom = globals.defaultZoom;
-  int amountOfPlayers;
-  int currentPlayer;
   int thisPlayer;
   bool startOfGame = true;
   bool paused = false;
@@ -47,15 +45,13 @@ class _MainGamePageState extends State<MainGamePage> {
   bool firing = false;
   bool movedPlayer = false;
   BuildContext pageContext;
-  List<int> playerTeams;
-  List<List<double>> lastFireSetup;
   TapDownDetails tapDetails;
 
   ///
   /// FUNCTIONS
   ///
 
-  Future<List<double>> animateProjectile(
+  /* Future<List<double>> animateProjectile(
       double intensity, double angleDegrees, int playerInt) async {
     //simulate particle
     double angleRadians = angleDegrees * globals.degreesToRadians;
@@ -97,8 +93,7 @@ class _MainGamePageState extends State<MainGamePage> {
       });
 
       //hit terrain?
-      terrainHeight = GlobalPainter(currentPlayer, playerTeams, lastFireSetup)
-          .calcNearestHeight(globals.currentMap, sX);
+      terrainHeight = GlobalPainter().calcNearestHeight(globals.currentMap, sX);
 
       //hit player?
       hitPlayer = false;
@@ -136,9 +131,9 @@ class _MainGamePageState extends State<MainGamePage> {
     impactPos = globals.projectilePos ?? globals.locationInvisible;
     globals.projectilePos = globals.locationInvisible;
     return impactPos;
-  }
+  }*/
 
-  bool takeDamage(List<double> impactPos, int playerInt) {
+  /*bool takeDamage(List<double> impactPos, int playerInt) {
     //local vars
     int currentPlayerTeam = playerTeams[playerInt];
     int amountRemaining = 0;
@@ -180,13 +175,13 @@ class _MainGamePageState extends State<MainGamePage> {
         item[0] < hitbox[0] + hitboxRadius &&
         item[1] > hitbox[1] - hitboxRadius &&
         item[1] < hitbox[1] + hitboxRadius;
-  }
+  }*/
 
   ///
   /// SUBROUTINES
   ///
 
-  Future<void> playerShoot(double intensity, double angleDegrees) async {
+  /*Future<void> playerShoot(double intensity, double angleDegrees) async {
     try {
       //set fire setups
       lastFireSetup[currentPlayer] = [intensity, angleDegrees];
@@ -235,7 +230,7 @@ class _MainGamePageState extends State<MainGamePage> {
     } catch (e) {
       outputError(e);
     }
-  }
+  }*/
 
   void pausePress() {
     try {
@@ -267,7 +262,7 @@ class _MainGamePageState extends State<MainGamePage> {
     }
   }
 
-  void playerMove(bool right) {
+  /*void playerMove(bool right) {
     try {
       double playerX = globals.playerPos[currentPlayer][0];
       double playerY;
@@ -280,8 +275,7 @@ class _MainGamePageState extends State<MainGamePage> {
           : playerX < 0
               ? 0
               : playerX;
-      playerY = GlobalPainter(currentPlayer, playerTeams, lastFireSetup)
-              .calcNearestHeight(globals.currentMap, playerX) +
+      playerY = GlobalPainter().calcNearestHeight(globals.currentMap, playerX) +
           globals.playerPadding;
       setState(() {
         movedPlayer = true;
@@ -290,22 +284,22 @@ class _MainGamePageState extends State<MainGamePage> {
     } catch (e) {
       outputError(e);
     }
-  }
+  }*/
 
-  void doubleTap() {
+  /*void doubleTap() {
     try {
       //get positions
       double tapX = tapDetails.localPosition.dx;
       double tapY = UI.screenHeight(context) - tapDetails.localPosition.dy;
       double playerX;
       double playerY;
-      int player = currentPlayer;
+      int player = globals.currentPlayer;
 
       //set player locations
-      playerX = globals.playerPos[player][0] *
+      playerX = globals.players[player].aX *
           UI.screenWidth(context) *
           globals.defaultZoom;
-      playerY = globals.playerPos[player][1] * UI.screenHeight(context);
+      playerY = globals.players[player].aY * UI.screenHeight(context);
 
       //check near player
       if (checkInRadius(
@@ -317,17 +311,11 @@ class _MainGamePageState extends State<MainGamePage> {
     } catch (e) {
       outputError(e);
     }
-  }
+  }*/
 
-  void playerShootTap() {
+  /*void playerShootTap() {
     try {
       //local variables
-      double intensity = lastFireSetup[currentPlayer][0];
-      double angle = lastFireSetup[currentPlayer][1];
-      List<String> fireSetupString = [
-        intensity.round().toString(),
-        angle.round().toString()
-      ];
 
       //show popup
       setState(() {
@@ -363,9 +351,9 @@ class _MainGamePageState extends State<MainGamePage> {
     } catch (e) {
       outputError(e);
     }
-  }
+  }*/
 
-  void nextPlayer(int playerInt) {
+  /*void nextPlayer(int playerInt) {
     try {
       //next player
       playerInt++;
@@ -381,7 +369,7 @@ class _MainGamePageState extends State<MainGamePage> {
     } catch (e) {
       outputError(e);
     }
-  }
+  }*/
 
   void gameResume() async {
     try {
@@ -503,14 +491,14 @@ class _MainGamePageState extends State<MainGamePage> {
 
       //save the variables
       try {
-        await UI.dataStore(globals.keySavedGame, true);
-        await UI.dataStore(globals.keyPlayerPos, globals.playerPos);
-        await UI.dataStore(globals.keyPlayerHealth, globals.playerHealth);
+        await UI.dataStore(globals.keySavedGame, true); //
+        await UI.dataStore(globals.keyPlayerPos, globals.playerPos); //
+        await UI.dataStore(globals.keyPlayerHealth, globals.playerHealth); //
         await UI.dataStore(globals.keyMapNo, globals.mapNo);
         await UI.dataStore(globals.keyAmountOfPlayers, amountOfPlayers);
         await UI.dataStore(globals.keyCurrentPlayer, currentPlayer);
         await UI.dataStore(globals.keyThisPlayer, thisPlayer);
-        await UI.dataStore(globals.keyPlayerTeams, playerTeams);
+        await UI.dataStore(globals.keyPlayerTeams, playerTeams); //
         await UI.dataStore(globals.keyGameMap, globals.currentMap);
         await UI.dataStore(globals.keyLastFireSetup, lastFireSetup);
         await UI.dataStore(globals.keyGameType, widget.type.string);
@@ -564,18 +552,18 @@ class _MainGamePageState extends State<MainGamePage> {
               playersTurn &&
               !movedPlayer) {
             //move left
-            playerMove(false);
+            globals.players[globals.currentPlayer].moveLeft();
           }
           if (keyPress == LogicalKeyboardKey.arrowRight &&
               playersTurn &&
               !movedPlayer) {
             //move right
-            playerMove(true);
+            globals.players[globals.currentPlayer].moveLeft();
           }
-          if (keyPress == LogicalKeyboardKey.enter) {
+          /*if (keyPress == LogicalKeyboardKey.enter) {
             //fire!!
             playerShootTap();
-          }
+          }*/
         }
         //always on keyboard controls
         if (key.logicalKey == LogicalKeyboardKey.escape) {
@@ -607,14 +595,16 @@ class _MainGamePageState extends State<MainGamePage> {
   //build UI
   @override
   Widget build(BuildContext context) {
+    globals.popup &= globals.projectiles.isNotEmpty;
     Scaffold page;
     try {
       if (startOfGame) widget.resumed ? gameResume() : gameStart();
       pageContext = context;
       if (loaded) {
-        playersTurn = thisPlayer == currentPlayer;
+        playersTurn = thisPlayer == globals.currentPlayer;
         Color playerButtonColour =
-            globals.teamColors[playerTeams[currentPlayer]] ?? globals.textColor;
+            globals.players[globals.currentPlayer].teamColour ??
+                globals.textColor;
         Size canvasSize =
             Size(UI.screenWidth(context) * zoom, UI.screenHeight(context));
         page = UI.scaffoldWithBackground(children: [
@@ -634,7 +624,7 @@ class _MainGamePageState extends State<MainGamePage> {
                   onKey: keyPresses,
                   focusNode: globals.gameInputs,
                   child: GestureDetector(
-                    onDoubleTap: () => tapDetails == null ? () {} : doubleTap(),
+                    //onDoubleTap: () => tapDetails == null ? () {} : doubleTap(),
                     onTapDown: (details) {
                       tapDetails = details;
                     },
@@ -643,11 +633,10 @@ class _MainGamePageState extends State<MainGamePage> {
                     },
                     //drag based shooting
                     onPanStart: (details) {
-                      Offset tapRelative = GlobalPainter(0, [], [])
-                          .actualPos(details.localPosition, canvasSize);
-                      if (checkInRadius(
-                              [tapRelative.dx, tapRelative.dy],
-                              globals.playerPos[currentPlayer],
+                      Offset tapRelative = details.localPosition.toRelative();
+
+                      if (tapRelative.checkInRadius(
+                              globals.players[globals.currentPlayer].aPos,
                               globals.blastRadius) &&
                           !globals.popup) {
                         globals.dragGhost = true;
@@ -656,11 +645,9 @@ class _MainGamePageState extends State<MainGamePage> {
                     onPanUpdate: (details) {
                       //define positions
                       if (globals.dragGhost) {
-                        Offset tapRelative = GlobalPainter(0, [], [])
-                            .actualPos(details.localPosition, canvasSize);
-                        Offset playerRelative = Offset(
-                            globals.playerPos[currentPlayer][0],
-                            globals.playerPos[currentPlayer][1]);
+                        Offset tapRelative = details.localPosition.toActual();
+                        Offset playerRelative =
+                            globals.players[globals.currentPlayer].aPos;
                         Offset arrowRelative =
                             playerRelative - tapRelative + playerRelative;
 
@@ -683,19 +670,16 @@ class _MainGamePageState extends State<MainGamePage> {
                         globals.popup = true;
 
                         //shoot
-                        Offset playerPos = Offset(
-                            globals.playerPos[currentPlayer][0],
-                            globals.playerPos[currentPlayer][1]);
+                        Offset playerPos =
+                            globals.players[globals.currentPlayer].aPos;
                         Offset arrow = Offset(
                             -(globals.arrowTop.dx - playerPos.dx),
                             globals.arrowTop.dy - playerPos.dy);
-                        double angle =
-                            arrow.direction * globals.radiansToDegrees;
-                        print(angle);
+                        double angle = arrow.direction;
                         double intensity =
                             arrow.distance * globals.shootSF; // TODO: continue
-                        await playerShoot(intensity, angle);
-                        globals.popup = false;
+                        globals.projectiles.add(Projectile.radians(
+                            intensity, angle, globals.currentPlayer));
                       }
                     },
                     child: Stack(
@@ -704,20 +688,17 @@ class _MainGamePageState extends State<MainGamePage> {
                         CustomPaint(
                           willChange: firing ?? false,
                           size: canvasSize,
-                          painter: ShootPainter(
-                              currentPlayer, playerTeams, lastFireSetup),
+                          painter: ShootPainter(),
                         ),
                         //players
                         CustomPaint(
                           size: canvasSize,
-                          painter: CharacterPainter(
-                              currentPlayer, playerTeams, lastFireSetup),
+                          painter: CharacterPainter(),
                         ),
                         //terrain
                         CustomPaint(
                           size: canvasSize,
-                          painter: GamePainter(
-                              currentPlayer, playerTeams, lastFireSetup),
+                          painter: GamePainter(),
                         )
                       ],
                     ),
@@ -818,11 +799,12 @@ class _MainGamePageState extends State<MainGamePage> {
                         icon: Icon(Icons.arrow_back_ios_rounded,
                             color: playerButtonColour),
                         iconSize: globals.iconSize,
-                        onPressed: () => playerMove(false),
+                        onPressed: () =>
+                            globals.players[globals.currentPlayer].moveRight(),
                       ),
                     )
                   : Container(),
-              playersTurn && !globals.popup
+              /*playersTurn && !globals.popup
                   ? Positioned(
                       //left: 0.0,
                       //right: 0.0,
@@ -836,7 +818,7 @@ class _MainGamePageState extends State<MainGamePage> {
                         onPressed: () => playerShootTap(),
                       ),
                     )
-                  : Container(),
+                  : Container(),*/
               playersTurn && !globals.popup && !movedPlayer
                   ? Positioned(
                       right: 0.0,
@@ -845,7 +827,8 @@ class _MainGamePageState extends State<MainGamePage> {
                         icon: Icon(Icons.arrow_forward_ios_rounded,
                             color: playerButtonColour),
                         iconSize: globals.iconSize,
-                        onPressed: () => playerMove(true),
+                        onPressed: () =>
+                            globals.players[globals.currentPlayer].moveRight(),
                       ),
                     )
                   : Container(),

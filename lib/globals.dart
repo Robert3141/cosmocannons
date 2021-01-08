@@ -56,7 +56,8 @@ const String warningMapOverwrite =
 const String keyMusic = "music"; //bool
 const String keyVolume = "sound"; //bool
 const String keySavedGame = "saved"; //bool
-const String keyPlayerPos = "playerPos"; //List<List<double>>
+const String keyPlayerPosX = "playerPosX"; //List<double>
+const String keyPlayerPosY = "playerPosY"; //List<double>
 const String keyPlayerHealth = "playerHealth"; //List<double>
 const String keyAmountOfPlayers = "amountOfPlayers"; //int
 const String keyCurrentPlayer = "currentPlayer"; //int
@@ -216,12 +217,8 @@ int mapNo;
 int terrainColumnsToRender = kIsWeb ? mapQualitySizes[0] : mapQualitySizes[1];
 int musicSeek = 0;
 int musicTrack = Random().nextInt(songs.length - 1);
+int currentPlayer;
 
-List<List<double>> playerPos;
-List<List<double>> turretPos;
-
-List<double> projectilePos;
-List<double> playerHealth;
 List<double> currentMap;
 
 List<List<Offset>> terrainCacheLocation;
@@ -232,6 +229,7 @@ Offset arrowTop = Offset(0, 0);
 
 Size canvasSize;
 
+//objects
 List<Player> players;
 List<Projectile> projectiles;
 
