@@ -230,8 +230,8 @@ Offset arrowTop = Offset(0, 0);
 Size canvasSize;
 
 //objects
-List<Player> players;
-List<Projectile> projectiles;
+List<Player> players = List<Player>.empty(growable: true);
+List<Projectile> projectiles = List<Projectile>.empty(growable: true);
 
 // Global UI based vars
 

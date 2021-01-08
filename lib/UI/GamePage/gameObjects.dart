@@ -61,6 +61,11 @@ class Player extends GameObject {
     _team = team;
     health = 0;
   }
+  Player.withHealth(Offset pos, int team, double h) {
+    aPos = pos;
+    _team = team;
+    health = h;
+  }
 
   //methods
   void moveRight() => move(globals.movementAmount);

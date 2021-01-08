@@ -371,6 +371,24 @@ class _MainGamePageState extends State<MainGamePage> {
     }
   }*/
 
+  //TODO: reference in code
+  Future<void> loadPlayerData() async {
+    //locals
+    int length = globals.players.length;
+
+    //save data
+    List<double> aX = await UI.dataLoad(globals.keyPlayerPosX, "List<double>");
+    List<double> aY = await UI.dataLoad(globals.keyPlayerPosY, "List<double>");
+    List<double> health =
+        await UI.dataLoad(globals.keyPlayerHealth, "List<double>");
+    List<int> team = await UI.dataLoad(globals.keyPlayerTeams, "List<int>");
+    //loop through
+    globals.players = List.empty(growable: true);
+    for (int i = 0; i < aX.length; i++)
+      globals.players
+          .add(Player.withHealth(Offset(aX[i], aY[i]), team[i], health[i]));
+  }
+
   void gameResume() async {
     try {
       setState(() {
@@ -378,20 +396,15 @@ class _MainGamePageState extends State<MainGamePage> {
       });
 
       //resume data
-      globals.playerPos =
-          await UI.dataLoad(globals.keyPlayerPos, "List<List<double>>");
-      globals.playerHealth =
-          await UI.dataLoad(globals.keyPlayerHealth, "List<double>");
       globals.mapNo = await UI.dataLoad(globals.keyMapNo, "int");
-      amountOfPlayers = await UI.dataLoad(globals.keyAmountOfPlayers, "int");
-      currentPlayer = await UI.dataLoad(globals.keyCurrentPlayer, "int");
+      globals.currentPlayer =
+          await UI.dataLoad(globals.keyCurrentPlayer, "int");
       thisPlayer = await UI.dataLoad(globals.keyThisPlayer, "int");
       globals.currentMap =
           await UI.dataLoad(globals.keyGameMap, "List<double>");
-      lastFireSetup =
-          await UI.dataLoad(globals.keyLastFireSetup, "List<List<double>>");
-      playerTeams = widget.playerTeams;
-      movedPlayer = await UI.dataLoad(globals.keyMovedPlayer, "bool");
+
+      //load players
+      loadPlayerData();
 
       //not start
       startOfGame = false;
@@ -412,25 +425,19 @@ class _MainGamePageState extends State<MainGamePage> {
   void gameStart() async {
     try {
       // get data from root
-      currentPlayer = widget.type.playerNumber;
-      playerTeams = widget.playerTeams;
-      thisPlayer = currentPlayer;
+      globals.currentPlayer = widget.type.playerNumber;
+      thisPlayer = globals.currentPlayer;
       globals.mapNo = widget.mapNo;
       globals.currentMap = globals.terrainMaps[widget.mapNo];
 
       //not start anymore
       startOfGame = false;
 
-      //set amount of players
-      amountOfPlayers = playerTeams.length;
-
-      //reset health and fire setups
-      globals.playerHealth = List.empty(growable: true);
-      lastFireSetup = List.empty(growable: true);
-      for (int i = 0; i < amountOfPlayers; i++) {
-        globals.playerHealth.add(globals.defaultPlayerHealth);
-        lastFireSetup.add(globals.defaultFireSetup.toList());
-      }
+      //create players
+      globals.players = List.empty(growable: true);
+      for (int i = 0; i < widget.playerTeams.length; i++)
+        globals.players.add(Player.fromListCreated(i, widget.playerTeams.length,
+            widget.playerTeams[i], globals.currentMap));
 
       //play music
       UI.playMusic();
@@ -460,8 +467,7 @@ class _MainGamePageState extends State<MainGamePage> {
   }
 
   //TODO: reference in code
-  Future<bool> savePlayerData(List<Player> playerData,
-      {int saveAttempt = 0}) async {
+  Future<bool> savePlayerData(List<Player> playerData) async {
     //locals
     bool savedCorrectly = true;
     int length = globals.players.length;
@@ -476,13 +482,11 @@ class _MainGamePageState extends State<MainGamePage> {
     savedCorrectly &= await UI.dataStore(globals.keyPlayerTeams,
         List<int>.generate(length, (index) => playerData[index].team));
 
-    // only report as saved if saving worked
-    savedCorrectly &= await UI.dataStore(globals.keySavedGame, savedCorrectly);
-
     return savedCorrectly;
   }
 
   void quitWithSaving() async {
+    bool savedCorrectly = true;
     try {
       //show saving popup
       setState(() {
@@ -491,18 +495,21 @@ class _MainGamePageState extends State<MainGamePage> {
 
       //save the variables
       try {
-        await UI.dataStore(globals.keySavedGame, true); //
-        await UI.dataStore(globals.keyPlayerPos, globals.playerPos); //
-        await UI.dataStore(globals.keyPlayerHealth, globals.playerHealth); //
-        await UI.dataStore(globals.keyMapNo, globals.mapNo);
-        await UI.dataStore(globals.keyAmountOfPlayers, amountOfPlayers);
-        await UI.dataStore(globals.keyCurrentPlayer, currentPlayer);
-        await UI.dataStore(globals.keyThisPlayer, thisPlayer);
-        await UI.dataStore(globals.keyPlayerTeams, playerTeams); //
-        await UI.dataStore(globals.keyGameMap, globals.currentMap);
-        await UI.dataStore(globals.keyLastFireSetup, lastFireSetup);
-        await UI.dataStore(globals.keyGameType, widget.type.string);
-        await UI.dataStore(globals.keyMovedPlayer, movedPlayer);
+        //save variables
+        savedCorrectly &= await UI.dataStore(globals.keyMapNo, globals.mapNo);
+        savedCorrectly &=
+            await UI.dataStore(globals.keyCurrentPlayer, globals.currentPlayer);
+        savedCorrectly &= await UI.dataStore(globals.keyThisPlayer, thisPlayer);
+        savedCorrectly &=
+            await UI.dataStore(globals.keyGameMap, globals.currentMap);
+        savedCorrectly &=
+            await UI.dataStore(globals.keyGameType, widget.type.string);
+        savedCorrectly &=
+            await UI.dataStore(globals.keyMovedPlayer, movedPlayer);
+        //save objects
+        savedCorrectly &= await savePlayerData(globals.players);
+        // only report as saved if saving worked
+        await UI.dataStore(globals.keySavedGame, savedCorrectly);
       } on ArgumentError catch (e) {
         if (e.name == "minified") {
           await UI.dataStore(globals.keySavedGame, false);
@@ -595,7 +602,7 @@ class _MainGamePageState extends State<MainGamePage> {
   //build UI
   @override
   Widget build(BuildContext context) {
-    globals.popup &= globals.projectiles.isNotEmpty;
+    //globals.popup &= globals.projectiles.isNotEmpty;
     Scaffold page;
     try {
       if (startOfGame) widget.resumed ? gameResume() : gameStart();
