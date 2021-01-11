@@ -145,7 +145,7 @@ const double playerPadding = 0.001;
 const double blastRadius = 0.01;
 const double blastDamage = -40;
 const double defaultPlayerHealth = 100;
-const double playerRadius = 10;
+const double playerRadius = 20;
 const double rangeArrowStart = 0.95;
 const double rangeArrowEnd = 0.99;
 

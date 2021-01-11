@@ -12,8 +12,8 @@ class GameObject {
 
   int _team;
   bool updated = false;
-  double aX; // x pos between 0 and 1 (left to right)
-  double aY; // y pos between 0 and 1 (bottom to top)
+  double aX = 0; // x pos between 0 and 1 (left to right)
+  double aY = 0; // y pos between 0 and 1 (bottom to top)
 
   // GETTERS
 
@@ -21,6 +21,8 @@ class GameObject {
   double get rY => (1 - aY) * globals.canvasSize.height;
   Offset get aPos => Offset(aX, aY);
   Offset get rPos => Offset(rX, rY);
+  Offset get aPosCentre => rPosCentre.toActual();
+  Offset get rPosCentre => rPos.translate(0, -globals.playerRadius);
   int get team => _team;
   Color get teamColour => globals.teamColors[team];
 
@@ -88,7 +90,7 @@ class Player extends GameObject {
 
   void draw(Canvas canvas) {
     //define locals
-    double radius = 10;
+    double radius = globals.playerRadius;
 
     //define paints
     final TextPainter playerHealthText = globals.defaultTextPaint
@@ -145,7 +147,7 @@ class Projectile extends GameObject {
   }
 
   void _projectileRadians(double intensity, double angleRadians) async {
-    /*//local vars
+    //local vars
     Offset impactPos;
 
     //set set u,a,s
@@ -158,7 +160,7 @@ class Projectile extends GameObject {
     _giveDamage(impactPos);
 
     //destroy now
-    globals.projectiles.remove(this);*/
+    globals.projectiles.remove(this);
   }
 
   void _renderCallback(Timer timer) {
@@ -174,7 +176,7 @@ class Projectile extends GameObject {
     // s = ut + 0.5att
     aX = aX + (_u.dx * _timeSec + 0.5 * aX * _timeSec * _timeSec) * globals.xSF;
     aY = aY + (_u.dy * _timeSec + 0.5 * aY * _timeSec * _timeSec) * globals.ySF;
-
+    print("$_timeSec  $aPos");
     // hit terrain?
     terrainHeight = GlobalPainter().calcNearestHeight(globals.currentMap, aX);
 
@@ -234,9 +236,9 @@ class Projectile extends GameObject {
     const Duration length = Duration(milliseconds: globals.frameLengthMs);
     const Duration check = Duration(milliseconds: globals.checkDoneMs);
     Timer timer;
-    Offset impactPos;
 
     //run timer
+    _timeSec = 0;
     timer = Timer.periodic(length, (timer) => _renderCallback(timer));
 
     // wait until flight over or long flight

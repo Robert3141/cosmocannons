@@ -650,32 +650,26 @@ class _MainGamePageState extends State<MainGamePage> {
                     },
                     //drag based shooting
                     onPanStart: (details) {
-                      Offset tapRelative = details.localPosition.toActual();
-                      print(
-                          "${tapRelative.dx} ${globals.players[globals.currentPlayer].aPos.dx}");
-                      print(
-                          "${tapRelative.dy} ${globals.players[globals.currentPlayer].aPos.dy}");
+                      Offset tapRelative = details.localPosition;
                       if (tapRelative.checkInRadius(
-                              globals.players[globals.currentPlayer].aPos,
-                              globals.blastRadius) &&
+                              globals.players[globals.currentPlayer].rPosCentre,
+                              globals.playerRadius) &&
                           !globals.popup) {
                         globals.dragGhost = true;
-                        print("drag ghost enabled");
                       }
                     },
                     onPanUpdate: (details) {
                       //define positions
                       if (globals.dragGhost) {
-                        Offset tapRelative = details.localPosition.toActual();
+                        Offset tapRelative = details.localPosition;
                         Offset playerRelative =
-                            globals.players[globals.currentPlayer].aPos;
+                            globals.players[globals.currentPlayer].rPosCentre;
                         Offset arrowRelative =
                             playerRelative - tapRelative + playerRelative;
 
                         //set arrowPos
                         setState(() {
-                          globals.arrowTop = arrowRelative;
-                          print(globals.arrowTop);
+                          globals.arrowTop = arrowRelative.toActual();
                         });
                       }
                     },
@@ -706,6 +700,12 @@ class _MainGamePageState extends State<MainGamePage> {
                     },
                     child: Stack(
                       children: [
+                        //projectiles
+                        CustomPaint(
+                          willChange: firing || globals.dragGhost ?? false,
+                          size: globals.canvasSize,
+                          painter: ShootPainter(),
+                        ),
                         //players
                         CustomPaint(
                           size: globals.canvasSize,
@@ -715,12 +715,6 @@ class _MainGamePageState extends State<MainGamePage> {
                         CustomPaint(
                           size: globals.canvasSize,
                           painter: GamePainter(),
-                        ),
-                        //projectiles
-                        CustomPaint(
-                          willChange: firing || globals.dragGhost ?? false,
-                          size: globals.canvasSize,
-                          painter: ShootPainter(),
                         ),
                       ],
                     ),

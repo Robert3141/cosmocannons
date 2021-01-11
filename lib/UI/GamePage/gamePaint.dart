@@ -135,15 +135,16 @@ class ShootPainter extends GlobalPainter {
     Paint painter = Paint()
       ..blendMode = BlendMode.plus
       ..color = player.teamColour;
-    if (globals.dragGhost || true) {
-      canvas.drawArrow(player.rPos, endPos.toRelative(), painter: painter);
+    if (globals.dragGhost) {
+      canvas.drawArrow(player.rPosCentre, endPos.toRelative(),
+          painter: painter);
     }
   }
 
   @override
   void paint(Canvas canvas, Size size) {
     super.paint(canvas, size);
-    Offset arrowTop = globals.arrowTop;
+    arrowTop = globals.arrowTop;
 
     spawnProjectile(canvas);
     drawAimArrow(canvas, globals.players[globals.currentPlayer], arrowTop);
@@ -159,9 +160,7 @@ class ShootPainter extends GlobalPainter {
     }
     //check arrow
     updated |= arrowTop != globals.arrowTop;
-    if (updated) print("new arrowTop $arrowTop");
-    print("proj $updated");
-    return false;
+    return updated;
   }
 }
 
@@ -199,7 +198,6 @@ class CharacterPainter extends GlobalPainter {
     for (int i = 0; i < globals.players.length; i++) {
       updated |= globals.players[i].updated;
     }
-    print("player $updated");
     return updated;
   }
 }
