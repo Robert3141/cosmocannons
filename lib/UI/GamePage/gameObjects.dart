@@ -85,6 +85,27 @@ class Player extends GameObject {
 
     updated = true;
   }
+
+  void draw(Canvas canvas) {
+    //define locals
+    double radius = 10;
+
+    //define paints
+    final TextPainter playerHealthText = globals.defaultTextPaint
+      ..text = TextSpan(
+          text: (this.health <= 0 ? 0 : this.health).toString(),
+          style: UI.defaultText())
+      ..layout();
+    final Paint playerCircle = globals.defaultDrawPaint
+      ..color = this.teamColour
+      ..strokeWidth = 10
+      ..strokeCap = StrokeCap.square;
+
+    //draw paints
+    canvas.drawCircle(this.rPos.translate(0, -radius), radius, playerCircle);
+    playerHealthText.paint(
+        canvas, this.rPos.translate(-playerHealthText.width / 2, -radius * 4));
+  }
 }
 
 class Projectile extends GameObject {
@@ -124,7 +145,7 @@ class Projectile extends GameObject {
   }
 
   void _projectileRadians(double intensity, double angleRadians) async {
-    //local vars
+    /*//local vars
     Offset impactPos;
 
     //set set u,a,s
@@ -137,7 +158,7 @@ class Projectile extends GameObject {
     _giveDamage(impactPos);
 
     //destroy now
-    globals.projectiles.remove(this);
+    globals.projectiles.remove(this);*/
   }
 
   void _renderCallback(Timer timer) {
@@ -193,6 +214,10 @@ class Projectile extends GameObject {
             position, globals.players[i].aPos, globals.blastRadius)) {
           //distance in radius
           distanceInRadius = globals.players[i].aPos - position;
+          globals.players[i].health -=
+              (globals.blastDamage * distanceInRadius.distance) /
+                  globals.blastRadius;
+          // TODO: check health goes to 0
         }
       }
     }

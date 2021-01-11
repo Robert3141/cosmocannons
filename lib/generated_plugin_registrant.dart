@@ -2,17 +2,14 @@
 // Generated file. Do not edit.
 //
 
-// ignore: unused_import
-import 'dart:ui';
-
 import 'package:assets_audio_player_web/web/assets_audio_player_web.dart';
 import 'package:shared_preferences_web/shared_preferences_web.dart';
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 // ignore: public_member_api_docs
-void registerPlugins(PluginRegistry registry) {
-  AssetsAudioPlayerWebPlugin.registerWith(registry.registrarFor(AssetsAudioPlayerWebPlugin));
-  SharedPreferencesPlugin.registerWith(registry.registrarFor(SharedPreferencesPlugin));
-  registry.registerMessageHandler();
+void registerPlugins(Registrar registrar) {
+  AssetsAudioPlayerWebPlugin.registerWith(registrar);
+  SharedPreferencesPlugin.registerWith(registrar);
+  registrar.registerMessageHandler();
 }

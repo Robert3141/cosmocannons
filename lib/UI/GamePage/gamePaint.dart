@@ -135,7 +135,7 @@ class ShootPainter extends GlobalPainter {
     Paint painter = Paint()
       ..blendMode = BlendMode.plus
       ..color = player.teamColour;
-    if (globals.dragGhost) {
+    if (globals.dragGhost || true) {
       canvas.drawArrow(player.rPos, endPos.toRelative(), painter: painter);
     }
   }
@@ -144,7 +144,6 @@ class ShootPainter extends GlobalPainter {
   void paint(Canvas canvas, Size size) {
     super.paint(canvas, size);
     Offset arrowTop = globals.arrowTop;
-    bool dragGhost = globals.dragGhost;
 
     spawnProjectile(canvas);
     drawAimArrow(canvas, globals.players[globals.currentPlayer], arrowTop);
@@ -152,8 +151,16 @@ class ShootPainter extends GlobalPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    // TODO: implement shouldRepaint
     //return arrowTop != globals.arrowTop || dragGhost != globals.dragGhost;
+    //check projectiles
+    bool updated = false;
+    for (int i = 0; i < globals.projectiles.length; i++) {
+      updated |= globals.projectiles[i].updated;
+    }
+    //check arrow
+    updated |= arrowTop != globals.arrowTop;
+    if (updated) print("new arrowTop $arrowTop");
+    print("proj $updated");
     return false;
   }
 }
@@ -171,31 +178,10 @@ class CharacterPainter extends GlobalPainter {
   /// SUBROUTINES
   ///
 
-  void drawPlayer(Canvas canvas, Player player) {
-    //define locals
-    double radius = 10;
-
-    //define paints
-    final TextPainter playerHealthText = globals.defaultTextPaint
-      ..text = TextSpan(
-          text: (player.health <= 0 ? 0 : player.health).toString(),
-          style: UI.defaultText())
-      ..layout();
-    final Paint playerCircle = globals.defaultDrawPaint
-      ..color = player.teamColour
-      ..strokeWidth = 10
-      ..strokeCap = StrokeCap.square;
-
-    //draw paints
-    canvas.drawCircle(player.rPos.translate(0, -radius), radius, playerCircle);
-    playerHealthText.paint(canvas,
-        player.rPos.translate(-playerHealthText.width / 2, -radius * 4));
-  }
-
   void spawnInPlayers(List<double> terrainHeights, Canvas canvas) {
     if (globals.players.isNotEmpty)
       for (int p = 0; p < globals.players.length; p++) {
-        drawPlayer(canvas, globals.players[p]);
+        globals.players[p].draw(canvas);
       }
   }
 
@@ -208,8 +194,13 @@ class CharacterPainter extends GlobalPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    //TODO fix this
-    return false;
+    //check all players
+    bool updated = false;
+    for (int i = 0; i < globals.players.length; i++) {
+      updated |= globals.players[i].updated;
+    }
+    print("player $updated");
+    return updated;
   }
 }
 

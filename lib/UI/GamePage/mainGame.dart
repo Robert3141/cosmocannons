@@ -373,29 +373,38 @@ class _MainGamePageState extends State<MainGamePage> {
 
   //TODO: reference in code
   Future<void> loadPlayerData() async {
-    //locals
-    int length = globals.players.length;
+    try {
+      //locals
+      int length = globals.players.length;
 
-    //save data
-    List<double> aX = await UI.dataLoad(globals.keyPlayerPosX, "List<double>");
-    List<double> aY = await UI.dataLoad(globals.keyPlayerPosY, "List<double>");
-    List<double> health =
-        await UI.dataLoad(globals.keyPlayerHealth, "List<double>");
-    List<int> team = await UI.dataLoad(globals.keyPlayerTeams, "List<int>");
-    //loop through
-    globals.players = List.empty(growable: true);
-    for (int i = 0; i < aX.length; i++)
-      globals.players
-          .add(Player.withHealth(Offset(aX[i], aY[i]), team[i], health[i]));
+      //save data
+      print(await UI.dataLoad(globals.keyPlayerPosX, "List<double>"));
+      List<double> aX =
+          await UI.dataLoad(globals.keyPlayerPosX, "List<double>");
+      List<double> aY =
+          await UI.dataLoad(globals.keyPlayerPosY, "List<double>");
+      List<double> health =
+          await UI.dataLoad(globals.keyPlayerHealth, "List<double>");
+      List<int> team = await UI.dataLoad(globals.keyPlayerTeams, "List<int>");
+      //loop through
+      globals.players = List.empty(growable: true);
+      for (int i = 0; i < aX.length; i++)
+        globals.players
+            .add(Player.withHealth(Offset(aX[i], aY[i]), team[i], health[i]));
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   void gameResume() async {
+    // TODO add null checks so it doesnt crash on update
     try {
       setState(() {
         loaded = false;
       });
 
       //resume data
+      print(await UI.dataLoad(globals.keyMapNo, "int"));
       globals.mapNo = await UI.dataLoad(globals.keyMapNo, "int");
       globals.currentPlayer =
           await UI.dataLoad(globals.keyCurrentPlayer, "int");
@@ -418,7 +427,8 @@ class _MainGamePageState extends State<MainGamePage> {
         loaded = true;
       });
     } catch (e) {
-      outputError(e);
+      print(e.toString());
+      //outputError(e);
     }
   }
 
@@ -640,13 +650,17 @@ class _MainGamePageState extends State<MainGamePage> {
                     },
                     //drag based shooting
                     onPanStart: (details) {
-                      Offset tapRelative = details.localPosition.toRelative();
-
+                      Offset tapRelative = details.localPosition.toActual();
+                      print(
+                          "${tapRelative.dx} ${globals.players[globals.currentPlayer].aPos.dx}");
+                      print(
+                          "${tapRelative.dy} ${globals.players[globals.currentPlayer].aPos.dy}");
                       if (tapRelative.checkInRadius(
                               globals.players[globals.currentPlayer].aPos,
                               globals.blastRadius) &&
                           !globals.popup) {
                         globals.dragGhost = true;
+                        print("drag ghost enabled");
                       }
                     },
                     onPanUpdate: (details) {
@@ -661,6 +675,7 @@ class _MainGamePageState extends State<MainGamePage> {
                         //set arrowPos
                         setState(() {
                           globals.arrowTop = arrowRelative;
+                          print(globals.arrowTop);
                         });
                       }
                     },
@@ -691,12 +706,6 @@ class _MainGamePageState extends State<MainGamePage> {
                     },
                     child: Stack(
                       children: [
-                        //projectiles
-                        CustomPaint(
-                          willChange: firing ?? false,
-                          size: globals.canvasSize,
-                          painter: ShootPainter(),
-                        ),
                         //players
                         CustomPaint(
                           size: globals.canvasSize,
@@ -706,7 +715,13 @@ class _MainGamePageState extends State<MainGamePage> {
                         CustomPaint(
                           size: globals.canvasSize,
                           painter: GamePainter(),
-                        )
+                        ),
+                        //projectiles
+                        CustomPaint(
+                          willChange: firing || globals.dragGhost ?? false,
+                          size: globals.canvasSize,
+                          painter: ShootPainter(),
+                        ),
                       ],
                     ),
                   ),
