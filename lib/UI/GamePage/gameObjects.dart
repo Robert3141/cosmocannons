@@ -32,7 +32,7 @@ class GameObject {
   set rY(double y) => aY = 1 - (y / globals.canvasSize.height);
   set aPos(Offset pos) {
     aX = pos.dx;
-    aX = pos.dy;
+    aY = pos.dy;
   }
 
   set rPos(Offset pos) {
@@ -117,6 +117,7 @@ class Projectile extends GameObject {
   double _timeSec;
   int _player;
   double distanceToPlayer;
+  Function updateUI;
 
   Offset get aU => _u;
   Offset get aA => _a;
@@ -135,18 +136,20 @@ class Projectile extends GameObject {
 
     _animateProjectile();
   }*/
-  Projectile.radians(double intensity, double angleRadians, int player) {
+  Projectile.radians(
+      double intensity, double angleRadians, int player, Function updater) {
+    updateUI = updater;
     _player = player;
     _team = playerObj.team;
-    _projectileRadians(intensity, angleRadians);
+    _projectileRunner(intensity, angleRadians);
   }
   Projectile.degrees(double intensity, double angleDegrees, int player) {
     _player = player;
     _team = playerObj.team;
-    _projectileRadians(intensity, angleDegrees * globals.degreesToRadians);
+    _projectileRunner(intensity, angleDegrees * globals.degreesToRadians);
   }
 
-  void _projectileRadians(double intensity, double angleRadians) async {
+  void _projectileRunner(double intensity, double angleRadians) async {
     //local vars
     Offset impactPos;
 
@@ -161,10 +164,16 @@ class Projectile extends GameObject {
 
     //destroy now
     globals.projectiles.remove(this);
+    print(globals.projectiles.length);
+    if (globals.projectiles.length == 0) {
+      globals.firing = false;
+      globals.popup = false;
+    }
   }
 
   void _renderCallback(Timer timer) {
     //set time
+    Player player;
     bool hitPlayer = false;
     double terrainHeight;
     double newDistToPlayer;
@@ -176,16 +185,18 @@ class Projectile extends GameObject {
     // s = ut + 0.5att
     aX = aX + (_u.dx * _timeSec + 0.5 * aX * _timeSec * _timeSec) * globals.xSF;
     aY = aY + (_u.dy * _timeSec + 0.5 * aY * _timeSec * _timeSec) * globals.ySF;
-    print("$_timeSec  $aPos");
+    updateUI();
     // hit terrain?
     terrainHeight = GlobalPainter().calcNearestHeight(globals.currentMap, aX);
 
     //hit player?
     hitPlayer = false;
     for (int p = 0; p < globals.players.length; p++) {
-      if (checkInRadius(aPos, playerObj.aPos, globals.blastRadius)) {
+      player = globals.players[p];
+      if (checkInRadius(aPos, player.aPos, globals.blastRadius) &&
+          player.team != playerInt) {
         //determine new distance to player
-        newDistToPlayer = (playerObj.aPos - aPos).distance;
+        newDistToPlayer = (player.aPos - aPos).distance;
 
         // player in range
         if (distanceToPlayer > newDistToPlayer) {
@@ -233,12 +244,14 @@ class Projectile extends GameObject {
   }
 
   Future<Offset> _animateProjectile() async {
+    globals.firing = true;
     const Duration length = Duration(milliseconds: globals.frameLengthMs);
     const Duration check = Duration(milliseconds: globals.checkDoneMs);
     Timer timer;
 
     //run timer
     _timeSec = 0;
+    aPos = playerObj.aPos;
     timer = Timer.periodic(length, (timer) => _renderCallback(timer));
 
     // wait until flight over or long flight

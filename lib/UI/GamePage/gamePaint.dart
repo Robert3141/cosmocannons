@@ -145,6 +145,9 @@ class ShootPainter extends GlobalPainter {
   void paint(Canvas canvas, Size size) {
     super.paint(canvas, size);
     arrowTop = globals.arrowTop;
+    if (globals.projectiles != null) if (globals.projectiles.length >= 1)
+      canvas.drawCircle(
+          globals.projectiles[0].rPos, 3, Paint()..color = Colors.pink);
 
     spawnProjectile(canvas);
     drawAimArrow(canvas, globals.players[globals.currentPlayer], arrowTop);
@@ -160,6 +163,7 @@ class ShootPainter extends GlobalPainter {
     }
     //check arrow
     updated |= arrowTop != globals.arrowTop;
+    print(updated);
     return updated;
   }
 }

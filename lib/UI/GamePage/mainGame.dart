@@ -42,10 +42,10 @@ class _MainGamePageState extends State<MainGamePage> {
   bool paused = false;
   bool playersTurn = true;
   bool loaded = true;
-  bool firing = false;
   bool movedPlayer = false;
   BuildContext pageContext;
   TapDownDetails tapDetails;
+  String updaterText = "";
 
   ///
   /// FUNCTIONS
@@ -552,7 +552,7 @@ class _MainGamePageState extends State<MainGamePage> {
       //only take key down events not key up as well
       if (key.runtimeType == RawKeyDownEvent) {
         //only take most inputs when not paused
-        if (!paused & !firing) {
+        if (!paused & !globals.firing) {
           String keyChar = key.data.keyLabel ?? "";
           KeyboardKey keyPress = key.logicalKey;
           switch (keyChar) {
@@ -590,6 +590,12 @@ class _MainGamePageState extends State<MainGamePage> {
     } catch (e) {
       outputError(e);
     }
+  }
+
+  void updateUI() {
+    setState(() {
+      updaterText = updaterText == "" ? " " : "";
+    });
   }
 
   void outputError(dynamic e) {
@@ -695,16 +701,18 @@ class _MainGamePageState extends State<MainGamePage> {
                         double intensity =
                             arrow.distance * globals.shootSF; // TODO: continue
                         globals.projectiles.add(Projectile.radians(
-                            intensity, angle, globals.currentPlayer));
+                            intensity, angle, globals.currentPlayer, updateUI));
                       }
                     },
                     child: Stack(
                       children: [
                         //projectiles
                         CustomPaint(
-                          willChange: firing || globals.dragGhost ?? false,
+                          willChange:
+                              globals.firing || (globals.dragGhost ?? false),
                           size: globals.canvasSize,
                           painter: ShootPainter(),
+                          child: Text(updaterText),
                         ),
                         //players
                         CustomPaint(
@@ -713,6 +721,7 @@ class _MainGamePageState extends State<MainGamePage> {
                         ),
                         //terrain
                         CustomPaint(
+                          isComplex: true,
                           size: globals.canvasSize,
                           painter: GamePainter(),
                         ),
@@ -790,7 +799,7 @@ class _MainGamePageState extends State<MainGamePage> {
                     )
                   : Container(),
               //pause button
-              (globals.popup && paused) || (!globals.popup & !firing)
+              (globals.popup && paused) || (!globals.popup & !globals.firing)
                   ? Positioned(
                       right: 0.0,
                       top: 0.0,
