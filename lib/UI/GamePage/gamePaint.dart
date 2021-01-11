@@ -101,31 +101,35 @@ class ShootPainter extends GlobalPainter {
       if (p.aX < 0) {
         if (p.aY > 1) {
           //arrow top left corner
+          end = Offset(globals.rangeArrowPadding, globals.rangeArrowPadding);
           start =
-              Offset(1 - globals.rangeArrowStart, 1 - globals.rangeArrowStart)
-                  .toRelative();
-          end = Offset(1 - globals.rangeArrowEnd, 1 - globals.rangeArrowEnd)
-              .toRelative();
+              end.translate(globals.rangeArrowLength, globals.rangeArrowLength);
           canvas.drawArrow(start, end, painter: paint);
         } else {
           //arrow left side
-          start = Offset(1 - globals.rangeArrowStart, p.aY).toRelative();
-          end = Offset(1 - globals.rangeArrowEnd, p.aY).toRelative();
+          end = Offset(0, p.rY);
+          start = end.translate(globals.rangeArrowLength, 0);
           canvas.drawArrow(start, end, painter: paint);
         }
       } else if (p.aX > 1) {
         if (p.aY > 1) {
           //arrow top right corner
+          end = Offset(globals.canvasSize.width - globals.rangeArrowPadding,
+              globals.rangeArrowPadding);
+          start = end.translate(
+              -globals.rangeArrowLength, globals.rangeArrowLength);
+          canvas.drawArrow(start, end, painter: paint);
         } else {
           //arrow right side
-          start = Offset(globals.rangeArrowStart, p.aY).toRelative();
-          end = Offset(globals.rangeArrowEnd, p.aY).toRelative();
+          end = Offset(
+              globals.canvasSize.width - globals.rangeArrowPadding, p.rY);
+          start = end.translate(-globals.rangeArrowLength, 0);
           canvas.drawArrow(start, end, painter: paint);
         }
       } else if (p.aY > 1) {
         //arrow top
-        start = Offset(p.aX, globals.rangeArrowStart).toRelative();
-        end = Offset(p.aX, globals.rangeArrowEnd).toRelative();
+        end = Offset(p.rX, 0);
+        start = end.translate(0, globals.rangeArrowLength);
         canvas.drawArrow(start, end, painter: paint);
       }
     }
@@ -163,7 +167,6 @@ class ShootPainter extends GlobalPainter {
     }
     //check arrow
     updated |= arrowTop != globals.arrowTop;
-    print(updated);
     return updated;
   }
 }

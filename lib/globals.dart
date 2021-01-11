@@ -146,8 +146,8 @@ const double blastRadius = 0.01;
 const double blastDamage = -40;
 const double defaultPlayerHealth = 100;
 const double playerRadius = 20;
-const double rangeArrowStart = 0.95;
-const double rangeArrowEnd = 0.99;
+const double rangeArrowLength = 20;
+const double rangeArrowPadding = 5;
 
 const List<double> locationInvisible = [-1, -1];
 const List<double> defaultFireSetup = [30, 90];

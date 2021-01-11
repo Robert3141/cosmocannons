@@ -138,18 +138,21 @@ class Projectile extends GameObject {
   }*/
   Projectile.radians(
       double intensity, double angleRadians, int player, Function updater) {
+    _projectileRunner(intensity, angleRadians, player, updater);
+  }
+  Projectile.degrees(
+      double intensity, double angleDegrees, int player, Function updater) {
+    _projectileRunner(
+        intensity, angleDegrees * globals.degreesToRadians, player, updater);
+  }
+
+  void _projectileRunner(double intensity, double angleRadians, int player,
+      Function updater) async {
+    //set stuff up
     updateUI = updater;
     _player = player;
     _team = playerObj.team;
-    _projectileRunner(intensity, angleRadians);
-  }
-  Projectile.degrees(double intensity, double angleDegrees, int player) {
-    _player = player;
-    _team = playerObj.team;
-    _projectileRunner(intensity, angleDegrees * globals.degreesToRadians);
-  }
 
-  void _projectileRunner(double intensity, double angleRadians) async {
     //local vars
     Offset impactPos;
 
@@ -164,10 +167,10 @@ class Projectile extends GameObject {
 
     //destroy now
     globals.projectiles.remove(this);
-    print(globals.projectiles.length);
     if (globals.projectiles.length == 0) {
       globals.firing = false;
       globals.popup = false;
+      updateUI();
     }
   }
 
@@ -182,9 +185,12 @@ class Projectile extends GameObject {
 
     //set new locations
     updated = true;
+    print("$_u $_a");
     // s = ut + 0.5att
-    aX = aX + (_u.dx * _timeSec + 0.5 * aX * _timeSec * _timeSec) * globals.xSF;
-    aY = aY + (_u.dy * _timeSec + 0.5 * aY * _timeSec * _timeSec) * globals.ySF;
+    aX = aX +
+        (_u.dx * _timeSec + 0.5 * _a.dx * _timeSec * _timeSec) * globals.xSF;
+    aY = aY +
+        (_u.dy * _timeSec + 0.5 * _a.dy * _timeSec * _timeSec) * globals.ySF;
     updateUI();
     // hit terrain?
     terrainHeight = GlobalPainter().calcNearestHeight(globals.currentMap, aX);
