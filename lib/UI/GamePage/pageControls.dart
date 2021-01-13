@@ -38,7 +38,7 @@ class CustomGestureRecognizer extends OneSequenceGestureRecognizer {
   @override
   void handleEvent(PointerEvent event) {
     if (event is PointerMoveEvent) {
-      _onPanUpdate(event.localPosition);
+      _onPanUpdate(event.localDelta);
     }
     if (event is PointerUpEvent) {
       _onPanEnd(event.localPosition);
@@ -50,15 +50,12 @@ class CustomGestureRecognizer extends OneSequenceGestureRecognizer {
 
   void _onPanStart(Offset pos) {
     globals.dragGhost = true;
+    globals.arrowTop = globals.players[globals.currentPlayer].aPos;
   }
 
-  void _onPanUpdate(Offset pos) {
-    //define positions
-    Offset playerRelative = globals.players[globals.currentPlayer].rPos;
-    Offset arrowRelative = playerRelative.scale(2, 2) - pos;
-
+  void _onPanUpdate(Offset delta) {
     //set arrowPos
-    globals.arrowTop = arrowRelative.toActual();
+    globals.arrowTop += Offset(-delta.dx.toActualX(), 1 - delta.dy.toActualY());
     updateUI();
   }
 

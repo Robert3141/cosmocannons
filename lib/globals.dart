@@ -228,7 +228,7 @@ List<List<Offset>> terrainCacheLocation;
 
 List<Color> terrainCacheColour;
 
-Offset arrowTop = Offset(0, 0);
+Offset arrowTop = Offset.zero;
 
 Size canvasSize;
 
