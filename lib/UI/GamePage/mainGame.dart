@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
+import 'package:cosmocannons/UI/GamePage/pageControls.dart';
 import 'package:cosmocannons/UI/launcher.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
 import 'package:cosmocannons/globals.dart' as globals;
@@ -378,7 +380,6 @@ class _MainGamePageState extends State<MainGamePage> {
       int length = globals.players.length;
 
       //save data
-      print(await UI.dataLoad(globals.keyPlayerPosX, "List<double>"));
       List<double> aX =
           await UI.dataLoad(globals.keyPlayerPosX, "List<double>");
       List<double> aY =
@@ -404,7 +405,6 @@ class _MainGamePageState extends State<MainGamePage> {
       });
 
       //resume data
-      print(await UI.dataLoad(globals.keyMapNo, "int"));
       globals.mapNo = await UI.dataLoad(globals.keyMapNo, "int");
       globals.currentPlayer =
           await UI.dataLoad(globals.keyCurrentPlayer, "int");
@@ -650,63 +650,13 @@ class _MainGamePageState extends State<MainGamePage> {
                   autofocus: true,
                   onKey: keyPresses,
                   focusNode: globals.gameInputs,
-                  child: GestureDetector(
-                    //onDoubleTap: () => tapDetails == null ? () {} : doubleTap(),
-                    onTapDown: (details) {
-                      tapDetails = details;
-                    },
-                    onDoubleTapDown: (details) {
-                      tapDetails = details;
-                    },
-                    //drag based shooting
-                    onPanStart: (details) {
-                      Offset tapRelative = details.localPosition;
-                      if (tapRelative.checkInRadius(
-                              globals.players[globals.currentPlayer].rPos,
-                              globals.playerRadius) &&
-                          !globals.popup) {
-                        globals.dragGhost = true;
-                      }
-                    },
-                    onPanUpdate: (details) {
-                      //define positions
-                      if (globals.dragGhost) {
-                        Offset tapRelative = details.localPosition;
-                        Offset playerRelative =
-                            globals.players[globals.currentPlayer].rPos;
-                        Offset arrowRelative =
-                            playerRelative - tapRelative + playerRelative;
-
-                        //set arrowPos
-                        setState(() {
-                          globals.arrowTop = arrowRelative.toActual();
-                        });
-                      }
-                    },
-                    onPanCancel: () {
-                      if (globals.dragGhost) {
-                        setState(() {
-                          globals.dragGhost = false;
-                        });
-                      }
-                    },
-                    onPanEnd: (details) async {
-                      if (globals.dragGhost) {
-                        globals.dragGhost = false;
-                        globals.popup = true;
-
-                        //shoot
-                        Offset playerPos =
-                            globals.players[globals.currentPlayer].aPos;
-                        Offset arrow = Offset(
-                            -(globals.arrowTop.dx - playerPos.dx),
-                            globals.arrowTop.dy - playerPos.dy);
-                        double angle = arrow.direction;
-                        double intensity =
-                            arrow.distance * globals.shootSF; // TODO: continue
-                        globals.projectiles.add(Projectile.radians(
-                            intensity, angle, globals.currentPlayer, updateUI));
-                      }
+                  child: RawGestureDetector(
+                    gestures: <Type, GestureRecognizerFactory>{
+                      CustomGestureRecognizer:
+                          GestureRecognizerFactoryWithHandlers<
+                                  CustomGestureRecognizer>(
+                              () => CustomGestureRecognizer(updateUI, zoom),
+                              (CustomGestureRecognizer instance) {})
                     },
                     child: Stack(
                       children: [

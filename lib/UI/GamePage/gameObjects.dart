@@ -199,7 +199,6 @@ class Projectile extends GameObject {
 
     //set new locations
     updated = true;
-    print("$_u $_a");
     // s = ut + 0.5att
     aX = aX +
         (_u.dx * _timeSec + 0.5 * _a.dx * _timeSec * _timeSec) * globals.xSF;
