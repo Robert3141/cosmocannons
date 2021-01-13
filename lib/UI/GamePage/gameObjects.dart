@@ -21,8 +21,6 @@ class GameObject {
   double get rY => (1 - aY) * globals.canvasSize.height;
   Offset get aPos => Offset(aX, aY);
   Offset get rPos => Offset(rX, rY);
-  Offset get aPosCentre => rPosCentre.toActual();
-  Offset get rPosCentre => rPos.translate(0, -globals.playerRadius);
   int get team => _team;
   Color get teamColour => globals.teamColors[team];
 
@@ -59,7 +57,8 @@ class Player extends GameObject {
   }
   Player.fromListCreated(int p, int n, int team, List<double> terrainHeights) {
     aX = (p + 1) / (n + 1);
-    aY = GamePainter().calcNearestHeight(terrainHeights, aX);
+    aY = GamePainter().calcNearestHeight(terrainHeights, aX) +
+        globals.playerRadiusY;
     _team = team;
     health = globals.defaultPlayerHealth;
   }
@@ -90,7 +89,14 @@ class Player extends GameObject {
 
   void draw(Canvas canvas) {
     //define locals
-    double radius = globals.playerRadius;
+    double radiusX = globals.playerRadiusX.toRelativeX();
+    double radiusY = (1 - globals.playerRadiusY).toRelativeY();
+    Rect topOval = Rect.fromPoints(rPos.translate(-radiusX, -radiusY),
+        rPos.translate(radiusX, radiusY * 0.5));
+    Rect midArc = Rect.fromPoints(
+        rPos.translate(-radiusX, radiusY * 1.5), rPos.translate(radiusX, 0));
+    Rect bottomArc = Rect.fromPoints(rPos.translate(-radiusX, radiusY * 1.5),
+        rPos.translate(radiusX, radiusY * 0.5));
 
     //define paints
     final TextPainter playerHealthText = globals.defaultTextPaint
@@ -98,15 +104,25 @@ class Player extends GameObject {
           text: (this.health <= 0 ? 0 : this.health).toString(),
           style: UI.defaultText())
       ..layout();
-    final Paint playerCircle = globals.defaultDrawPaint
+    Paint playerPainterEmpty = Paint()
       ..color = this.teamColour
-      ..strokeWidth = 10
-      ..strokeCap = StrokeCap.square;
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+    Paint playerPainterFill = Paint()
+      ..color = this.teamColour
+      ..strokeWidth = 3
+      ..style = PaintingStyle.fill
+      ..strokeCap = StrokeCap.round;
 
     //draw paints
-    canvas.drawCircle(this.rPos.translate(0, -radius), radius, playerCircle);
+    canvas.drawArc(topOval, pi, 2 * pi, false, playerPainterFill);
+    canvas.drawArc(midArc, pi, pi, false, playerPainterEmpty);
+    canvas.drawArc(bottomArc, pi, pi, false, playerPainterEmpty);
     playerHealthText.paint(
-        canvas, this.rPos.translate(-playerHealthText.width / 2, -radius * 4));
+        canvas,
+        this.rPos.translate(
+            -playerHealthText.width / 2, -radiusY - playerHealthText.height));
   }
 }
 
@@ -116,7 +132,6 @@ class Projectile extends GameObject {
   Offset _startPos;
   double _timeSec;
   int _player;
-  double distanceToPlayer;
   Function updateUI;
 
   Offset get aU => _u;
@@ -158,6 +173,7 @@ class Projectile extends GameObject {
 
     //set set u,a,s
     _u = Offset(intensity * -cos(angleRadians), intensity * sin(angleRadians));
+    _u = _u.scale(0.125, 0.125);
     _a = Offset(globals.Ax, globals.Ay);
     aPos = playerObj.aPos;
 
@@ -176,12 +192,10 @@ class Projectile extends GameObject {
 
   void _renderCallback(Timer timer) {
     //set time
-    Player player;
     bool hitPlayer = false;
     double terrainHeight;
-    double newDistToPlayer;
     int tick = timer.tick;
-    _timeSec = (globals.frameLengthMs * tick * globals.animationSpeed) / 1000;
+    _timeSec = (globals.frameLengthMs * tick) / 1000;
 
     //set new locations
     updated = true;
@@ -191,27 +205,17 @@ class Projectile extends GameObject {
         (_u.dx * _timeSec + 0.5 * _a.dx * _timeSec * _timeSec) * globals.xSF;
     aY = aY +
         (_u.dy * _timeSec + 0.5 * _a.dy * _timeSec * _timeSec) * globals.ySF;
-    updateUI();
+    if (tick % 1 == 0) updateUI();
     // hit terrain?
     terrainHeight = GlobalPainter().calcNearestHeight(globals.currentMap, aX);
 
     //hit player?
     hitPlayer = false;
     for (int p = 0; p < globals.players.length; p++) {
-      player = globals.players[p];
-      if (checkInRadius(aPos, player.aPos, globals.blastRadius) &&
-          player.team != playerInt) {
-        //determine new distance to player
-        newDistToPlayer = (player.aPos - aPos).distance;
-
-        // player in range
-        if (distanceToPlayer > newDistToPlayer) {
-          //player moving away from target i.e hit
-          hitPlayer = true;
-        } else {
-          //player moving towards target i.e not hit yet
-          distanceToPlayer = newDistToPlayer;
-        }
+      if (checkInRadius(aPos, globals.players[p].aPos, globals.blastRadius) &&
+          globals.players[p].team != playerInt) {
+        // player hit
+        hitPlayer = true;
       }
     }
 

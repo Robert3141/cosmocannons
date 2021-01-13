@@ -138,14 +138,16 @@ const double degreesToRadians = pi / 180;
 const double radiansToDegrees = 180 / pi;
 const double Ax = 0;
 const double Ay = -9.81;
-const double xSF = 1 / 10000;
-const double ySF = 1 / 10000;
+const double xSF = 1 / 1000;
+const double ySF = 1 / 1000;
 const double animationSpeed = 3;
 const double playerPadding = 0.001;
 const double blastRadius = 0.01;
 const double blastDamage = -40;
 const double defaultPlayerHealth = 100;
 const double playerRadius = 20;
+const double playerRadiusX = 0.005;
+const double playerRadiusY = 0.03;
 const double rangeArrowLength = 20;
 const double rangeArrowPadding = 5;
 
@@ -249,10 +251,6 @@ final TextPainter defaultTextPaint = TextPainter(
     text: TextSpan(style: UI.defaultText()),
     textAlign: TextAlign.center,
     textDirection: TextDirection.ltr);
-
-final Paint defaultDrawPaint = Paint()
-  ..strokeWidth = 0
-  ..strokeCap = StrokeCap.butt;
 
 /// DATA TYPES
 

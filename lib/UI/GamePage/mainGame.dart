@@ -628,6 +628,10 @@ class _MainGamePageState extends State<MainGamePage> {
         Color playerButtonColour =
             globals.players[globals.currentPlayer].teamColour ??
                 globals.textColor;
+        double sWidth = UI.screenWidth(context);
+        double sHeight = UI.screenHeight(context);
+        zoom = (16 * sHeight) / (9 * sWidth);
+        if (zoom < 1) zoom = 1;
         globals.canvasSize =
             Size(UI.screenWidth(context) * zoom, UI.screenHeight(context));
         page = UI.scaffoldWithBackground(children: [
@@ -658,7 +662,7 @@ class _MainGamePageState extends State<MainGamePage> {
                     onPanStart: (details) {
                       Offset tapRelative = details.localPosition;
                       if (tapRelative.checkInRadius(
-                              globals.players[globals.currentPlayer].rPosCentre,
+                              globals.players[globals.currentPlayer].rPos,
                               globals.playerRadius) &&
                           !globals.popup) {
                         globals.dragGhost = true;
@@ -669,7 +673,7 @@ class _MainGamePageState extends State<MainGamePage> {
                       if (globals.dragGhost) {
                         Offset tapRelative = details.localPosition;
                         Offset playerRelative =
-                            globals.players[globals.currentPlayer].rPosCentre;
+                            globals.players[globals.currentPlayer].rPos;
                         Offset arrowRelative =
                             playerRelative - tapRelative + playerRelative;
 
@@ -714,16 +718,17 @@ class _MainGamePageState extends State<MainGamePage> {
                           painter: ShootPainter(),
                           child: Text(updaterText),
                         ),
-                        //players
-                        CustomPaint(
-                          size: globals.canvasSize,
-                          painter: CharacterPainter(),
-                        ),
+
                         //terrain
                         CustomPaint(
                           isComplex: true,
                           size: globals.canvasSize,
                           painter: GamePainter(),
+                        ),
+                        //players
+                        CustomPaint(
+                          size: globals.canvasSize,
+                          painter: CharacterPainter(),
                         ),
                       ],
                     ),

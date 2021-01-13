@@ -29,6 +29,36 @@ extension OffsetExtender on Offset {
         item.dy > hitbox.dy - hitboxRadius &&
         item.dy < hitbox.dy + hitboxRadius;
   }
+
+  void print() {
+    debugPrint("${this.dx} ${this.dy}");
+  }
+
+  Offset shift() {
+    return this.translate(this.dx, this.dy);
+  }
+}
+
+extension DoubleExtender on double {
+  /// Take values between 0 and 1 and convert to between 0 and globals.canvasSize
+  double toRelativeX() {
+    return Offset(this, 0).toRelative().dx;
+  }
+
+  /// Take values between 0 and 1 and convert to between 0 and globals.canvasSize
+  double toRelativeY() {
+    return Offset(0, this).toRelative().dy;
+  }
+
+  /// Take values between 0 and globals.canvasSize and convert to between 0 and 1
+  double toActualX() {
+    return Offset(this, 0).toActual().dx;
+  }
+
+  /// Take values between 0 and globals.canvasSize and convert to between 0 and 1
+  double toActualY() {
+    return Offset(0, this).toActual().dy;
+  }
 }
 
 class GlobalPainter extends CustomPainter {
@@ -81,7 +111,7 @@ class ShootPainter extends GlobalPainter {
 
   void drawProjectile(Projectile projectile, Canvas canvas) {
     //define vars
-    final paint = globals.defaultDrawPaint..color = projectile.teamColour;
+    final paint = Paint()..color = projectile.teamColour;
 
     //draw projectile
     canvas.drawCircle(projectile.rPos, 3, paint);
@@ -94,7 +124,7 @@ class ShootPainter extends GlobalPainter {
     for (int i = 0; i < globals.projectiles.length; i++) {
       //draw projectile
       p = globals.projectiles[i];
-      final paint = globals.defaultDrawPaint..color = p.teamColour;
+      final paint = Paint()..color = p.teamColour;
       drawProjectile(p, canvas);
 
       //draw arrow if its out of range
@@ -140,8 +170,7 @@ class ShootPainter extends GlobalPainter {
       ..blendMode = BlendMode.plus
       ..color = player.teamColour;
     if (globals.dragGhost) {
-      canvas.drawArrow(player.rPosCentre, endPos.toRelative(),
-          painter: painter);
+      canvas.drawArrow(player.rPos, endPos.toRelative(), painter: painter);
     }
   }
 

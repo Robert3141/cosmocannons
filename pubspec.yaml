@@ -33,7 +33,7 @@ dependencies:
   assets_audio_player: ^2.0.13+1
   shared_preferences: ^0.5.12+2
   shared_preferences_moretypes: ^2.4.0
-  draw_arrow: ^1.0.0
+  draw_arrow: ^1.0.0  
   #shared_preferences_moretypes:
   #  path: ../shared_preferences_moretypes
 
