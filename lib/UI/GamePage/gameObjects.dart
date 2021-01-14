@@ -41,7 +41,8 @@ class GameObject {
 
 class Player extends GameObject {
   // attributes
-  double health;
+  bool drawHitbox = false;
+  double health = globals.defaultPlayerHealth;
   Offset _lastShot = Offset.zero;
 
   //getters
@@ -91,10 +92,11 @@ class Player extends GameObject {
     //define locals
     double radiusX = globals.playerRadiusX.toRelativeX();
     double radiusY = (1 - globals.playerRadiusY).toRelativeY();
+    double windowWidth = radiusX / 4;
     Rect topOval = Rect.fromPoints(rPos.translate(-radiusX, -radiusY),
         rPos.translate(radiusX, radiusY * 0.5));
     Rect midArc = Rect.fromPoints(
-        rPos.translate(-radiusX, radiusY * 1.5), rPos.translate(radiusX, 0));
+        rPos.translate(-radiusX, radiusY * 2), rPos.translate(radiusX, 0));
     Rect bottomArc = Rect.fromPoints(rPos.translate(-radiusX, radiusY * 1.5),
         rPos.translate(radiusX, radiusY * 0.5));
 
@@ -104,21 +106,44 @@ class Player extends GameObject {
           text: (this.health <= 0 ? 0 : this.health).toString(),
           style: UI.defaultText())
       ..layout();
-    Paint playerPainterEmpty = Paint()
-      ..color = this.teamColour
-      ..strokeWidth = 3
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
     Paint playerPainterFill = Paint()
       ..color = this.teamColour
       ..strokeWidth = 3
       ..style = PaintingStyle.fill
       ..strokeCap = StrokeCap.round;
+    Paint whitePainterFill = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 3
+      ..style = PaintingStyle.fill
+      ..strokeCap = StrokeCap.round;
+    Paint whiterPainterEmpty = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+    Paint blackPainterFill = Paint()
+      ..color = Colors.black
+      ..strokeWidth = 3
+      ..style = PaintingStyle.fill
+      ..strokeCap = StrokeCap.round;
 
-    //draw paints
+    //draw ship
     canvas.drawArc(topOval, pi, 2 * pi, false, playerPainterFill);
-    canvas.drawArc(midArc, pi, pi, false, playerPainterEmpty);
-    canvas.drawArc(bottomArc, pi, pi, false, playerPainterEmpty);
+    canvas.drawArc(midArc, pi, pi, false, playerPainterFill);
+    canvas.drawArc(bottomArc, pi, pi, false, blackPainterFill);
+    //draw windows
+    canvas.drawCircle(rPos, windowWidth, whitePainterFill);
+    canvas.drawCircle(
+        rPos.translate(0, -radiusY / 3), windowWidth, whitePainterFill);
+    canvas.drawCircle(
+        rPos.translate(0, -2 * radiusY / 3), windowWidth, whitePainterFill);
+    //draw hitbox
+    if (drawHitbox)
+      canvas.drawRect(
+          Rect.fromCenter(
+              center: rPos, width: radiusX * 2, height: radiusY * 2),
+          whiterPainterEmpty);
+    //draw text
     playerHealthText.paint(
         canvas,
         this.rPos.translate(
