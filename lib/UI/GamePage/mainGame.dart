@@ -39,7 +39,6 @@ class MainGamePage extends StatefulWidget {
 class _MainGamePageState extends State<MainGamePage> {
   //locals
   double zoom = globals.defaultZoom;
-  int thisPlayer;
   bool startOfGame = true;
   bool paused = false;
   bool playersTurn = true;
@@ -390,8 +389,8 @@ class _MainGamePageState extends State<MainGamePage> {
       //loop through
       globals.players = List.empty(growable: true);
       for (int i = 0; i < aX.length; i++)
-        globals.players
-            .add(Player.withHealth(Offset(aX[i], aY[i]), team[i], health[i]));
+        globals.players.add(Player.withHealth(
+            Offset(aX[i], aY[i]), team[i], health[i], updateUI));
     } catch (e) {
       print(e.toString());
     }
@@ -408,7 +407,7 @@ class _MainGamePageState extends State<MainGamePage> {
       globals.mapNo = await UI.dataLoad(globals.keyMapNo, "int");
       globals.currentPlayer =
           await UI.dataLoad(globals.keyCurrentPlayer, "int");
-      thisPlayer = await UI.dataLoad(globals.keyThisPlayer, "int");
+      globals.thisPlayer = await UI.dataLoad(globals.keyThisPlayer, "int");
       globals.currentMap =
           await UI.dataLoad(globals.keyGameMap, "List<double>");
 
@@ -436,7 +435,7 @@ class _MainGamePageState extends State<MainGamePage> {
     try {
       // get data from root
       globals.currentPlayer = widget.type.playerNumber;
-      thisPlayer = globals.currentPlayer;
+      globals.thisPlayer = globals.currentPlayer;
       globals.mapNo = widget.mapNo;
       globals.currentMap = globals.terrainMaps[widget.mapNo];
 
@@ -447,7 +446,7 @@ class _MainGamePageState extends State<MainGamePage> {
       globals.players = List.empty(growable: true);
       for (int i = 0; i < widget.playerTeams.length; i++)
         globals.players.add(Player.fromListCreated(i, widget.playerTeams.length,
-            widget.playerTeams[i], globals.currentMap));
+            widget.playerTeams[i], globals.currentMap, updateUI));
 
       //play music
       UI.playMusic();
@@ -464,13 +463,13 @@ class _MainGamePageState extends State<MainGamePage> {
       double currentPos = globals.gameScroller.offset;
       double newPos = currentPos + increase;
       double maxPos = UI.screenWidth(context) * zoom * 0.5;
-      newPos = newPos >= 0
+      /*newPos = newPos >= 0
           ? newPos < maxPos
               ? newPos
               : maxPos
-          : 0;
+          : 0;*/
       globals.gameScroller.animateTo(newPos,
-          duration: Duration(milliseconds: 5), curve: Curves.ease);
+          duration: Duration(milliseconds: 100), curve: Curves.ease);
     } catch (e) {
       outputError(e);
     }
@@ -509,7 +508,8 @@ class _MainGamePageState extends State<MainGamePage> {
         savedCorrectly &= await UI.dataStore(globals.keyMapNo, globals.mapNo);
         savedCorrectly &=
             await UI.dataStore(globals.keyCurrentPlayer, globals.currentPlayer);
-        savedCorrectly &= await UI.dataStore(globals.keyThisPlayer, thisPlayer);
+        savedCorrectly &=
+            await UI.dataStore(globals.keyThisPlayer, globals.thisPlayer);
         savedCorrectly &=
             await UI.dataStore(globals.keyGameMap, globals.currentMap);
         savedCorrectly &=
@@ -575,12 +575,8 @@ class _MainGamePageState extends State<MainGamePage> {
               playersTurn &&
               !movedPlayer) {
             //move right
-            globals.players[globals.currentPlayer].moveLeft();
+            globals.players[globals.currentPlayer].moveRight();
           }
-          /*if (keyPress == LogicalKeyboardKey.enter) {
-            //fire!!
-            playerShootTap();
-          }*/
         }
         //always on keyboard controls
         if (key.logicalKey == LogicalKeyboardKey.escape) {
@@ -621,10 +617,14 @@ class _MainGamePageState extends State<MainGamePage> {
     //globals.popup &= globals.projectiles.isNotEmpty;
     Scaffold page;
     try {
-      if (startOfGame) widget.resumed ? gameResume() : gameStart();
+      if (startOfGame) {
+        globals.type = widget.type;
+        widget.resumed ? gameResume() : gameStart();
+      }
+      ;
       pageContext = context;
       if (loaded) {
-        playersTurn = thisPlayer == globals.currentPlayer;
+        playersTurn = globals.thisPlayer == globals.currentPlayer;
         Color playerButtonColour =
             globals.players[globals.currentPlayer].teamColour ??
                 globals.textColor;
@@ -780,7 +780,7 @@ class _MainGamePageState extends State<MainGamePage> {
                             color: playerButtonColour),
                         iconSize: globals.iconSize,
                         onPressed: () =>
-                            globals.players[globals.currentPlayer].moveRight(),
+                            globals.players[globals.currentPlayer].moveLeft(),
                       ),
                     )
                   : Container(),

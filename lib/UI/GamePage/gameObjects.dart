@@ -11,6 +11,7 @@ class GameObject {
   // VARIABLES
 
   int _team;
+  Function updateUI;
   bool updated = false;
   double aX = 0; // x pos between 0 and 1 (left to right)
   double aY = 0; // y pos between 0 and 1 (bottom to top)
@@ -51,19 +52,23 @@ class Player extends GameObject {
   //setters
 
   // constructors
-  Player(Offset pos, int team) {
+  Player(Offset pos, int team, Function updater) {
+    updateUI = updater;
     aPos = pos;
     _team = team;
     health = globals.defaultPlayerHealth;
   }
-  Player.fromListCreated(int p, int n, int team, List<double> terrainHeights) {
+  Player.fromListCreated(
+      int p, int n, int team, List<double> terrainHeights, Function updater) {
+    updateUI = updater;
     aX = (p + 1) / (n + 1);
     aY = GamePainter().calcNearestHeight(terrainHeights, aX) +
         globals.playerRadiusY;
     _team = team;
     health = globals.defaultPlayerHealth;
   }
-  Player.withHealth(Offset pos, int team, double h) {
+  Player.withHealth(Offset pos, int team, double h, Function updater) {
+    updateUI = updater;
     aPos = pos;
     _team = team;
     health = h;
@@ -72,7 +77,7 @@ class Player extends GameObject {
   //methods
   void moveRight() => move(globals.movementAmount);
 
-  void moveLeft() => move(globals.movementAmount);
+  void moveLeft() => move(-globals.movementAmount);
 
   /// Positive is right
   void move(double actualAmount) {
@@ -83,9 +88,11 @@ class Player extends GameObject {
     while (aX < 0) aX += 1;
 
     //set y
-    aY = GlobalPainter().calcNearestHeight(globals.currentMap, aX);
+    aY = GlobalPainter().calcNearestHeight(globals.currentMap, aX) +
+        globals.playerRadiusY;
 
     updated = true;
+    updateUI();
   }
 
   void draw(Canvas canvas) {
@@ -95,10 +102,11 @@ class Player extends GameObject {
     double windowWidth = radiusX / 4;
     Rect topOval = Rect.fromPoints(rPos.translate(-radiusX, -radiusY),
         rPos.translate(radiusX, radiusY * 0.5));
-    Rect midArc = Rect.fromPoints(
-        rPos.translate(-radiusX, radiusY * 2), rPos.translate(radiusX, 0));
-    Rect bottomArc = Rect.fromPoints(rPos.translate(-radiusX, radiusY * 1.5),
-        rPos.translate(radiusX, radiusY * 0.5));
+    Rect midArc = Rect.fromPoints(rPos.translate(-radiusX, radiusY * 2.5),
+        rPos.translate(radiusX, -radiusY * 0.5));
+    Rect bottomArc = Rect.fromPoints(
+        rPos.translate(-radiusX * 0.7, radiusY * 0.4),
+        rPos.translate(radiusX * 0.7, radiusY * 1.6));
 
     //define paints
     final TextPainter playerHealthText = globals.defaultTextPaint
@@ -106,48 +114,52 @@ class Player extends GameObject {
           text: (this.health <= 0 ? 0 : this.health).toString(),
           style: UI.defaultText())
       ..layout();
-    Paint playerPainterFill = Paint()
+    Paint playerFill = Paint()
       ..color = this.teamColour
       ..strokeWidth = 3
       ..style = PaintingStyle.fill
       ..strokeCap = StrokeCap.round;
-    Paint whitePainterFill = Paint()
+    Paint whiteFill = Paint()
       ..color = Colors.white
       ..strokeWidth = 3
       ..style = PaintingStyle.fill
       ..strokeCap = StrokeCap.round;
-    Paint whiterPainterEmpty = Paint()
+    Paint whiteEmpty = Paint()
       ..color = Colors.white
-      ..strokeWidth = 3
+      ..strokeWidth = 1
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
-    Paint blackPainterFill = Paint()
+    Paint blackFill = Paint()
       ..color = Colors.black
       ..strokeWidth = 3
       ..style = PaintingStyle.fill
       ..strokeCap = StrokeCap.round;
 
     //draw ship
-    canvas.drawArc(topOval, pi, 2 * pi, false, playerPainterFill);
-    canvas.drawArc(midArc, pi, pi, false, playerPainterFill);
-    canvas.drawArc(bottomArc, pi, pi, false, blackPainterFill);
+    canvas.drawArc(topOval, 0, 2 * pi, false, playerFill);
+    canvas.drawArc(midArc, pi, pi, false, playerFill);
+    canvas.drawArc(bottomArc, pi, pi, false, blackFill);
     //draw windows
-    canvas.drawCircle(rPos, windowWidth, whitePainterFill);
+    canvas.drawCircle(rPos, windowWidth, whiteFill);
+    canvas.drawCircle(rPos.translate(0, -radiusY / 3), windowWidth, whiteFill);
     canvas.drawCircle(
-        rPos.translate(0, -radiusY / 3), windowWidth, whitePainterFill);
-    canvas.drawCircle(
-        rPos.translate(0, -2 * radiusY / 3), windowWidth, whitePainterFill);
+        rPos.translate(0, -2 * radiusY / 3), windowWidth, whiteFill);
     //draw hitbox
     if (drawHitbox)
       canvas.drawRect(
           Rect.fromCenter(
               center: rPos, width: radiusX * 2, height: radiusY * 2),
-          whiterPainterEmpty);
+          whiteEmpty);
     //draw text
     playerHealthText.paint(
         canvas,
         this.rPos.translate(
             -playerHealthText.width / 2, -radiusY - playerHealthText.height));
+  }
+
+  @override
+  String toString() {
+    return "Player(health:$health, team:$team, pos:$aPos)";
   }
 }
 
@@ -157,7 +169,6 @@ class Projectile extends GameObject {
   Offset _startPos;
   double _timeSec;
   int _player;
-  Function updateUI;
 
   Offset get aU => _u;
   Offset get aA => _a;
@@ -167,15 +178,6 @@ class Projectile extends GameObject {
   int get playerInt => _player;
   Player get playerObj => globals.players[playerInt];
 
-  /*Projectile(Offset u, Offset a, Offset s, int player) {
-    _u = u;
-    _a = a;
-    _startPos = s;
-    _timeSec = 0;
-    _player = player;
-
-    _animateProjectile();
-  }*/
   Projectile.radians(
       double intensity, double angleRadians, int player, Function updater) {
     _projectileRunner(intensity, angleRadians, player, updater);
@@ -198,21 +200,22 @@ class Projectile extends GameObject {
 
     //set set u,a,s
     _u = Offset(intensity * -cos(angleRadians), intensity * sin(angleRadians));
-    _u = _u.scale(0.125, 0.125);
+    _u = _u.scale(globals.shootScaling, globals.shootScaling);
     _a = Offset(globals.Ax, globals.Ay);
     aPos = playerObj.aPos;
 
     impactPos = await _animateProjectile();
 
     _giveDamage(impactPos);
+    _nextPlayer();
 
     //destroy now
     globals.projectiles.remove(this);
-    if (globals.projectiles.length == 0) {
+    if (globals.projectiles.length >= 0) {
       globals.firing = false;
       globals.popup = false;
-      updateUI();
     }
+    updateUI();
   }
 
   void _renderCallback(Timer timer) {
@@ -236,10 +239,13 @@ class Projectile extends GameObject {
     //hit player?
     hitPlayer = false;
     for (int p = 0; p < globals.players.length; p++) {
-      if (checkInRadius(aPos, globals.players[p].aPos, globals.blastRadius) &&
-          globals.players[p].team != playerInt) {
-        // player hit
-        hitPlayer = true;
+      if (globals.players[p].team != playerInt) {
+        if (checkInRadius(aPos, globals.players[p].aPos, globals.playerRadiusX,
+            globals.playerRadiusY)) {
+          // player hit
+          hitPlayer = true;
+          p = globals.players.length;
+        }
       }
     }
 
@@ -251,30 +257,35 @@ class Projectile extends GameObject {
 
   void _giveDamage(Offset position) {
     //locals
-    Offset distanceInRadius;
+
     //check all players
     for (int i = 0; i < globals.players.length; i++) {
-      //check player in team
-      if (globals.players[i].team == playerObj.team) {
+      //check player not in team
+      if (globals.players[i].team != playerInt) {
         // check player in blast radius
-        if (checkInRadius(
-            position, globals.players[i].aPos, globals.blastRadius)) {
-          //distance in radius
-          distanceInRadius = globals.players[i].aPos - position;
-          globals.players[i].health -=
-              (globals.blastDamage * distanceInRadius.distance) /
-                  globals.blastRadius;
-          // TODO: check health goes to 0
+        if (checkInRadius(position, globals.players[i].aPos,
+            globals.playerRadiusX, globals.playerRadiusY)) {
+          //player in blast radius administer damage
+          globals.players[i].health -= globals.blastDamage;
+          globals.players[i].updated = true;
+
+          //remove dead players
+          if (globals.players[i].health <= 0) {
+            globals.players.removeAt(i);
+            i--;
+          }
         }
       }
     }
+    updateUI();
   }
 
-  bool checkInRadius(Offset item, Offset hitbox, double hitboxRadius) {
-    return item.dx > hitbox.dx - hitboxRadius &&
-        item.dx < hitbox.dx + hitboxRadius &&
-        item.dy > hitbox.dy - hitboxRadius &&
-        item.dy < hitbox.dy + hitboxRadius;
+  bool checkInRadius(
+      Offset item, Offset hitbox, double hitboxX, double hitBoxY) {
+    return item.dx > hitbox.dx - hitboxX &&
+        item.dx < hitbox.dx + hitboxX &&
+        item.dy > hitbox.dy - hitBoxY &&
+        item.dy < hitbox.dy + hitBoxY;
   }
 
   Future<Offset> _animateProjectile() async {
@@ -295,6 +306,16 @@ class Projectile extends GameObject {
 
     //cancel ticker and remove from UI
     timer.cancel();
-    return rPos;
+    return aPos;
+  }
+
+  void _nextPlayer() {
+    //next player
+    globals.currentPlayer++;
+    if (globals.currentPlayer >= globals.players.length)
+      globals.currentPlayer = 0;
+    print(globals.currentPlayer);
+    if (globals.type.showPlayerUI(globals.currentPlayer))
+      globals.thisPlayer = globals.currentPlayer;
   }
 }

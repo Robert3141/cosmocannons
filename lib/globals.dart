@@ -143,13 +143,14 @@ const double ySF = 1 / 1000;
 const double animationSpeed = 3;
 const double playerPadding = 0.001;
 const double blastRadius = 0.01;
-const double blastDamage = -40;
+const double blastDamage = 40;
 const double defaultPlayerHealth = 100;
 const double playerRadius = 20;
 const double playerRadiusX = 0.005;
 const double playerRadiusY = 0.03;
 const double rangeArrowLength = 20;
 const double rangeArrowPadding = 5;
+const double shootScaling = 0.125;
 
 const List<double> locationInvisible = [-1, -1];
 const List<double> defaultFireSetup = [30, 90];
@@ -221,6 +222,7 @@ int terrainColumnsToRender = kIsWeb ? mapQualitySizes[0] : mapQualitySizes[1];
 int musicSeek = 0;
 int musicTrack = Random().nextInt(songs.length - 1);
 int currentPlayer;
+int thisPlayer;
 
 List<double> currentMap;
 
@@ -231,6 +233,8 @@ List<Color> terrainCacheColour;
 Offset arrowTop = Offset.zero;
 
 Size canvasSize;
+
+GameType type;
 
 //objects
 List<Player> players = List<Player>.empty(growable: true);

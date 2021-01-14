@@ -20,7 +20,7 @@ class CustomGestureRecognizer extends OneSequenceGestureRecognizer {
   }
 
   @override
-  void addAllowedPointer(PointerDownEvent event) {
+  void addPointer(PointerDownEvent event) {
     //check in position
     if (event.localPosition.checkInRadius(
             globals.players[globals.currentPlayer].rPos,
