@@ -208,6 +208,7 @@ class Projectile extends GameObject {
 
     _giveDamage(impactPos);
     _nextPlayer();
+    _checkWinner();
 
     //destroy now
     globals.projectiles.remove(this);
@@ -216,6 +217,27 @@ class Projectile extends GameObject {
       globals.popup = false;
     }
     updateUI();
+  }
+
+  Future<Offset> _animateProjectile() async {
+    globals.firing = true;
+    const Duration length = Duration(milliseconds: globals.frameLengthMs);
+    const Duration check = Duration(milliseconds: globals.checkDoneMs);
+    Timer timer;
+
+    //run timer
+    _timeSec = 0;
+    aPos = playerObj.aPos;
+    timer = Timer.periodic(length, (timer) => _renderCallback(timer));
+
+    // wait until flight over or long flight
+    while (timer.isActive && _timeSec <= globals.maxFlightLength) {
+      await Future.delayed(check);
+    }
+
+    //cancel ticker and remove from UI
+    timer.cancel();
+    return aPos;
   }
 
   void _renderCallback(Timer timer) {
@@ -239,7 +261,8 @@ class Projectile extends GameObject {
     //hit player?
     hitPlayer = false;
     for (int p = 0; p < globals.players.length; p++) {
-      if (globals.players[p].team != playerInt) {
+      print("p=$p length=${globals.players.length}");
+      if (globals.players[p].team != playerObj.team) {
         if (checkInRadius(aPos, globals.players[p].aPos, globals.playerRadiusX,
             globals.playerRadiusY)) {
           // player hit
@@ -253,6 +276,24 @@ class Projectile extends GameObject {
     if (terrainHeight >= aY || hitPlayer) {
       timer.cancel();
     }
+  }
+
+  bool checkInRadius(
+      Offset item, Offset hitbox, double hitboxX, double hitBoxY) {
+    return item.dx > hitbox.dx - hitboxX &&
+        item.dx < hitbox.dx + hitboxX &&
+        item.dy > hitbox.dy - hitBoxY &&
+        item.dy < hitbox.dy + hitBoxY;
+  }
+
+  void _nextPlayer() {
+    //next player
+    globals.currentPlayer++;
+    if (globals.currentPlayer >= globals.players.length)
+      globals.currentPlayer = 0;
+    print(globals.currentPlayer);
+    if (globals.type.showPlayerUI(globals.currentPlayer))
+      globals.thisPlayer = globals.currentPlayer;
   }
 
   void _giveDamage(Offset position) {
@@ -280,42 +321,25 @@ class Projectile extends GameObject {
     updateUI();
   }
 
-  bool checkInRadius(
-      Offset item, Offset hitbox, double hitboxX, double hitBoxY) {
-    return item.dx > hitbox.dx - hitboxX &&
-        item.dx < hitbox.dx + hitboxX &&
-        item.dy > hitbox.dy - hitBoxY &&
-        item.dy < hitbox.dy + hitBoxY;
-  }
+  void _checkWinner() {
+    if (globals.players.isEmpty) {
+      //Players wiped each other out
+    } else {
+      //check amount of teams in play
+      List<int> teamsLeft = List<int>.empty(growable: true);
+      int playersTeam;
 
-  Future<Offset> _animateProjectile() async {
-    globals.firing = true;
-    const Duration length = Duration(milliseconds: globals.frameLengthMs);
-    const Duration check = Duration(milliseconds: globals.checkDoneMs);
-    Timer timer;
+      for (int p = 0; p < globals.players.length; p++) {
+        playersTeam = globals.players[p].team;
+        //team not in list
+        if (teamsLeft.lastIndexOf(playersTeam) == -1)
+          teamsLeft.add(playersTeam);
+      }
 
-    //run timer
-    _timeSec = 0;
-    aPos = playerObj.aPos;
-    timer = Timer.periodic(length, (timer) => _renderCallback(timer));
-
-    // wait until flight over or long flight
-    while (timer.isActive && _timeSec <= globals.maxFlightLength) {
-      await Future.delayed(check);
+      if (teamsLeft.length == 1) {
+        // last team wins
+        print("Team ${globals.defaultTeamNames[teamsLeft[0]]} has won!");
+      }
     }
-
-    //cancel ticker and remove from UI
-    timer.cancel();
-    return aPos;
-  }
-
-  void _nextPlayer() {
-    //next player
-    globals.currentPlayer++;
-    if (globals.currentPlayer >= globals.players.length)
-      globals.currentPlayer = 0;
-    print(globals.currentPlayer);
-    if (globals.type.showPlayerUI(globals.currentPlayer))
-      globals.thisPlayer = globals.currentPlayer;
   }
 }
