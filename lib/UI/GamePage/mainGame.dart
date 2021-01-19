@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:ui';
 import 'package:cosmocannons/UI/GamePage/pageControls.dart';
 import 'package:cosmocannons/UI/launcher.dart';
@@ -82,7 +81,6 @@ class _MainGamePageState extends State<MainGamePage> {
     }
   }
 
-  //TODO: reference in code
   Future<void> loadPlayerData() async {
     try {
       //save data
@@ -119,7 +117,7 @@ class _MainGamePageState extends State<MainGamePage> {
           await UI.dataLoad(globals.keyGameMap, "List<double>");
 
       //load players
-      loadPlayerData();
+      await loadPlayerData();
 
       //not start
       startOfGame = false;
@@ -169,12 +167,6 @@ class _MainGamePageState extends State<MainGamePage> {
     try {
       double currentPos = globals.gameScroller.offset;
       double newPos = currentPos + increase;
-      double maxPos = UI.screenWidth(context) * zoom * 0.5;
-      /*newPos = newPos >= 0
-          ? newPos < maxPos
-              ? newPos
-              : maxPos
-          : 0;*/
       globals.gameScroller.animateTo(newPos,
           duration: Duration(milliseconds: 100), curve: Curves.ease);
     } catch (e) {
@@ -182,7 +174,6 @@ class _MainGamePageState extends State<MainGamePage> {
     }
   }
 
-  //TODO: reference in code
   Future<bool> savePlayerData(List<Player> playerData) async {
     //locals
     bool savedCorrectly = true;
@@ -321,14 +312,12 @@ class _MainGamePageState extends State<MainGamePage> {
   //build UI
   @override
   Widget build(BuildContext context) {
-    //globals.popup &= globals.projectiles.isNotEmpty;
     Scaffold page;
     try {
       if (startOfGame) {
         globals.type = widget.type;
         widget.resumed ? gameResume() : gameStart();
       }
-      ;
       pageContext = context;
       if (loaded) {
         playersTurn = globals.thisPlayer == globals.currentPlayer;

@@ -1,6 +1,6 @@
 import 'package:cosmocannons/UI/GamePage/gameObjects.dart';
 import 'package:flutter/gestures.dart';
-import 'package:cosmocannons/UI/GamePage/gamePaint.dart';
+import 'package:cosmocannons/overrides.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
@@ -72,7 +72,7 @@ class CustomGestureRecognizer extends OneSequenceGestureRecognizer {
     Offset arrow = Offset(-(globals.arrowTop.dx - playerPos.dx),
         globals.arrowTop.dy - playerPos.dy);
     double angle = arrow.direction;
-    double intensity = arrow.distance * globals.shootSF; // TODO: continue
+    double intensity = arrow.distance * globals.shootSF;
     globals.projectiles.add(Projectile.radians(
         intensity, angle, globals.currentPlayer, this.updateUI));
   }

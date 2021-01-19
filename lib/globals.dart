@@ -150,7 +150,7 @@ const double playerRadiusX = 0.005;
 const double playerRadiusY = 0.03;
 const double rangeArrowLength = 20;
 const double rangeArrowPadding = 5;
-const double shootScaling = 0.125;
+const double shootSF = 62.5;
 
 const List<double> locationInvisible = [-1, -1];
 const List<double> defaultFireSetup = [30, 90];
@@ -164,7 +164,6 @@ const int frameLengthMs = 16;
 const int maxFlightLength = 20;
 const int checkDoneMs = 100;
 const int defaultMap = 0;
-const int shootSF = 500;
 
 const List<int> playerTeams = [0, 1, 2, 3];
 const List<int> mapQualitySizes = [5, 25, 50];

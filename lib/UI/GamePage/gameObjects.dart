@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:cosmocannons/UI/globalUIElements.dart';
 import 'dart:async';
+import 'package:cosmocannons/overrides.dart';
 
 class GameObject {
   // VARIABLES
@@ -101,6 +102,42 @@ class Player extends GameObject {
 
     updated = true;
     updateUI();
+  }
+
+  /// Randomly picks a player not on it's team unless given specific team.
+  /// Accuracy is given between 0 (very innacurate) and 1 (very accurate)
+  void playAI(Function updater, int thisPlayer,
+      {int teamToTarget, double accuracy}) {
+    //local vars
+    double angle;
+    double intensity;
+    const double timeSec = 3;
+    int selectedPlayer;
+    Offset u;
+    Offset s;
+    const Offset a = Offset(globals.Ax, globals.Ay);
+
+    // select player to target
+    if (teamToTarget != null &&
+        globals.players.any((element) => element.team == teamToTarget)) {
+      //TODO continue
+      //teamToTarget exists in array
+    } else {
+      //select random player not on team
+    }
+
+    //calculates optimum trajectory for hit
+    // u = (s-0.5*a*t*t) / t
+    s = globals.players[selectedPlayer].aPos - aPos;
+    u = (s - a * timeSec * timeSec * 0.5) / timeSec;
+    intensity = u.distance;
+    angle = u.direction;
+
+    // adds variability to firing angle and intensity
+
+    //fire projectile
+    globals.projectiles
+        .add(Projectile.radians(intensity, angle, thisPlayer, updater));
   }
 
   @override
@@ -209,7 +246,6 @@ class Projectile extends GameObject {
 
     //set set u,a,s
     _u = Offset(intensity * -cos(angleRadians), intensity * sin(angleRadians));
-    _u = _u.scale(globals.shootScaling, globals.shootScaling);
     _a = Offset(globals.Ax, globals.Ay);
     aPos = playerObj.aPos;
 
