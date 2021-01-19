@@ -109,14 +109,6 @@ class ShootPainter extends GlobalPainter {
 
   ShootPainter();
 
-  void drawProjectile(Projectile projectile, Canvas canvas) {
-    //define vars
-    final paint = Paint()..color = projectile.teamColour;
-
-    //draw projectile
-    canvas.drawCircle(projectile.rPos, 3, paint);
-  }
-
   void spawnProjectile(Canvas canvas) {
     Projectile p;
     Offset start;
@@ -125,7 +117,7 @@ class ShootPainter extends GlobalPainter {
       //draw projectile
       p = globals.projectiles[i];
       final paint = Paint()..color = p.teamColour;
-      drawProjectile(p, canvas);
+      p.draw(canvas);
 
       //draw arrow if its out of range
       if (p.aX < 0) {

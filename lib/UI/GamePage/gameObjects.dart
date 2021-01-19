@@ -38,6 +38,14 @@ class GameObject {
     rX = pos.dx;
     rY = pos.dy;
   }
+
+  void draw(Canvas canvas) {
+    //define vars
+    final paint = Paint()..color = teamColour;
+
+    //draw projectile
+    canvas.drawCircle(rPos, 3, paint);
+  }
 }
 
 class Player extends GameObject {
@@ -95,6 +103,7 @@ class Player extends GameObject {
     updateUI();
   }
 
+  @override
   void draw(Canvas canvas) {
     //define locals
     double radiusX = globals.playerRadiusX.toRelativeX();
