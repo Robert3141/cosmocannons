@@ -111,9 +111,9 @@ class Player extends GameObject {
     //local vars
     const double timeSec = 2;
     const Offset a = Offset(globals.Ax, globals.Ay);
-    double angle;
-    double intensity;
     double angleVariance;
+    double uX = 0;
+    double uY = 0;
     int selectedPlayer =
         _selectPlayer(teamToTarget, globals.players[thisPlayer].team);
     Offset u;
@@ -123,21 +123,18 @@ class Player extends GameObject {
     //calculates optimum trajectory for hit
     // u = (s-0.5*a*t*t) / t
     s = globals.players[selectedPlayer].aPos - aPos;
-    s.scale(1 / globals.xSF, 1 / globals.ySF);
-    u = (s - a * timeSec * timeSec * 0.5) / timeSec;
-    intensity = u.distance;
-    angle = u.direction;
-    print("$thisPlayer angle:$angle intensity:$intensity");
+    s = s.scale(1 / globals.xSF, 1 / globals.ySF);
+    uX = (s.dx - (0.5 * a.dx * timeSec * timeSec)) / timeSec;
+    uY = (s.dy - (0.5 * a.dy * timeSec * timeSec)) / timeSec;
+    u = Offset(uX, uY);
 
     // adds variability to firing angle
-    /*angleVariance = pi / 20;
-    angleVariance *= accuracy == null ? rand.nextDouble() / 4 : 1 - accuracy;
-    angleVariance *= rand.nextBool() ? 1 : -1; //plus or minus
-    angle += angleVariance;*/
+    angleVariance = accuracy ?? 1 - (rand.nextDouble() / 8);
+    angleVariance = rand.nextBool() ? 2 - angleVariance : angleVariance;
+    u = Offset(u.dx * angleVariance, u.dy);
 
     //fire projectile
-    globals.projectiles
-        .add(Projectile.radians(intensity, angle, thisPlayer, updater));
+    globals.projectiles.add(Projectile.velocity(u, thisPlayer, updater));
   }
 
   @override
@@ -248,18 +245,27 @@ class Projectile extends GameObject {
   int get playerInt => _player;
   Player get playerObj => globals.players[playerInt];
 
+  Projectile.velocity(Offset velocity, int player, Function updater) {
+    _projectileRunner(velocity, player, updater);
+  }
   Projectile.radians(
       double intensity, double angleRadians, int player, Function updater) {
-    _projectileRunner(intensity, angleRadians, player, updater);
+    _projectileRunner(angleToOffset(intensity, angleRadians), player, updater);
   }
   Projectile.degrees(
       double intensity, double angleDegrees, int player, Function updater) {
     _projectileRunner(
-        intensity, angleDegrees * globals.degreesToRadians, player, updater);
+        angleToOffset(intensity, angleDegrees * globals.degreesToRadians),
+        player,
+        updater);
   }
 
-  void _projectileRunner(double intensity, double angleRadians, int player,
-      Function updater) async {
+  Offset angleToOffset(double intensity, double angleRadians) {
+    return Offset(
+        intensity * -cos(angleRadians), intensity * sin(angleRadians));
+  }
+
+  void _projectileRunner(Offset velocity, int player, Function updater) async {
     //set stuff up
     updateUI = updater;
     _player = player;
@@ -269,7 +275,7 @@ class Projectile extends GameObject {
     Offset impactPos;
 
     //set set u,a,s
-    _u = Offset(intensity * -cos(angleRadians), intensity * sin(angleRadians));
+    _u = velocity;
     _a = Offset(globals.Ax, globals.Ay);
     aPos = playerObj.aPos;
 
@@ -325,9 +331,9 @@ class Projectile extends GameObject {
     //set new locations
     updated = true;
     // s = ut + 0.5att
-    aX = aX +
+    aX = playerObj.aX +
         (_u.dx * _timeSec + 0.5 * _a.dx * _timeSec * _timeSec) * globals.xSF;
-    aY = aY +
+    aY = playerObj.aY +
         (_u.dy * _timeSec + 0.5 * _a.dy * _timeSec * _timeSec) * globals.ySF;
     if (tick % 1 == 0) updateUI();
     // hit terrain?
