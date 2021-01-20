@@ -109,22 +109,16 @@ class Player extends GameObject {
   void playAI(Function updater, int thisPlayer,
       {int teamToTarget, double accuracy}) {
     //local vars
+    const double timeSec = 3;
+    const Offset a = Offset(globals.Ax, globals.Ay);
     double angle;
     double intensity;
-    const double timeSec = 3;
-    int selectedPlayer;
+    double angleVariance;
+    int selectedPlayer =
+        _selectPlayer(teamToTarget, globals.players[thisPlayer].team);
     Offset u;
     Offset s;
-    const Offset a = Offset(globals.Ax, globals.Ay);
-
-    // select player to target
-    if (teamToTarget != null &&
-        globals.players.any((element) => element.team == teamToTarget)) {
-      //TODO continue
-      //teamToTarget exists in array
-    } else {
-      //select random player not on team
-    }
+    Random rand = Random();
 
     //calculates optimum trajectory for hit
     // u = (s-0.5*a*t*t) / t
@@ -133,7 +127,11 @@ class Player extends GameObject {
     intensity = u.distance;
     angle = u.direction;
 
-    // adds variability to firing angle and intensity
+    // adds variability to firing angle
+    angleVariance = pi / 20;
+    angleVariance *= accuracy == null ? rand.nextDouble() / 4 : 1 - accuracy;
+    angleVariance *= rand.nextBool() ? 1 : -1; //plus or minus
+    angle += angleVariance;
 
     //fire projectile
     globals.projectiles
@@ -206,6 +204,30 @@ class Player extends GameObject {
   @override
   String toString() {
     return "Player(health:$health, team:$team, pos:$aPos)";
+  }
+
+  int _selectPlayer(int teamToTarget, int playerTeam) {
+    //locals
+    List<int> playersToChoose = List<int>.empty(growable: true);
+    Random rand = new Random();
+
+    // add players to target list
+    if (teamToTarget != null &&
+        teamToTarget != playerTeam &&
+        globals.players.any((element) => element.team == teamToTarget)) {
+      //teamToTarget exists in array
+      for (int i = 0; i < globals.players.length; i++) {
+        if (globals.players[i].team == teamToTarget) playersToChoose.add(i);
+      }
+    } else {
+      //select random player not on team
+      for (int i = 0; i < globals.players.length; i++) {
+        if (globals.players[i].team != playerTeam) playersToChoose.add(i);
+      }
+    }
+
+    //chose random number
+    return playersToChoose[rand.nextInt(playersToChoose.length)];
   }
 }
 
