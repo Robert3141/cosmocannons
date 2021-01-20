@@ -95,7 +95,7 @@ class _MainGamePageState extends State<MainGamePage> {
       globals.players = List.empty(growable: true);
       for (int i = 0; i < aX.length; i++)
         globals.players.add(Player.withHealth(
-            Offset(aX[i], aY[i]), team[i], health[i], updateUI));
+            Offset(aX[i], aY[i]), team[i], health[i], updateUI, context));
     } catch (e) {
       print(e.toString());
     }
@@ -151,7 +151,7 @@ class _MainGamePageState extends State<MainGamePage> {
       globals.players = List.empty(growable: true);
       for (int i = 0; i < widget.playerTeams.length; i++)
         globals.players.add(Player.fromListCreated(i, widget.playerTeams.length,
-            widget.playerTeams[i], globals.currentMap, updateUI));
+            widget.playerTeams[i], globals.currentMap, updateUI, context));
 
       //play music
       UI.playMusic();
@@ -200,31 +200,36 @@ class _MainGamePageState extends State<MainGamePage> {
         UI.textDisplayPopup(context, globals.saving);
       });
 
-      //save the variables
-      try {
-        //save variables
-        savedCorrectly &= await UI.dataStore(globals.keyMapNo, globals.mapNo);
-        savedCorrectly &=
-            await UI.dataStore(globals.keyCurrentPlayer, globals.currentPlayer);
-        savedCorrectly &=
-            await UI.dataStore(globals.keyThisPlayer, globals.thisPlayer);
-        savedCorrectly &=
-            await UI.dataStore(globals.keyGameMap, globals.currentMap);
-        savedCorrectly &=
-            await UI.dataStore(globals.keyGameType, widget.type.string);
-        savedCorrectly &=
-            await UI.dataStore(globals.keyMovedPlayer, movedPlayer);
-        //save objects
-        savedCorrectly &= await savePlayerData(globals.players);
-        // only report as saved if saving worked
-        await UI.dataStore(globals.keySavedGame, savedCorrectly);
-      } on ArgumentError catch (e) {
-        if (e.name == "minified") {
-          await UI.dataStore(globals.keySavedGame, false);
-        } else {
-          print("$e");
-          throw ("One of data being stored is not correct type");
+      if (globals.players.length > 1) {
+        //save the variables
+        try {
+          //save variables
+          savedCorrectly &= await UI.dataStore(globals.keyMapNo, globals.mapNo);
+          savedCorrectly &= await UI.dataStore(
+              globals.keyCurrentPlayer, globals.currentPlayer);
+          savedCorrectly &=
+              await UI.dataStore(globals.keyThisPlayer, globals.thisPlayer);
+          savedCorrectly &=
+              await UI.dataStore(globals.keyGameMap, globals.currentMap);
+          savedCorrectly &=
+              await UI.dataStore(globals.keyGameType, widget.type.string);
+          savedCorrectly &=
+              await UI.dataStore(globals.keyMovedPlayer, movedPlayer);
+          //save objects
+          savedCorrectly &= await savePlayerData(globals.players);
+          // only report as saved if saving worked
+          await UI.dataStore(globals.keySavedGame, savedCorrectly);
+        } on ArgumentError catch (e) {
+          if (e.name == "minified") {
+            await UI.dataStore(globals.keySavedGame, false);
+          } else {
+            print("$e");
+            throw ("One of data being stored is not correct type");
+          }
         }
+      } else {
+        //only 1 or fewer players
+        await UI.dataStore(globals.keySavedGame, false);
       }
 
       //stop music

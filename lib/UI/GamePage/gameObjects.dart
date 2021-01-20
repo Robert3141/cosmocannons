@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 import 'package:cosmocannons/UI/GamePage/gamePaint.dart';
+import 'package:cosmocannons/UI/launcher.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/globals.dart' as globals;
@@ -54,6 +55,7 @@ class Player extends GameObject {
   bool drawHitbox = false;
   double health = globals.defaultPlayerHealth;
   Offset _lastShot = Offset.zero;
+  BuildContext _context;
 
   //getters
   Offset get lastShot => _lastShot;
@@ -61,26 +63,30 @@ class Player extends GameObject {
   //setters
 
   // constructors
-  Player(Offset pos, int team, Function updater) {
+  Player(Offset pos, int team, Function updater, BuildContext context) {
     updateUI = updater;
     aPos = pos;
     _team = team;
     health = globals.defaultPlayerHealth;
+    _context = context;
   }
-  Player.fromListCreated(
-      int p, int n, int team, List<double> terrainHeights, Function updater) {
+  Player.fromListCreated(int p, int n, int team, List<double> terrainHeights,
+      Function updater, BuildContext context) {
     updateUI = updater;
     aX = (p + 1) / (n + 1);
     aY = GamePainter().calcNearestHeight(terrainHeights, aX) +
         globals.playerRadiusY;
     _team = team;
     health = globals.defaultPlayerHealth;
+    _context = context;
   }
-  Player.withHealth(Offset pos, int team, double h, Function updater) {
+  Player.withHealth(
+      Offset pos, int team, double h, Function updater, BuildContext context) {
     updateUI = updater;
     aPos = pos;
     _team = team;
     health = h;
+    _context = context;
   }
 
   //methods
@@ -107,9 +113,9 @@ class Player extends GameObject {
   /// Randomly picks a player not on it's team unless given specific team.
   /// Accuracy is given between 0 (very innacurate) and 1 (very accurate)
   void playAI(Function updater, int thisPlayer,
-      {int teamToTarget, double accuracy}) {
+      {int teamToTarget, double accuracy}) async {
     //local vars
-    const double timeSec = 2;
+    double timeSec = 2;
     const Offset a = Offset(globals.Ax, globals.Ay);
     double angleVariance;
     double uX = 0;
@@ -120,10 +126,15 @@ class Player extends GameObject {
     Offset s;
     Random rand = Random();
 
+    //choose to move
+    if (rand.nextInt(10) > 6) rand.nextBool() ? moveLeft() : moveRight();
+    await Future.delayed(Duration(milliseconds: 500));
+
     //calculates optimum trajectory for hit
     // u = (s-0.5*a*t*t) / t
     s = globals.players[selectedPlayer].aPos - aPos;
     s = s.scale(1 / globals.xSF, 1 / globals.ySF);
+    timeSec = rand.nextDouble() * 1.5 + 0.5;
     uX = (s.dx - (0.5 * a.dx * timeSec * timeSec)) / timeSec;
     uY = (s.dy - (0.5 * a.dy * timeSec * timeSec)) / timeSec;
     u = Offset(uX, uY);
@@ -283,7 +294,7 @@ class Projectile extends GameObject {
 
     _giveDamage(impactPos);
     _nextPlayer();
-    _checkWinner();
+    _checkWinner(playerObj._context);
 
     //destroy now
     globals.projectiles.remove(this);
@@ -400,7 +411,7 @@ class Projectile extends GameObject {
     updateUI();
   }
 
-  void _checkWinner() {
+  void _checkWinner(BuildContext context) {
     if (globals.players.isEmpty) {
       //Players wiped each other out
     } else {
@@ -417,7 +428,13 @@ class Projectile extends GameObject {
 
       if (teamsLeft.length == 1) {
         // last team wins
-        print("Team ${globals.defaultTeamNames[teamsLeft[0]]} has won!");
+        UI.dataInputPopup(context, [null],
+            notInput: true,
+            data: ["Team ${globals.defaultTeamNames[teamsLeft[0]]} has won!"],
+            onFinish: (bool b) {
+          UI.startNewPage(context, [], newPage: LauncherPage());
+        });
+        updateUI();
       }
     }
   }

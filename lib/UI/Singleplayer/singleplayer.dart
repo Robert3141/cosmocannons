@@ -31,6 +31,8 @@ class _SingleplayerPageState extends State<SingleplayerPage> {
           if (b) beginGame();
         });
       });
+    } else {
+      beginGame();
     }
   }
 

@@ -25,7 +25,9 @@ class CustomGestureRecognizer extends OneSequenceGestureRecognizer {
     if (event.localPosition.checkInRadius(
             globals.players[globals.currentPlayer].rPos,
             globals.playerRadius) &&
-        !globals.popup) {
+        !globals.popup &&
+        !globals.firing &&
+        globals.currentPlayer == globals.thisPlayer) {
       //in player position
       _onPanStart(event.localPosition);
       startTrackingPointer(event.pointer);
