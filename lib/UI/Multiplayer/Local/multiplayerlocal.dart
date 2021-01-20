@@ -17,7 +17,6 @@ class _LocalMultiPageState extends State<LocalMultiPage> {
   //locals
   int amountOfPlayers = globals.defualtPlayerAmount;
   int mapSelected = globals.defaultMap;
-  List<int> playerTeams = globals.playerTeams;
   //functions
   void checkStartGame() async {
     //check save
@@ -37,8 +36,8 @@ class _LocalMultiPageState extends State<LocalMultiPage> {
   }
 
   void beginGame() {
-    //add players to player teams
-    playerTeams = List.empty(growable: true);
+    // add players to list
+    List<int> playerTeams = List.empty(growable: true);
     for (int i = 0; i < amountOfPlayers; i++) {
       playerTeams.add(i);
     }

@@ -109,7 +109,7 @@ class Player extends GameObject {
   void playAI(Function updater, int thisPlayer,
       {int teamToTarget, double accuracy}) {
     //local vars
-    const double timeSec = 3;
+    const double timeSec = 2;
     const Offset a = Offset(globals.Ax, globals.Ay);
     double angle;
     double intensity;
@@ -123,15 +123,17 @@ class Player extends GameObject {
     //calculates optimum trajectory for hit
     // u = (s-0.5*a*t*t) / t
     s = globals.players[selectedPlayer].aPos - aPos;
+    s.scale(1 / globals.xSF, 1 / globals.ySF);
     u = (s - a * timeSec * timeSec * 0.5) / timeSec;
     intensity = u.distance;
     angle = u.direction;
+    print("$thisPlayer angle:$angle intensity:$intensity");
 
     // adds variability to firing angle
-    angleVariance = pi / 20;
+    /*angleVariance = pi / 20;
     angleVariance *= accuracy == null ? rand.nextDouble() / 4 : 1 - accuracy;
     angleVariance *= rand.nextBool() ? 1 : -1; //plus or minus
-    angle += angleVariance;
+    angle += angleVariance;*/
 
     //fire projectile
     globals.projectiles
@@ -284,6 +286,12 @@ class Projectile extends GameObject {
       globals.popup = false;
     }
     updateUI();
+
+    //singleplayer run AI
+    if (globals.thisPlayer != globals.currentPlayer &&
+        globals.type == globals.GameType.singlePlayer)
+      globals.players[globals.currentPlayer]
+          .playAI(updater, globals.currentPlayer);
   }
 
   Future<Offset> _animateProjectile() async {
@@ -328,7 +336,6 @@ class Projectile extends GameObject {
     //hit player?
     hitPlayer = false;
     for (int p = 0; p < globals.players.length; p++) {
-      print("p=$p length=${globals.players.length}");
       if (globals.players[p].team != playerObj.team) {
         if (checkInRadius(aPos, globals.players[p].aPos, globals.playerRadiusX,
             globals.playerRadiusY)) {
@@ -358,7 +365,6 @@ class Projectile extends GameObject {
     globals.currentPlayer++;
     if (globals.currentPlayer >= globals.players.length)
       globals.currentPlayer = 0;
-    print(globals.currentPlayer);
     if (globals.type.showPlayerUI(globals.currentPlayer))
       globals.thisPlayer = globals.currentPlayer;
   }

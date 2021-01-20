@@ -121,7 +121,7 @@ class _LauncherPageState extends State<LauncherPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           UI.largeButton(
-              enabled: false, // TODO: make singleplayer mode
+              enabled: true,
               text: globals.singleplayer,
               width: _resumeGame ? globals.thirdButton : globals.halfButton,
               onTap: () => singlePlayer(),
