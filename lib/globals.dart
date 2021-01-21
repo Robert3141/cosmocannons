@@ -1,14 +1,16 @@
 library cosmocannons.globals;
 
+import 'dart:async';
 import 'dart:ui';
 import 'dart:math';
+import 'package:client_server_lan/client_server_lan.dart';
 import 'package:cosmocannons/UI/GamePage/gameObjects.dart';
 import 'package:flutter/foundation.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/mapData.dart' as maps;
 import 'package:cosmocannons/UI/globalUIElements.dart';
-import 'package:assets_audio_player/assets_audio_player.dart';
+//import 'package:assets_audio_player/assets_audio_player.dart';
 
 /// CONSTANTS
 
@@ -52,6 +54,7 @@ const String errorOccurred = "An error occurred!\nDetails: ";
 const String mapChosen = "Selected Map";
 const String warningMapOverwrite =
     "WARNING! About to overwite previous save data";
+const String scanClients = "Scan Players";
 
 const String keyMusic = "music"; //bool
 const String keyVolume = "sound"; //bool
@@ -71,6 +74,8 @@ const String keyMapNo = "mapNo"; //int
 const String keyRenderHeight = "graphics"; //int
 const String keyMusicIndex = "musicIndex"; //int
 const String keyMusicSeek = "musicSeek"; //int
+
+const String packetConnected = "clientsConnected";
 
 const String helpMultiplayerHome =
     "On local device is currently the only supported. Multiplayer on the same Wifi Network is coming soon...";
@@ -104,14 +109,14 @@ List<AssetImage> backgrounds = [
   AssetImage("assets/images/moon.png"),
 ];
 
-List<Audio> songs = [
+/*List<Audio> songs = [
   Audio("assets/music/1.ogg"),
   Audio("assets/music/2.ogg"),
   Audio("assets/music/3.ogg"),
   Audio("assets/music/4.ogg"),
   Audio("assets/music/5.ogg"),
   Audio("assets/music/6.ogg")
-];
+];*/
 
 const double smallWidth = 0.2;
 const double smallHeight = 0.2;
@@ -215,11 +220,12 @@ bool playMusic = false;
 bool playAudio = false;
 bool dragGhost = false;
 bool firing = false;
+bool inGame = false;
 
 int mapNo;
 int terrainColumnsToRender = kIsWeb ? mapQualitySizes[0] : mapQualitySizes[1];
 int musicSeek = 0;
-int musicTrack = Random().nextInt(songs.length - 1);
+//int musicTrack = Random().nextInt(songs.length - 1);
 int currentPlayer;
 int thisPlayer;
 
@@ -235,6 +241,8 @@ Size canvasSize;
 
 GameType type;
 
+Stream<DataPacket> dataReceiver;
+
 //objects
 List<Player> players = List<Player>.empty(growable: true);
 List<Projectile> projectiles = List<Projectile>.empty(growable: true);
@@ -248,7 +256,7 @@ ScrollController gameScroller = ScrollController();
 
 FocusNode gameInputs = FocusNode();
 
-AssetsAudioPlayer musicPlayer = AssetsAudioPlayer();
+//AssetsAudioPlayer musicPlayer = AssetsAudioPlayer();
 
 final TextPainter defaultTextPaint = TextPainter(
     text: TextSpan(style: UI.defaultText()),

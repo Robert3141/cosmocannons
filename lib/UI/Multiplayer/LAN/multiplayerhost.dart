@@ -19,8 +19,9 @@ class _LocalMultiPageState extends State<HostMultiPage> {
   //locals
   bool readyForPlay = false;
   bool hostingServer = false;
-  List<int> playerTeams = globals.playerTeams;
-  List<String> playerNames = globals.playerNames;
+  List<int> playerTeams = List.from(globals.playerTeams);
+  List<String> playerNames = List.from(globals.playerNames);
+  List<bool> playerConnected = List.filled(4, false);
   String userNameText = "";
   ServerNode server;
 
@@ -52,12 +53,31 @@ class _LocalMultiPageState extends State<HostMultiPage> {
     //server now ready
     setState(() {
       hostingServer = true;
+      playerConnected[0] = true;
       //serverStatus = "Server ready on ${server.host}:${server.port}";
     });
+    //pass data
+    globals.dataReceiver = server.dataResponse;
     server.dataResponse.listen(dataReceived);
   }
 
-  void dataReceived(DataPacket data) {}
+  void scanClients() async {
+    server.discoverNodes();
+    await Future<dynamic>.delayed(const Duration(seconds: 2));
+    for (int i = 0;
+        i < server.clientsConnected.length || i < playerNames.length;
+        i++) {
+      setState(() {
+        playerNames[i + 1] = server.clientsConnected[i].name;
+        playerConnected[i + 1] = true;
+        server.sendData("", data, to)
+      });
+    }
+  }
+
+  void dataReceived(DataPacket data) {
+    print(data);
+  }
 
   void changePlayerTeam(int playerNo, int newTeam) {
     setState(() {
@@ -69,6 +89,12 @@ class _LocalMultiPageState extends State<HostMultiPage> {
     setState(() {
       readyForPlay = !readyForPlay;
     });
+  }
+
+  @override
+  void dispose() {
+    if (server != null) if (server.isRunning) server.dispose();
+    super.dispose();
   }
 
   //build UI
@@ -99,8 +125,10 @@ class _LocalMultiPageState extends State<HostMultiPage> {
                   ),
                   UI.halfButton(
                       quaterButton: true,
-                      text: globals.hostStartServer,
-                      onTap: () {},
+                      text: hostingServer
+                          ? globals.hostStartServer
+                          : globals.scanClients,
+                      onTap: hostingServer ? startServer : scanClients,
                       enabled: userNameText.isNotEmpty,
                       context: context)
                 ],
@@ -122,6 +150,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
               context: context,
               playerNames: playerNames,
               playerTeams: playerTeams,
+              playerEnabled: playerConnected,
               changePlayerTeam: changePlayerTeam),
         ],
       ),

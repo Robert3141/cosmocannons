@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:shared_preferences_moretypes/shared_preferences_moretypes.dart';
-import 'package:assets_audio_player/assets_audio_player.dart';
+//import 'package:assets_audio_player/assets_audio_player.dart';
 
 class UI {
   // simplified methods to get the screen details
@@ -67,10 +67,12 @@ class UI {
             padding: padding
                 ? EdgeInsets.all(getPaddingSize(context))
                 : EdgeInsets.zero,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: children,
-            ),
+            child: Wrap(children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: children,
+              ),
+            ]),
           ),
         ),
       );
@@ -263,6 +265,7 @@ class UI {
           {@required BuildContext context,
           List<String> playerNames,
           @required List<int> playerTeams,
+          @required List<bool> playerEnabled,
           @required void changePlayerTeam(int playerNo, int newTeam)}) =>
       Container(
         decoration: BoxDecoration(
@@ -295,7 +298,7 @@ class UI {
                       // Left Column Cells
                       return tableCell(
                         context,
-                        text: playerNames[y - 1],
+                        text: playerEnabled[y - 1] ? playerNames[y - 1] : "",
                         textColor: globals.teamColors[playerTeams[y - 1]],
                       );
                     } else if (y == 0) {
@@ -307,10 +310,14 @@ class UI {
                       );
                     } else {
                       // Other Cells
-                      return tableCell(context, onTap: () {
-                        changePlayerTeam(y, x);
-                      },
-                          ticked: playerTeams[y - 1] == x,
+                      return tableCell(context,
+                          onTap: playerEnabled[y - 1]
+                              ? () {
+                                  changePlayerTeam(y, x - 1);
+                                }
+                              : () {},
+                          ticked: playerEnabled[y - 1] &&
+                              playerTeams[y - 1] == x - 1,
                           textColor: globals.teamColors[x - 1]);
                     }
                   }),
@@ -654,7 +661,7 @@ class UI {
   static bool _supportedMusicPlatform = kIsWeb || Platform.isAndroid;
 
   static Future playMusic() async {
-    if (_supportedMusicPlatform) {
+    /*if (_supportedMusicPlatform) {
       globals.playMusic = await UI.dataLoad(globals.keyMusic, "bool") ?? true;
       if (globals.playMusic && !globals.musicPlayer.isPlaying.value) {
         globals.musicTrack = await UI.dataLoad(globals.keyMusicIndex, "int") ??
@@ -671,11 +678,11 @@ class UI {
         await globals.musicPlayer.play();
       } else
         stopMusic();
-    }
+    }*/
   }
 
   static Future stopMusic() async {
-    if (_supportedMusicPlatform) {
+    /*if (_supportedMusicPlatform) {
       if (globals.musicPlayer.isPlaying.value) {
         globals.musicSeek =
             globals.musicPlayer.currentPosition.value.inMilliseconds;
@@ -685,6 +692,6 @@ class UI {
       }
       globals.musicPlayer.stop();
       globals.musicPlayer = AssetsAudioPlayer();
-    }
+    }*/
   }
 }
