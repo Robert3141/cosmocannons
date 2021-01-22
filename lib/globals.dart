@@ -79,6 +79,7 @@ const String packetPlayerNames = "playerNames";
 const String packetPlayerNumber = "playerNumber";
 const String packetPlayerEnabled = "playerEnables";
 const String packetPlayerReady = "playerReady";
+const String packetPlayerTeams = "playerTeams";
 
 const String helpMultiplayerHome =
     "On local device is currently the only supported. Multiplayer on the same Wifi Network is coming soon...";

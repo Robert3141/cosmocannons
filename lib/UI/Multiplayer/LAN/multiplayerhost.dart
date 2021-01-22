@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
 import 'package:cosmocannons/globals.dart' as globals;
@@ -18,7 +19,7 @@ class HostMultiPage extends StatefulWidget {
 
 class _LocalMultiPageState extends State<HostMultiPage> {
   //locals
-  bool readyForPlay = false;
+  //bool readyForPlay = false;
   bool hostingServer = false;
   bool scanning = false;
   List<int> playerTeams = List.from(globals.playerTeams);
@@ -46,7 +47,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
   void startServer() async {
     String ip = await Wifi.ip;
     server = ServerNode(
-      name: "Server",
+      name: userNameText,
       verbose: true,
       host: ip,
       port: 8085,
@@ -71,7 +72,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
     server.discoverNodes();
     await Future<dynamic>.delayed(const Duration(seconds: 2));
     for (int i = 0;
-        i < server.clientsConnected.length || i < playerNames.length;
+        i < server.clientsConnected.length && i < playerNames.length;
         i++) {
       //update playerNames
       setState(() {
@@ -91,18 +92,20 @@ class _LocalMultiPageState extends State<HostMultiPage> {
   }
 
   void dataReceived(DataPacket data) {
-    print(data);
     int clientNo = data.clientNo(server);
     if (clientNo != null && clientNo < playerNames.length) {
       //deal with data
       switch (data.title) {
         case globals.packetPlayerReady:
           setState(() {
-            playerReady[clientNo] = data.payload;
-            if (playerReady.every((e) => e)) {
-              // TODO: start game
-              print("game ready to start");
-            }
+            playerReady[clientNo + 1] = data.payload == "true";
+            checkgameReadyToStart();
+          });
+          break;
+        case globals.packetPlayerTeams:
+          setState(() {
+            playerTeams = data.payload.toString().parseListInt();
+            sendToEveryone(globals.packetPlayerTeams, playerTeams);
           });
           break;
         default:
@@ -119,25 +122,40 @@ class _LocalMultiPageState extends State<HostMultiPage> {
 
   void sendToEveryone(String title, dynamic payload) {
     for (int i = 0;
-        i < server.clientsConnected.length || i < playerNames.length;
+        i < server.clientsConnected.length && i < playerNames.length;
         i++) {
       String address = server.clientsConnected[i].address;
       server.sendData(title, payload, address);
     }
   }
 
+  void checkgameReadyToStart() {
+    print(playerReady);
+    print(playerConnected);
+    if (playerReady.every((e) => e) ||
+        listEquals(playerReady, playerConnected)) {
+      // TODO: start game
+      print("game ready to start");
+    }
+  }
+
   void changePlayerTeam(int playerNo, int newTeam) {
+    print(playerNo);
     //only change if this player
-    if (playerNo == 0)
+    if (playerNo == 1) {
       setState(() {
         playerTeams[playerNo - 1] = newTeam;
       });
+      //send  updated data
+      sendToEveryone(globals.packetPlayerTeams, playerTeams);
+    }
   }
 
   void toggleReady() {
     setState(() {
-      readyForPlay = !readyForPlay;
+      playerReady[0] = !playerReady[0];
     });
+    checkgameReadyToStart();
   }
 
   @override
@@ -177,10 +195,10 @@ class _LocalMultiPageState extends State<HostMultiPage> {
                       height: UI.getHalfHeight(context) *
                           globals.halfButton *
                           globals.heightMultiplier,
-                      text: hostingServer
+                      text: !hostingServer
                           ? globals.hostStartServer
                           : globals.scanClients,
-                      onTap: hostingServer ? startServer : scanClients,
+                      onTap: !hostingServer ? startServer : scanClients,
                       enabled: userNameText.isNotEmpty && !scanning,
                       context: context)
                 ],
@@ -189,11 +207,12 @@ class _LocalMultiPageState extends State<HostMultiPage> {
                 height: UI.getPaddingSize(context),
               ),
               UI.halfButton(
-                text: readyForPlay ? globals.readyForPlay : globals.readyUp,
+                text: playerReady[0] ? globals.readyForPlay : globals.readyUp,
                 onTap: () => toggleReady(),
                 enabled: hostingServer,
-                buttonFill:
-                    readyForPlay ? globals.buttonReady : globals.buttonNotReady,
+                buttonFill: playerReady[0]
+                    ? globals.buttonReady
+                    : globals.buttonNotReady,
                 context: context,
               )
             ],

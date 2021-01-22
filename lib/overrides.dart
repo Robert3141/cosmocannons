@@ -74,11 +74,44 @@ extension packetExtender on DataPacket {
     int clientNo;
 
     for (int i = 0; i < server.clientsConnected.length; i++) {
-      if (server.clientsConnected[i].address == this.host) {
+      if (server.clientsConnected[i].address == "${this.host}:${this.port}") {
         clientNo = i;
         i = server.clientsConnected.length;
       }
     }
     return clientNo;
+  }
+}
+
+extension StringExtender on String {
+  /// gets list from List<String>.toString()
+  List<String> parseListString() {
+    String data;
+    List<String> list = List.empty(growable: true);
+    if (this.startsWith("[") && this.endsWith("]")) {
+      data = this.substring(1, this.length - 1);
+      list = data.split(", ");
+    } else {
+      throw "parse Error";
+    }
+    return list;
+  }
+
+  List<bool> parseListBool() {
+    List<String> stringList = this.parseListString();
+    List<bool> booleans = List.empty(growable: true);
+    for (int i = 0; i < stringList.length; i++) {
+      booleans.add(stringList[i] == "true");
+    }
+    return booleans;
+  }
+
+  List<int> parseListInt() {
+    List<String> stringList = this.parseListString();
+    List<int> ints = List.empty(growable: true);
+    for (int i = 0; i < stringList.length; i++) {
+      ints.add(int.parse(stringList[i]));
+    }
+    return ints;
   }
 }

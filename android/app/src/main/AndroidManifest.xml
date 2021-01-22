@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="cosmocannons"
-        usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config" >
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
@@ -29,6 +29,10 @@
               android:name="io.flutter.embedding.android.SplashScreenDrawable"
               android:resource="@drawable/launch_background"
               />
+            <!-- Network profiles for LAN communication-->
+            <meta-data 
+              android:name="io.flutter.network-policy"
+              android:resource="@xml/network_security_config"/>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

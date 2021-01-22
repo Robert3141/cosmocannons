@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:wifi/wifi.dart';
+import 'package:cosmocannons/overrides.dart';
 
 class ClientMultiPage extends StatefulWidget {
   //constructor of class
@@ -19,6 +20,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
   //locals
   bool readyForPlay = false;
   bool connectedToServer = false;
+  bool connecting = false;
   int playerNumber = 1;
   List<int> playerTeams = List.from(globals.playerTeams);
   List<String> playerNames = List.from(globals.playerNames);
@@ -42,9 +44,12 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
   }
 
   void startClient() async {
+    setState(() {
+      connecting = true;
+    });
     String ip = await Wifi.ip;
     client = ClientNode(
-      name: "Server",
+      name: userNameText,
       verbose: true,
       host: ip,
       port: 8085,
@@ -63,16 +68,25 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
   void dataReceived(DataPacket data) {
     switch (data.title) {
       case globals.packetPlayerNumber:
-        playerNumber = data.payload;
+        playerNumber = int.parse(data.payload) + 2;
+        setState(() {
+          connecting = false;
+          connectedToServer = true;
+        });
         break;
       case globals.packetPlayerNames:
         setState(() {
-          playerNames = data.payload;
+          playerNames = data.payload.toString().parseListString();
         });
         break;
       case globals.packetPlayerEnabled:
         setState(() {
-          playerNames = data.payload;
+          playerConnected = data.payload.toString().parseListBool();
+        });
+        break;
+      case globals.packetPlayerTeams:
+        setState(() {
+          playerTeams = data.payload.toString().parseListInt();
         });
         break;
       default:
@@ -83,10 +97,14 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
   }
 
   void changePlayerTeam(int playerNo, int newTeam) {
-    if (playerNo == playerNumber)
+    print(playerNumber);
+    if (playerNo == playerNumber) {
       setState(() {
         playerTeams[playerNo - 1] = newTeam;
       });
+      client.sendData(
+          globals.packetPlayerTeams, playerTeams, client.serverDetails.address);
+    }
   }
 
   void toggleReady() {
@@ -127,7 +145,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
                           globals.heightMultiplier,
                       text: globals.clientName,
                       onTap: nameSelectPopup,
-                      enabled: !connectedToServer,
+                      enabled: !connectedToServer && !connecting,
                       context: context),
                   Container(
                     width: UI.getPaddingSize(context),
@@ -138,7 +156,9 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
                           globals.halfButton *
                           globals.heightMultiplier,
                       text: globals.clientConnectServer,
-                      enabled: userNameText.isNotEmpty && !connectedToServer,
+                      enabled: userNameText.isNotEmpty &&
+                          !connectedToServer &&
+                          !connecting,
                       onTap: startClient,
                       context: context),
                 ],
