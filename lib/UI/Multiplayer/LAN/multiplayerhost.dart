@@ -48,7 +48,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
     String ip = await Wifi.ip;
     server = ServerNode(
       name: userNameText,
-      verbose: true,
+      verbose: kDebugMode,
       host: ip,
       port: 8085,
     );
@@ -130,17 +130,14 @@ class _LocalMultiPageState extends State<HostMultiPage> {
   }
 
   void checkgameReadyToStart() {
-    print(playerReady);
-    print(playerConnected);
-    if (playerReady.every((e) => e) ||
-        listEquals(playerReady, playerConnected)) {
+    if (listEquals(playerReady, playerConnected) &&
+        playerConnected[1] == true) {
       // TODO: start game
       print("game ready to start");
     }
   }
 
   void changePlayerTeam(int playerNo, int newTeam) {
-    print(playerNo);
     //only change if this player
     if (playerNo == 1) {
       setState(() {

@@ -1,5 +1,6 @@
 import 'package:client_server_lan/client_server_lan.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
 import 'package:cosmocannons/globals.dart' as globals;
@@ -50,7 +51,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
     String ip = await Wifi.ip;
     client = ClientNode(
       name: userNameText,
-      verbose: true,
+      verbose: kDebugMode,
       host: ip,
       port: 8085,
     );
