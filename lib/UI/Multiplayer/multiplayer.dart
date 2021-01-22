@@ -40,7 +40,7 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
     var platform = Theme.of(context).platform;
     bool kIsAndroid = platform == TargetPlatform.android;
     //bool kIsIOS = platform == TargetPlatform.iOS;
-    bool kIsMobile = kIsAndroid; //TODO: Multiplayer LAN
+    bool kIsMobile = kIsAndroid;
 
     Scaffold page = UI.scaffoldWithBackground(
       context: context,

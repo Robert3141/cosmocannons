@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 import 'package:cosmocannons/UI/GamePage/mainGame.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cosmocannons/globals.dart' as globals;
@@ -113,8 +112,7 @@ class UI {
                 ? Container()
                 : smallButton(
                     text: globals.help,
-                    onTap: () => UI.textDisplayPopup(
-                        context, helpText), //TODO add help text for all pages
+                    onTap: () => UI.textDisplayPopup(context, helpText),
                     context: context,
                     enabled: helpText != ""),
           ],

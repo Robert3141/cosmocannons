@@ -4,6 +4,7 @@ import 'package:cosmocannons/UI/globalUIElements.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:client_server_lan/client_server_lan.dart';
 import 'package:wifi/wifi.dart';
+import 'package:cosmocannons/overrides.dart';
 
 class HostMultiPage extends StatefulWidget {
   //constructor of class
@@ -19,9 +20,11 @@ class _LocalMultiPageState extends State<HostMultiPage> {
   //locals
   bool readyForPlay = false;
   bool hostingServer = false;
+  bool scanning = false;
   List<int> playerTeams = List.from(globals.playerTeams);
   List<String> playerNames = List.from(globals.playerNames);
   List<bool> playerConnected = List.filled(4, false);
+  List<bool> playerReady = List.filled(4, false);
   String userNameText = "";
   ServerNode server;
 
@@ -62,27 +65,73 @@ class _LocalMultiPageState extends State<HostMultiPage> {
   }
 
   void scanClients() async {
+    setState(() {
+      scanning = true;
+    });
     server.discoverNodes();
     await Future<dynamic>.delayed(const Duration(seconds: 2));
     for (int i = 0;
         i < server.clientsConnected.length || i < playerNames.length;
         i++) {
+      //update playerNames
       setState(() {
         playerNames[i + 1] = server.clientsConnected[i].name;
         playerConnected[i + 1] = true;
-        server.sendData("", data, to)
       });
+      //tell them their numbers
+      server.sendData(
+          globals.packetPlayerNumber, i, server.clientsConnected[i].address);
     }
+    //tell players all the player names
+    sendToEveryone(globals.packetPlayerNames, playerNames);
+    sendToEveryone(globals.packetPlayerEnabled, playerConnected);
+    setState(() {
+      scanning = false;
+    });
   }
 
   void dataReceived(DataPacket data) {
     print(data);
+    int clientNo = data.clientNo(server);
+    if (clientNo != null && clientNo < playerNames.length) {
+      //deal with data
+      switch (data.title) {
+        case globals.packetPlayerReady:
+          setState(() {
+            playerReady[clientNo] = data.payload;
+            if (playerReady.every((e) => e)) {
+              // TODO: start game
+              print("game ready to start");
+            }
+          });
+          break;
+        default:
+          debugPrint("Error packet not known title");
+          debugPrint("$data");
+          break;
+      }
+    } else {
+      //not known player so ignore
+      debugPrint("Not known player $clientNo");
+      debugPrint("$data");
+    }
+  }
+
+  void sendToEveryone(String title, dynamic payload) {
+    for (int i = 0;
+        i < server.clientsConnected.length || i < playerNames.length;
+        i++) {
+      String address = server.clientsConnected[i].address;
+      server.sendData(title, payload, address);
+    }
   }
 
   void changePlayerTeam(int playerNo, int newTeam) {
-    setState(() {
-      playerTeams[playerNo - 1] = newTeam;
-    });
+    //only change if this player
+    if (playerNo == 0)
+      setState(() {
+        playerTeams[playerNo - 1] = newTeam;
+      });
   }
 
   void toggleReady() {
@@ -123,13 +172,16 @@ class _LocalMultiPageState extends State<HostMultiPage> {
                   Container(
                     width: UI.getPaddingSize(context),
                   ),
-                  UI.halfButton(
-                      quaterButton: true,
+                  UI.largeButton(
+                      width: UI.getHalfWidth(context) * globals.halfButton,
+                      height: UI.getHalfHeight(context) *
+                          globals.halfButton *
+                          globals.heightMultiplier,
                       text: hostingServer
                           ? globals.hostStartServer
                           : globals.scanClients,
                       onTap: hostingServer ? startServer : scanClients,
-                      enabled: userNameText.isNotEmpty,
+                      enabled: userNameText.isNotEmpty && !scanning,
                       context: context)
                 ],
               ),

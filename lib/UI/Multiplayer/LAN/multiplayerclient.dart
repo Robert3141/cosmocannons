@@ -61,18 +61,39 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
   }
 
   void dataReceived(DataPacket data) {
-    print(data);
+    switch (data.title) {
+      case globals.packetPlayerNumber:
+        playerNumber = data.payload;
+        break;
+      case globals.packetPlayerNames:
+        setState(() {
+          playerNames = data.payload;
+        });
+        break;
+      case globals.packetPlayerEnabled:
+        setState(() {
+          playerNames = data.payload;
+        });
+        break;
+      default:
+        debugPrint("Error packet not known title");
+        debugPrint("$data");
+        break;
+    }
   }
 
   void changePlayerTeam(int playerNo, int newTeam) {
-    setState(() {
-      playerTeams[playerNo - 1] = newTeam;
-    });
+    if (playerNo == playerNumber)
+      setState(() {
+        playerTeams[playerNo - 1] = newTeam;
+      });
   }
 
   void toggleReady() {
     setState(() {
       readyForPlay = !readyForPlay;
+      client.sendData(globals.packetPlayerReady, readyForPlay,
+          client.serverDetails.address);
     });
   }
 
@@ -117,19 +138,15 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
                           globals.halfButton *
                           globals.heightMultiplier,
                       text: globals.clientConnectServer,
-                      enabled: userNameText.isNotEmpty,
-                      onTap: null,
+                      enabled: userNameText.isNotEmpty && !connectedToServer,
+                      onTap: startClient,
                       context: context),
                 ],
               ),
               Container(
                 height: UI.getPaddingSize(context),
               ),
-              UI.largeButton(
-                  width: UI.getHalfWidth(context),
-                  height: UI.getHalfHeight(context) *
-                      globals.halfButton *
-                      globals.heightMultiplier,
+              UI.halfButton(
                   text: readyForPlay ? globals.readyForPlay : globals.readyUp,
                   onTap: () => toggleReady(),
                   enabled: connectedToServer,
@@ -144,7 +161,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
               playerNames: playerNames,
               playerTeams: playerTeams,
               playerEnabled: playerConnected,
-              changePlayerTeam: null)
+              changePlayerTeam: changePlayerTeam)
         ],
       ),
     ], context: context, backgroundNo: 3);

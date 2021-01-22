@@ -75,7 +75,10 @@ const String keyRenderHeight = "graphics"; //int
 const String keyMusicIndex = "musicIndex"; //int
 const String keyMusicSeek = "musicSeek"; //int
 
-const String packetConnected = "clientsConnected";
+const String packetPlayerNames = "playerNames";
+const String packetPlayerNumber = "playerNumber";
+const String packetPlayerEnabled = "playerEnables";
+const String packetPlayerReady = "playerReady";
 
 const String helpMultiplayerHome =
     "On local device is currently the only supported. Multiplayer on the same Wifi Network is coming soon...";

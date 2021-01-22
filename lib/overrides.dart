@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:client_server_lan/client_server_lan.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/globals.dart' as globals;
@@ -64,5 +65,20 @@ extension DoubleExtender on double {
   /// Take values between 0 and globals.canvasSize and convert to between 0 and 1
   double toActualY() {
     return Offset(0, this).toActual().dy;
+  }
+}
+
+extension packetExtender on DataPacket {
+  /// Gets int no of connected client
+  int clientNo(ServerNode server) {
+    int clientNo;
+
+    for (int i = 0; i < server.clientsConnected.length; i++) {
+      if (server.clientsConnected[i].address == this.host) {
+        clientNo = i;
+        i = server.clientsConnected.length;
+      }
+    }
+    return clientNo;
   }
 }

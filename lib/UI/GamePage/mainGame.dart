@@ -102,7 +102,6 @@ class _MainGamePageState extends State<MainGamePage> {
   }
 
   void gameResume() async {
-    // TODO add null checks so it doesnt crash on update
     try {
       setState(() {
         loaded = false;
