@@ -20,8 +20,10 @@ class HostMultiPage extends StatefulWidget {
 class _LocalMultiPageState extends State<HostMultiPage> {
   //locals
   //bool readyForPlay = false;
+  int chosenMap = 0;
   bool hostingServer = false;
   bool scanning = false;
+  bool gameStarting = false;
   List<int> playerTeams = List.from(globals.playerTeams);
   List<String> playerNames = List.from(globals.playerNames);
   List<bool> playerConnected = List.filled(4, false);
@@ -41,6 +43,25 @@ class _LocalMultiPageState extends State<HostMultiPage> {
   void nameSelectPopup() {
     setState(() {
       UI.dataInputPopup(context, [playerNameChange], title: globals.hostName);
+    });
+  }
+
+  void mapNumberChange(int num) {
+    setState(() {
+      chosenMap = num;
+      Navigator.of(context).pop();
+    });
+    mapSelectPopup();
+    sendToEveryone(globals.packetMapNumber, chosenMap);
+  }
+
+  void mapSelectPopup() {
+    setState(() {
+      UI.dataInputPopup(context, [],
+          title: globals.mapChosen,
+          child: UI.settingsEntry("", mapNumberChange, context,
+              texts: globals.mapNames, ints: [0, 1, 2], intVar: chosenMap),
+          numericData: List.filled(globals.mapNames.length, true));
     });
   }
 
@@ -104,7 +125,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
           break;
         case globals.packetPlayerTeams:
           setState(() {
-            playerTeams = data.payload.toString().parseListInt();
+            playerTeams[clientNo + 1] = int.parse(data.payload);
             sendToEveryone(globals.packetPlayerTeams, playerTeams);
           });
           break;
@@ -131,9 +152,12 @@ class _LocalMultiPageState extends State<HostMultiPage> {
 
   void checkgameReadyToStart() {
     if (listEquals(playerReady, playerConnected) &&
-        playerConnected[1] == true) {
+        playerConnected[1] == true &&
+        !gameStarting) {
       // TODO: start game
-      print("game ready to start");
+      print("game starting");
+      gameStarting = true;
+      //UI.startNewPage(context, playerTeams,chosenMap: globals.terrainMaps[])
     }
   }
 
@@ -180,9 +204,10 @@ class _LocalMultiPageState extends State<HostMultiPage> {
                 children: [
                   UI.halfButton(
                       quaterButton: true,
-                      text: globals.hostName,
-                      onTap: nameSelectPopup,
-                      enabled: !hostingServer,
+                      text:
+                          hostingServer ? globals.mapChosen : globals.hostName,
+                      onTap: hostingServer ? mapSelectPopup : nameSelectPopup,
+                      enabled: true,
                       context: context),
                   Container(
                     width: UI.getPaddingSize(context),
@@ -222,7 +247,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
               changePlayerTeam: changePlayerTeam),
         ],
       ),
-    ], context: context, backgroundNo: 3);
+    ], context: context, backgroundNo: chosenMap + 7);
 
     return page;
   }

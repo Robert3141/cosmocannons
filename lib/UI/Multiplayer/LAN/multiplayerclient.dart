@@ -23,6 +23,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
   bool connectedToServer = false;
   bool connecting = false;
   int playerNumber = 1;
+  int mapChosen = 0;
   List<int> playerTeams = List.from(globals.playerTeams);
   List<String> playerNames = List.from(globals.playerNames);
   List<bool> playerConnected = List.filled(4, false);
@@ -90,6 +91,11 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
           playerTeams = data.payload.toString().parseListInt();
         });
         break;
+      case globals.packetMapNumber:
+        setState(() {
+          mapChosen = int.parse(data.payload);
+        });
+        break;
       default:
         debugPrint("Error packet not known title");
         debugPrint("$data");
@@ -98,13 +104,9 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
   }
 
   void changePlayerTeam(int playerNo, int newTeam) {
-    print(playerNumber);
     if (playerNo == playerNumber) {
-      setState(() {
-        playerTeams[playerNo - 1] = newTeam;
-      });
       client.sendData(
-          globals.packetPlayerTeams, playerTeams, client.serverDetails.address);
+          globals.packetPlayerTeams, newTeam, client.serverDetails.address);
     }
   }
 
@@ -185,7 +187,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
               changePlayerTeam: changePlayerTeam)
         ],
       ),
-    ], context: context, backgroundNo: 3);
+    ], context: context, backgroundNo: mapChosen + 7);
 
     return page;
   }

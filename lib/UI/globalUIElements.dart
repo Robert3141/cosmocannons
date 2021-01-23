@@ -238,7 +238,6 @@ class UI {
       InkWell(
         onTap: onTap,
         child: Container(
-          color: globals.buttonFill,
           alignment: Alignment.center,
           width: UI.getHalfWidth(context) *
               globals.tableElement *
@@ -267,6 +266,7 @@ class UI {
           @required void changePlayerTeam(int playerNo, int newTeam)}) =>
       Container(
         decoration: BoxDecoration(
+          color: globals.buttonFill,
           border: Border.all(
               width: globals.buttonBorderSize, color: globals.buttonBorder),
           borderRadius: BorderRadius.circular(globals.buttonClipSize),
@@ -387,7 +387,8 @@ class UI {
                             globals.halfButton *
                             (title == null ? 1 : 0.95) -
                         (globals.buttonBorderSize * 2)),
-                width: screenWidth(context) * (width ?? getHalfWidth(context)),
+                width: screenWidth(context) * (width ?? getHalfWidth(context)) -
+                    10,
                 decoration: BoxDecoration(
                     border: Border.all(
                       width: globals.buttonBorderSize,
@@ -487,6 +488,7 @@ class UI {
       List<String> data = const [""],
       String title = "",
       bool notInput = false,
+      Widget child,
       bool barrierDismissable = true,
       Function(bool confirm) onFinish}) {
     List<Widget> children = [];
@@ -509,7 +511,7 @@ class UI {
         padding: EdgeInsets.symmetric(vertical: UI.getPaddingSize(context)),
         child: Text(
           title,
-          style: UI.defaultText(true),
+          style: UI.defaultText(false),
           textAlign: TextAlign.center,
         )));
     children.add(Container(
@@ -536,6 +538,8 @@ class UI {
         ],
       ));
     }
+    //child
+    if (child != null) children.add(child);
     return showDialog(
       barrierColor: globals.disabledBorder,
       barrierDismissible: barrierDismissable,
@@ -568,10 +572,14 @@ class UI {
     //on enter:
     FocusNode popupKeyboard = FocusNode();
     Timer popupStart = Timer(Duration(milliseconds: 500), () {});
+    Widget confirmButton;
+    if (children == null) children = [];
 
     //add confirm button
-    if (children.length == dataChange.length + 2 || textPopup)
-      children.add(Column(children: [
+    if (children.length == dataChange.length + 2 ||
+        textPopup ||
+        dataChange.length == 0) {
+      confirmButton = Column(children: [
         UI.largeButton(
             height: globals.smallHeight,
             text: globals.confirm,
@@ -580,7 +588,8 @@ class UI {
               onFinish(true);
             },
             context: context)
-      ]));
+      ]);
+    }
     return Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         backgroundColor: Color(0x1A1A1A).withOpacity(1),
@@ -608,9 +617,26 @@ class UI {
               borderRadius: BorderRadius.circular(globals.buttonClipSize),
             ),
             width: screenWidth(context) * getHalfWidth(context),
-            child: ListView(
-              //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: children,
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                //show confirm button
+                return Column(
+                  children: [
+                    Expanded(
+                        child: OverflowBox(
+                      child: ListView(
+                        children: children,
+                      ),
+                      minWidth: constraints.minWidth,
+                      maxWidth: constraints.maxWidth,
+                    )),
+                    constraints.maxHeight >
+                            globals.smallHeight * screenHeight(context)
+                        ? confirmButton ?? Container()
+                        : Container(),
+                  ],
+                );
+              },
             ),
           ),
         ));
