@@ -403,6 +403,13 @@ class Projectile extends GameObject {
           //remove dead players
           if (globals.players[i].health <= 0) {
             globals.players.removeAt(i);
+            //if player killed is below the current player then the current player needs updating
+            if (i < globals.currentPlayer) {
+              globals.currentPlayer--;
+              _player--;
+            }
+
+            //count from after the player removed
             i--;
           }
         }

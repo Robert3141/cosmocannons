@@ -33,8 +33,8 @@ const String clientConnectServer = "Start Client";
 const String clientDisconenctServer = "Disconnect from Server";
 const String readyUp = "Ready Up";
 const String readyForPlay = "Ready";
-const String client = "Client";
-const String host = "Host";
+const String _client = "Client";
+const String _host = "Host";
 const String notConnected = "Not Connected";
 const String paused = "Paused";
 const String platformNotSupported = "Not supported on this device";
@@ -45,6 +45,7 @@ const String shootIntensity = "Intensity";
 const String shootAngle = "Angle";
 const String beginGame = "Begin";
 const String quitWithSave = "Save and Quit";
+const String quitNoSave = "Exit";
 const String allDead = "No players survived!";
 const String welcomeBack = "Welcome back";
 const String saving = "Saving . . .";
@@ -81,6 +82,7 @@ const String packetPlayerEnabled = "playerEnables";
 const String packetPlayerReady = "playerReady";
 const String packetPlayerTeams = "playerTeams";
 const String packetMapNumber = "mapNumber";
+const String packetGameStart = "gameStart";
 
 const String helpMultiplayerHome =
     "On local device is currently the only supported. Multiplayer on the same Wifi Network is coming soon...";
@@ -97,7 +99,7 @@ const List<String> defaultTeamNames = ["Red", "Green", "Blue", "Yellow"];
 const List<String> playerAmounts = ["2", "3", "4"];
 const List<String> shootOptions = [shootIntensity, shootAngle];
 const List<String> winningPlayerIs = ["The winner is player ", " from team "];
-const List<String> playerNames = [host, client, client, client];
+const List<String> playerNames = [_host, _client, _client, _client];
 const List<String> mapNames = ["Hills", "Desert", "Moon"];
 const List<String> mapQualityString = ["Low", "Medium", "High"];
 
@@ -246,7 +248,8 @@ Size canvasSize;
 
 GameType type;
 
-Stream<DataPacket> dataReceiver;
+ServerNode server;
+ClientNode client;
 
 //objects
 List<Player> players = List<Player>.empty(growable: true);
@@ -286,6 +289,10 @@ extension GameExtension on GameType {
       default:
         return null;
     }
+  }
+
+  bool get isLAN {
+    return this == GameType.multiHost || this == GameType.multiClient;
   }
 
   String get string {

@@ -22,13 +22,13 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
   bool readyForPlay = false;
   bool connectedToServer = false;
   bool connecting = false;
+  bool gameStarting = false;
   int playerNumber = 1;
   int mapChosen = 0;
   List<int> playerTeams = List.from(globals.playerTeams);
   List<String> playerNames = List.from(globals.playerNames);
   List<bool> playerConnected = List.filled(4, false);
   String userNameText = "";
-  ClientNode client;
 
   //functions
   void playerNameChange(String text) {
@@ -50,24 +50,24 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
       connecting = true;
     });
     String ip = await Wifi.ip;
-    client = ClientNode(
+    globals.client = ClientNode(
       name: userNameText,
       verbose: kDebugMode,
       host: ip,
       port: 8085,
     );
-    await client.init();
-    await client.onReady;
+    await globals.client.init();
+    await globals.client.onReady;
     //server now ready
     setState(() {
       //serverStatus = "Server ready on ${server.host}:${server.port}";
     });
     //pass data
-    globals.dataReceiver = client.dataResponse;
-    client.dataResponse.listen(dataReceived);
+    globals.client.dataResponse.listen(dataReceived);
   }
 
   void dataReceived(DataPacket data) {
+    print("received $data");
     switch (data.title) {
       case globals.packetPlayerNumber:
         playerNumber = int.parse(data.payload) + 2;
@@ -96,6 +96,21 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
           mapChosen = int.parse(data.payload);
         });
         break;
+      case globals.packetGameStart:
+        if (!gameStarting) {
+          //create players as list only of players that have started
+          List<int> players = List.empty(growable: true);
+          for (int i = 0; i < playerConnected.length; i++) {
+            if (playerConnected[i]) players.add(playerTeams[i]);
+          }
+
+          //start game
+          gameStarting = true;
+          print("game starting");
+          UI.startNewPage(context, players,
+              chosenMap: mapChosen, type: globals.GameType.multiClient);
+        }
+        break;
       default:
         debugPrint("Error packet not known title");
         debugPrint("$data");
@@ -105,22 +120,23 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
 
   void changePlayerTeam(int playerNo, int newTeam) {
     if (playerNo == playerNumber) {
-      client.sendData(
-          globals.packetPlayerTeams, newTeam, client.serverDetails.address);
+      globals.client.sendData(globals.packetPlayerTeams, newTeam,
+          globals.client.serverDetails.address);
     }
   }
 
   void toggleReady() {
     setState(() {
       readyForPlay = !readyForPlay;
-      client.sendData(globals.packetPlayerReady, readyForPlay,
-          client.serverDetails.address);
+      globals.client.sendData(globals.packetPlayerReady, readyForPlay,
+          globals.client.serverDetails.address);
     });
   }
 
   @override
   void dispose() {
-    if (client != null) if (client.isRunning) client.dispose();
+    if (globals.client != null) if (globals.client.isRunning && !gameStarting)
+      globals.client.dispose();
     super.dispose();
   }
 

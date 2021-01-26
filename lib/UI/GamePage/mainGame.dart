@@ -191,6 +191,10 @@ class _MainGamePageState extends State<MainGamePage> {
     return savedCorrectly;
   }
 
+  void quitNoSave() {
+    //TODO do quitting for no save
+  }
+
   void quitWithSaving() async {
     bool savedCorrectly = true;
     try {
@@ -405,8 +409,12 @@ class _MainGamePageState extends State<MainGamePage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 UI.halfButton(
-                                    text: globals.quitWithSave,
-                                    onTap: quitWithSaving,
+                                    text: globals.type.isLAN
+                                        ? globals.quitNoSave
+                                        : globals.quitWithSave,
+                                    onTap: globals.type.isLAN
+                                        ? quitNoSave
+                                        : quitWithSaving,
                                     context: context),
                               ],
                             ),

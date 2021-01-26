@@ -29,7 +29,6 @@ class _LocalMultiPageState extends State<HostMultiPage> {
   List<bool> playerConnected = List.filled(4, false);
   List<bool> playerReady = List.filled(4, false);
   String userNameText = "";
-  ServerNode server;
 
   //functions
   void playerNameChange(String text) {
@@ -67,14 +66,14 @@ class _LocalMultiPageState extends State<HostMultiPage> {
 
   void startServer() async {
     String ip = await Wifi.ip;
-    server = ServerNode(
+    globals.server = ServerNode(
       name: userNameText,
       verbose: kDebugMode,
       host: ip,
       port: 8085,
     );
-    await server.init();
-    await server.onReady;
+    await globals.server.init();
+    await globals.server.onReady;
     //server now ready
     setState(() {
       hostingServer = true;
@@ -82,27 +81,26 @@ class _LocalMultiPageState extends State<HostMultiPage> {
       //serverStatus = "Server ready on ${server.host}:${server.port}";
     });
     //pass data
-    globals.dataReceiver = server.dataResponse;
-    server.dataResponse.listen(dataReceived);
+    globals.server.dataResponse.listen(dataReceived);
   }
 
   void scanClients() async {
     setState(() {
       scanning = true;
     });
-    server.discoverNodes();
+    globals.server.discoverNodes();
     await Future<dynamic>.delayed(const Duration(seconds: 2));
     for (int i = 0;
-        i < server.clientsConnected.length && i < playerNames.length;
+        i < globals.server.clientsConnected.length && i < playerNames.length;
         i++) {
       //update playerNames
       setState(() {
-        playerNames[i + 1] = server.clientsConnected[i].name;
+        playerNames[i + 1] = globals.server.clientsConnected[i].name;
         playerConnected[i + 1] = true;
       });
       //tell them their numbers
-      server.sendData(
-          globals.packetPlayerNumber, i, server.clientsConnected[i].address);
+      globals.server.sendData(globals.packetPlayerNumber, i,
+          globals.server.clientsConnected[i].address);
     }
     //tell players all the player names
     sendToEveryone(globals.packetPlayerNames, playerNames);
@@ -113,7 +111,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
   }
 
   void dataReceived(DataPacket data) {
-    int clientNo = data.clientNo(server);
+    int clientNo = data.clientNo(globals.server);
     if (clientNo != null && clientNo < playerNames.length) {
       //deal with data
       switch (data.title) {
@@ -143,10 +141,10 @@ class _LocalMultiPageState extends State<HostMultiPage> {
 
   void sendToEveryone(String title, dynamic payload) {
     for (int i = 0;
-        i < server.clientsConnected.length && i < playerNames.length;
+        i < globals.server.clientsConnected.length && i < playerNames.length;
         i++) {
-      String address = server.clientsConnected[i].address;
-      server.sendData(title, payload, address);
+      String address = globals.server.clientsConnected[i].address;
+      globals.server.sendData(title, payload, address);
     }
   }
 
@@ -154,10 +152,18 @@ class _LocalMultiPageState extends State<HostMultiPage> {
     if (listEquals(playerReady, playerConnected) &&
         playerConnected[1] == true &&
         !gameStarting) {
-      // TODO: start game
+      //create players as list only of players that have started
+      List<int> players = List.empty(growable: true);
+      for (int i = 0; i < playerConnected.length; i++) {
+        if (playerConnected[i]) players.add(playerTeams[i]);
+      }
+
+      //start game
       print("game starting");
       gameStarting = true;
-      //UI.startNewPage(context, playerTeams,chosenMap: globals.terrainMaps[])
+      sendToEveryone(globals.packetGameStart, gameStarting);
+      UI.startNewPage(context, players,
+          chosenMap: chosenMap, type: globals.GameType.multiHost);
     }
   }
 
@@ -181,7 +187,8 @@ class _LocalMultiPageState extends State<HostMultiPage> {
 
   @override
   void dispose() {
-    if (server != null) if (server.isRunning) server.dispose();
+    if (globals.server != null) if (globals.server.isRunning && !gameStarting)
+      globals.server.dispose();
     super.dispose();
   }
 

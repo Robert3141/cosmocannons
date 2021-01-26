@@ -338,7 +338,7 @@ class UI {
       Alignment alignment = Alignment.bottomCenter,
       globals.GameType type = globals.GameType.multiLocal,
       bool resumed = false,
-      chosenMap = globals.defaultMap}) {
+      int chosenMap = globals.defaultMap}) {
     if (newPage == null)
       newPage = MainGamePage(
         playerTeams: playerTeams,
