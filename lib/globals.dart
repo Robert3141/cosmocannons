@@ -84,6 +84,7 @@ const String packetMapNumber = "mapNumber";
 const String packetGameStart = "gameStart";
 const String packetFire = "fireInfo";
 const String packetPlayersTurn = "playerTurn";
+const String packetGameEnd = "gameEnd";
 
 const String helpMultiplayerHome =
     "On local device is currently the only supported. Multiplayer on the same Wifi Network is coming soon...";

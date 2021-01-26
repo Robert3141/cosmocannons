@@ -206,9 +206,12 @@ class _MainGamePageState extends State<MainGamePage> {
   }
 
   void quitNoSave() async {
-    //TODO do quitting for no save
     //stop music
     await UI.stopMusic();
+
+    //dispose LAN
+    if (globals.type == globals.GameType.multiHost) globals.server.disposer();
+    if (globals.type == globals.GameType.multiClient) globals.client.disposer();
 
     //disable pause menu
     globals.popup = false;
@@ -350,6 +353,23 @@ class _MainGamePageState extends State<MainGamePage> {
         setState(() {
           globals.currentPlayer = int.parse(data.payload.toString());
         });
+        break;
+      case globals.packetGameEnd:
+        if (globals.type == globals.GameType.multiHost) {
+          //server forward to others
+          globals.server.disposer();
+        } else {
+          //client dispose
+          globals.client.dispose();
+        }
+        //stop music
+        await UI.stopMusic();
+
+        //disable pause menu
+        globals.popup = false;
+
+        //quit without saving
+        UI.startNewPage(context, [], newPage: LauncherPage());
         break;
       default:
         debugPrint("Error packet not known title");

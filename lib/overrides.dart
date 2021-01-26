@@ -137,4 +137,17 @@ extension ServerExtender on ServerNode {
       globals.server.sendData(title, payload, address);
     }
   }
+
+  void disposer() {
+    //tell them all
+    this.sendToEveryone(globals.packetGameEnd, true, globals.players.length);
+    //run dispose
+    dispose();
+  }
+}
+
+extension ClientExtender on ClientNode {
+  void disposer() {
+    this.sendData(globals.packetGameEnd, true, this.serverDetails.address);
+  }
 }

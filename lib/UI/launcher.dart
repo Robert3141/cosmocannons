@@ -99,6 +99,14 @@ class _LauncherPageState extends State<LauncherPage> {
     });
   }
 
+  void removeThreads() {
+    //disposes of server and client if availiable
+    if (globals.server != null) if (globals.server.isRunning)
+      globals.server.dispose();
+    if (globals.client != null) if (globals.client.isRunning)
+      globals.client.dispose();
+  }
+
   void firstBuilder() {
     if (firstBuild) {
       firstBuild = false;
@@ -107,6 +115,7 @@ class _LauncherPageState extends State<LauncherPage> {
       loadVariables();
       //getVersionString();
       showResumeGame();
+      removeThreads();
     }
   }
 

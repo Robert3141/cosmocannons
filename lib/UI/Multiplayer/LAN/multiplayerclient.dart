@@ -136,6 +136,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
 
   @override
   void dispose() {
+    //TODO handle clients leaving mid lobby
     if (globals.client != null) if (globals.client.isRunning && !gameStarting)
       globals.client.dispose();
     super.dispose();
