@@ -82,6 +82,8 @@ const String packetPlayerReady = "playerReady";
 const String packetPlayerTeams = "playerTeams";
 const String packetMapNumber = "mapNumber";
 const String packetGameStart = "gameStart";
+const String packetFire = "fireInfo";
+const String packetPlayersTurn = "playerTurn";
 
 const String helpMultiplayerHome =
     "On local device is currently the only supported. Multiplayer on the same Wifi Network is coming soon...";
@@ -323,10 +325,10 @@ extension GameExtension on GameType {
         return true;
         break;
       case GameType.multiHost:
-        return playerNo == 0;
+        return false;
         break;
       case GameType.multiClient:
-        return playerNo == thisPlayer;
+        return false;
         break;
       default:
         return null;

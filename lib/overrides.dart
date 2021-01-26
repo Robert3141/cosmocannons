@@ -114,4 +114,27 @@ extension StringExtender on String {
     }
     return ints;
   }
+
+  Offset parseOffset() {
+    String offsetData = this.trim();
+    List<String> values = List.empty(growable: true);
+    double x;
+    double y;
+    offsetData = offsetData.substring(7, offsetData.length - 1);
+    values = offsetData.split(",");
+    x = double.parse(values[0]);
+    y = double.parse(values[1]);
+    return Offset(x, y);
+  }
+}
+
+extension ServerExtender on ServerNode {
+  void sendToEveryone(String title, dynamic payload, int amountOfPlayers) {
+    for (int i = 0;
+        i < globals.server.clientsConnected.length && i < amountOfPlayers;
+        i++) {
+      String address = globals.server.clientsConnected[i].address;
+      globals.server.sendData(title, payload, address);
+    }
+  }
 }

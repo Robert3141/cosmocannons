@@ -277,10 +277,6 @@ class Projectile extends GameObject {
   }
 
   void _projectileRunner(Offset velocity, int player, Function updater) async {
-    //share firing of projectile // TODO finish the sending of packets and receiving of data
-    if (globals.type == globals.GameType.multiHost) ;
-    if (globals.type == globals.GameType.multiClient) ;
-
     //set stuff up
     updateUI = updater;
     _player = player;
@@ -388,6 +384,13 @@ class Projectile extends GameObject {
       globals.currentPlayer = 0;
     if (globals.type.showPlayerUI(globals.currentPlayer))
       globals.thisPlayer = globals.currentPlayer;
+    print("projectile ${this._player}");
+    print(globals.thisPlayer);
+    print(globals.currentPlayer);
+    //server get's final choice over who is playing
+    if (globals.type == globals.GameType.multiHost)
+      globals.server.sendToEveryone(globals.packetPlayersTurn,
+          globals.currentPlayer, globals.players.length);
   }
 
   void _giveDamage(Offset position) {

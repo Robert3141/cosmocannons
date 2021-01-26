@@ -107,7 +107,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
           //start game
           gameStarting = true;
           print("game starting");
-          globals.thisPlayer = playerNumber;
+          globals.thisPlayer = playerNumber - 1;
           UI.startNewPage(context, players,
               chosenMap: mapChosen, type: globals.GameType.multiClient);
         }

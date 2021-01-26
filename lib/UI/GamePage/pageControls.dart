@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cosmocannons/UI/GamePage/gameObjects.dart';
 import 'package:flutter/gestures.dart';
 import 'package:cosmocannons/overrides.dart';
@@ -77,5 +79,19 @@ class CustomGestureRecognizer extends OneSequenceGestureRecognizer {
     double intensity = arrow.distance * globals.shootSF;
     globals.projectiles.add(Projectile.radians(
         intensity, angle, globals.currentPlayer, this.updateUI));
+
+    //share firing of projectile
+    Offset velocity = _angleToOffset(intensity, angle);
+    if (globals.type == globals.GameType.multiHost)
+      globals.server
+          .sendToEveryone(globals.packetFire, velocity, globals.players.length);
+    if (globals.type == globals.GameType.multiClient)
+      globals.client.sendData(
+          globals.packetFire, velocity, globals.client.serverDetails.address);
+  }
+
+  Offset _angleToOffset(double intensity, double angleRadians) {
+    return Offset(
+        intensity * -cos(angleRadians), intensity * sin(angleRadians));
   }
 }

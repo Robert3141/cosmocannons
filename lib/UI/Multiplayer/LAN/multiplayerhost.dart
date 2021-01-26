@@ -112,39 +112,32 @@ class _LocalMultiPageState extends State<HostMultiPage> {
 
   void dataReceived(DataPacket data) {
     int clientNo = data.clientNo(globals.server);
-    if (clientNo != null && clientNo < playerNames.length) {
-      //deal with data
-      switch (data.title) {
-        case globals.packetPlayerReady:
-          setState(() {
-            playerReady[clientNo + 1] = data.payload == "true";
-            checkgameReadyToStart();
-          });
-          break;
-        case globals.packetPlayerTeams:
-          setState(() {
-            playerTeams[clientNo + 1] = int.parse(data.payload);
-            sendToEveryone(globals.packetPlayerTeams, playerTeams);
-          });
-          break;
-        default:
-          debugPrint("Error packet not known title");
-          debugPrint("$data");
-          break;
+    if (!gameStarting) {
+      if (clientNo != null && clientNo < playerNames.length) {
+        //deal with data
+        switch (data.title) {
+          case globals.packetPlayerReady:
+            setState(() {
+              playerReady[clientNo + 1] = data.payload == "true";
+              checkgameReadyToStart();
+            });
+            break;
+          case globals.packetPlayerTeams:
+            setState(() {
+              playerTeams[clientNo + 1] = int.parse(data.payload);
+              sendToEveryone(globals.packetPlayerTeams, playerTeams);
+            });
+            break;
+          default:
+            debugPrint("Error packet not known title");
+            debugPrint("$data");
+            break;
+        }
+      } else {
+        //not known player so ignore
+        debugPrint("Not known player $clientNo");
+        debugPrint("$data");
       }
-    } else {
-      //not known player so ignore
-      debugPrint("Not known player $clientNo");
-      debugPrint("$data");
-    }
-  }
-
-  void sendToEveryone(String title, dynamic payload) {
-    for (int i = 0;
-        i < globals.server.clientsConnected.length && i < playerNames.length;
-        i++) {
-      String address = globals.server.clientsConnected[i].address;
-      globals.server.sendData(title, payload, address);
     }
   }
 
@@ -184,6 +177,9 @@ class _LocalMultiPageState extends State<HostMultiPage> {
     });
     checkgameReadyToStart();
   }
+
+  void sendToEveryone(String title, dynamic payload) =>
+      globals.server.sendToEveryone(title, payload, playerNames.length);
 
   @override
   void dispose() {

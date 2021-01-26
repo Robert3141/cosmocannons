@@ -11,6 +11,7 @@ import 'package:cosmocannons/globals.dart' as globals;
 import 'package:cosmocannons/UI/GamePage/gamePaint.dart';
 import 'package:flutter/services.dart';
 import 'package:cosmocannons/UI/GamePage/gameObjects.dart';
+import 'package:cosmocannons/overrides.dart';
 
 class MainGamePage extends StatefulWidget {
   //constructor of class
@@ -204,8 +205,16 @@ class _MainGamePageState extends State<MainGamePage> {
     return savedCorrectly;
   }
 
-  void quitNoSave() {
+  void quitNoSave() async {
     //TODO do quitting for no save
+    //stop music
+    await UI.stopMusic();
+
+    //disable pause menu
+    globals.popup = false;
+
+    //quit without saving
+    UI.startNewPage(context, [], newPage: LauncherPage());
   }
 
   void quitWithSaving() async {
@@ -316,7 +325,38 @@ class _MainGamePageState extends State<MainGamePage> {
   }
 
   /// Receives data from the server/client
-  void dataReceiver(DataPacket data) {}
+  void dataReceiver(DataPacket data) async {
+    switch (data.title) {
+      case globals.packetFire:
+        //prevents repeat packets from firing two projectiles
+        if (!globals.firing) {
+          globals.firing = true;
+          if (globals.type == globals.GameType.multiHost) {
+            // Server
+            globals.server.sendToEveryone(
+                globals.packetFire, data.payload, globals.players.length);
+          }
+          //render firing
+          globals.projectiles.add(Projectile.velocity(
+              data.payload.toString().parseOffset(),
+              globals.currentPlayer,
+              updateUI));
+        }
+        break;
+      case globals.packetPlayersTurn:
+        while (globals.firing) {
+          await Future.delayed(Duration(milliseconds: 100));
+        }
+        setState(() {
+          globals.currentPlayer = int.parse(data.payload.toString());
+        });
+        break;
+      default:
+        debugPrint("Error packet not known title");
+        debugPrint("$data");
+        break;
+    }
+  }
 
   void outputError(dynamic e) {
     String output = globals.errorOccurred + e.toString();
