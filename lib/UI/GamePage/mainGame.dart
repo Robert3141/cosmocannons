@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:client_server_lan/client_server_lan.dart';
 import 'package:cosmocannons/UI/GamePage/pageControls.dart';
 import 'package:cosmocannons/UI/launcher.dart';
 import 'package:flutter/cupertino.dart';
@@ -129,6 +130,12 @@ class _MainGamePageState extends State<MainGamePage> {
       setState(() {
         loaded = true;
       });
+
+      //singleplayer play AI of current player
+      if (globals.type == globals.GameType.singlePlayer &&
+          globals.currentPlayer != 0)
+        globals.players[globals.currentPlayer]
+            .playAI(updateUI, globals.currentPlayer);
     } catch (e) {
       print(e.toString());
       //outputError(e);
@@ -138,8 +145,8 @@ class _MainGamePageState extends State<MainGamePage> {
   void gameStart() async {
     try {
       // get data from root
-      globals.currentPlayer = widget.type.playerNumber;
-      globals.thisPlayer = globals.currentPlayer;
+      globals.currentPlayer = 0;
+      globals.thisPlayer = globals.type.playerNumber;
       globals.mapNo = widget.mapNo;
       globals.currentMap = globals.terrainMaps[widget.mapNo];
 
@@ -157,6 +164,12 @@ class _MainGamePageState extends State<MainGamePage> {
 
       //cancel popup
       globals.popup = false;
+
+      //set data receivers
+      if (globals.type == globals.GameType.multiHost)
+        globals.server.dataResponse.listen(dataReceiver);
+      if (globals.type == globals.GameType.multiClient)
+        globals.client.dataResponse.listen(dataReceiver);
     } catch (e) {
       outputError(e);
     }
@@ -295,10 +308,15 @@ class _MainGamePageState extends State<MainGamePage> {
   }
 
   void updateUI() {
-    setState(() {
-      updaterText = updaterText == "" ? " " : "";
-    });
+    //mounted ensures this only updates UI if dispose hasn't been called
+    if (mounted)
+      setState(() {
+        updaterText = updaterText == "" ? " " : "";
+      });
   }
+
+  /// Receives data from the server/client
+  void dataReceiver(DataPacket data) {}
 
   void outputError(dynamic e) {
     String output = globals.errorOccurred + e.toString();

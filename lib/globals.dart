@@ -1,6 +1,5 @@
 library cosmocannons.globals;
 
-import 'dart:async';
 import 'dart:ui';
 import 'dart:math';
 import 'package:client_server_lan/client_server_lan.dart';
@@ -327,7 +326,7 @@ extension GameExtension on GameType {
         return playerNo == 0;
         break;
       case GameType.multiClient:
-        return playerNo == 1;
+        return playerNo == thisPlayer;
         break;
       default:
         return null;
@@ -341,7 +340,7 @@ extension GameExtension on GameType {
       case GameType.multiHost:
         return 0;
       case GameType.multiClient:
-        return 1;
+        return thisPlayer;
       case GameType.multiLocal:
         return 0;
       default:

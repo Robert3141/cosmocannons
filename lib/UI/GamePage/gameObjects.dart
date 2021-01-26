@@ -277,6 +277,10 @@ class Projectile extends GameObject {
   }
 
   void _projectileRunner(Offset velocity, int player, Function updater) async {
+    //share firing of projectile // TODO finish the sending of packets and receiving of data
+    if (globals.type == globals.GameType.multiHost) ;
+    if (globals.type == globals.GameType.multiClient) ;
+
     //set stuff up
     updateUI = updater;
     _player = player;
