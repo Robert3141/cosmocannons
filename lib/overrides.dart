@@ -148,6 +148,7 @@ extension ServerExtender on ServerNode {
 
 extension ClientExtender on ClientNode {
   void disposer() {
-    this.sendData(globals.packetGameEnd, true, this.serverDetails.address);
+    this.sendData(
+        globals.packetGameEnd, true.toString(), this.serverDetails.address);
   }
 }

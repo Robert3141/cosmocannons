@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
 import 'package:cosmocannons/globals.dart' as globals;
-import 'package:wifi/wifi.dart';
 import 'package:cosmocannons/overrides.dart';
 
 class ClientMultiPage extends StatefulWidget {
@@ -49,12 +48,9 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
     setState(() {
       connecting = true;
     });
-    String ip = await Wifi.ip;
     globals.client = ClientNode(
       name: userNameText,
       verbose: kDebugMode,
-      host: ip,
-      port: 8085,
     );
     await globals.client.init();
     await globals.client.onReady;
@@ -121,7 +117,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
 
   void changePlayerTeam(int playerNo, int newTeam) {
     if (playerNo == playerNumber) {
-      globals.client.sendData(globals.packetPlayerTeams, newTeam,
+      globals.client.sendData(globals.packetPlayerTeams, newTeam.toString(),
           globals.client.serverDetails.address);
     }
   }
@@ -129,8 +125,8 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
   void toggleReady() {
     setState(() {
       readyForPlay = !readyForPlay;
-      globals.client.sendData(globals.packetPlayerReady, readyForPlay,
-          globals.client.serverDetails.address);
+      globals.client.sendData(globals.packetPlayerReady,
+          readyForPlay.toString(), globals.client.serverDetails.address);
     });
   }
 

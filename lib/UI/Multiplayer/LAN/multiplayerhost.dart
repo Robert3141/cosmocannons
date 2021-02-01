@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:client_server_lan/client_server_lan.dart';
-import 'package:wifi/wifi.dart';
 import 'package:cosmocannons/overrides.dart';
 
 class HostMultiPage extends StatefulWidget {
@@ -65,12 +64,9 @@ class _LocalMultiPageState extends State<HostMultiPage> {
   }
 
   void startServer() async {
-    String ip = await Wifi.ip;
     globals.server = ServerNode(
       name: userNameText,
       verbose: kDebugMode,
-      host: ip,
-      port: 8085,
     );
     await globals.server.init();
     await globals.server.onReady;
@@ -99,7 +95,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
         playerConnected[i + 1] = true;
       });
       //tell them their numbers
-      globals.server.sendData(globals.packetPlayerNumber, i,
+      globals.server.sendData(globals.packetPlayerNumber, i.toString(),
           globals.server.clientsConnected[i].address);
     }
     //tell players all the player names

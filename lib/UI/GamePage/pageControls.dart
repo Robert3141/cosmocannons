@@ -86,8 +86,8 @@ class CustomGestureRecognizer extends OneSequenceGestureRecognizer {
       globals.server
           .sendToEveryone(globals.packetFire, velocity, globals.players.length);
     if (globals.type == globals.GameType.multiClient)
-      globals.client.sendData(
-          globals.packetFire, velocity, globals.client.serverDetails.address);
+      globals.client.sendData(globals.packetFire, velocity.toString(),
+          globals.client.serverDetails.address);
   }
 
   Offset _angleToOffset(double intensity, double angleRadians) {
