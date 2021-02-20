@@ -9,10 +9,10 @@ Future main() async {
     runApp(MyApp());
   } else {
     WidgetsFlutterBinding.ensureInitialized();
-    SystemChrome.setPreferredOrientations(
+    await SystemChrome.setPreferredOrientations(
             [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])
         .then((_) {
-      runApp(new MyApp());
+      runApp(MyApp());
     });
   }
 }

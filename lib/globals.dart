@@ -13,118 +13,118 @@ import 'package:cosmocannons/UI/globalUIElements.dart';
 
 /// CONSTANTS
 
-const String fontName = "AstroSpace";
-const String gameTitle = "Cosmo Cannons";
-const String singleplayer = "Single Player";
-const String multiplayer = "Multiplayer";
-const String settings = "Settings";
-const String achievements = "Achievements";
-const String back = "Back";
-const String help = "Help";
-const String localMulti = "On local device";
-const String hostMulti = "LAN Host";
-const String clientMulti = "LAN Client";
-const String hostName = "Pick Host Name";
-const String clientName = "Pick Client Name";
-const String hostStartServer = "Start Server";
-const String hostStopServer = "Stop Server";
-const String clientConnectServer = "Start Client";
-const String clientDisconenctServer = "Disconnect from Server";
-const String readyUp = "Ready Up";
-const String readyForPlay = "Ready";
-const String _client = "Client";
-const String _host = "Host";
-const String notConnected = "Not Connected";
-const String paused = "Paused";
-const String platformNotSupported = "Not supported on this device";
-const String amountOfPlayers = "Amount of players";
-const String confirm = "OK";
-const String shootSetup = "Fire!";
-const String shootIntensity = "Intensity";
-const String shootAngle = "Angle";
-const String beginGame = "Begin";
-const String quitWithSave = "Save and Quit";
-const String quitNoSave = "Exit";
-const String allDead = "No players survived!";
-const String welcomeBack = "Welcome back";
-const String saving = "Saving . . .";
-const String loading = "Loading . . .";
-const String resumeGame = "Resume Game";
-const String errorOccurred = "An error occurred!\nDetails: ";
-const String mapChosen = "Selected Map";
+const String fontName = 'AstroSpace';
+const String gameTitle = 'Cosmo Cannons';
+const String singleplayer = 'Single Player';
+const String multiplayer = 'Multiplayer';
+const String settings = 'Settings';
+const String achievements = 'Achievements';
+const String back = 'Back';
+const String help = 'Help';
+const String localMulti = 'On local device';
+const String hostMulti = 'LAN Host';
+const String clientMulti = 'LAN Client';
+const String hostName = 'Pick Host Name';
+const String clientName = 'Pick Client Name';
+const String hostStartServer = 'Start Server';
+const String hostStopServer = 'Stop Server';
+const String clientConnectServer = 'Start Client';
+const String clientDisconenctServer = 'Disconnect from Server';
+const String readyUp = 'Ready Up';
+const String readyForPlay = 'Ready';
+const String _client = 'Client';
+const String _host = 'Host';
+const String notConnected = 'Not Connected';
+const String paused = 'Paused';
+const String platformNotSupported = 'Not supported on this device';
+const String amountOfPlayers = 'Amount of players';
+const String confirm = 'OK';
+const String shootSetup = 'Fire!';
+const String shootIntensity = 'Intensity';
+const String shootAngle = 'Angle';
+const String beginGame = 'Begin';
+const String quitWithSave = 'Save and Quit';
+const String quitNoSave = 'Exit';
+const String allDead = 'No players survived!';
+const String welcomeBack = 'Welcome back';
+const String saving = 'Saving . . .';
+const String loading = 'Loading . . .';
+const String resumeGame = 'Resume Game';
+const String errorOccurred = 'An error occurred!\nDetails: ';
+const String mapChosen = 'Selected Map';
 const String warningMapOverwrite =
-    "WARNING! About to overwite previous save data";
-const String scanClients = "Scan Players";
+    'WARNING! About to overwite previous save data';
+const String scanClients = 'Scan Players';
 
-const String keyMusic = "music"; //bool
-const String keyVolume = "sound"; //bool
-const String keySavedGame = "saved"; //bool
-const String keyPlayerPosX = "playerPosX"; //List<double>
-const String keyPlayerPosY = "playerPosY"; //List<double>
-const String keyPlayerHealth = "playerHealth"; //List<double>
-const String keyAmountOfPlayers = "amountOfPlayers"; //int
-const String keyCurrentPlayer = "currentPlayer"; //int
-const String keyThisPlayer = "thisPlayer"; //int
-const String keyPlayerTeams = "playerTeams"; //List<int>
-const String keyGameMap = "gameMap"; //List<double>
-const String keyLastFireSetup = "lastFireSetup"; //List<List<double>>
-const String keyGameType = "gameType"; //GameType
-const String keyMovedPlayer = "movedPlayer"; //bool
-const String keyMapNo = "mapNo"; //int
-const String keyRenderHeight = "graphics"; //int
-const String keyMusicIndex = "musicIndex"; //int
-const String keyMusicSeek = "musicSeek"; //int
+const String keyMusic = 'music'; //bool
+const String keyVolume = 'sound'; //bool
+const String keySavedGame = 'saved'; //bool
+const String keyPlayerPosX = 'playerPosX'; //List<double>
+const String keyPlayerPosY = 'playerPosY'; //List<double>
+const String keyPlayerHealth = 'playerHealth'; //List<double>
+const String keyAmountOfPlayers = 'amountOfPlayers'; //int
+const String keyCurrentPlayer = 'currentPlayer'; //int
+const String keyThisPlayer = 'thisPlayer'; //int
+const String keyPlayerTeams = 'playerTeams'; //List<int>
+const String keyGameMap = 'gameMap'; //List<double>
+const String keyLastFireSetup = 'lastFireSetup'; //List<List<double>>
+const String keyGameType = 'gameType'; //GameType
+const String keyMovedPlayer = 'movedPlayer'; //bool
+const String keyMapNo = 'mapNo'; //int
+const String keyRenderHeight = 'graphics'; //int
+const String keyMusicIndex = 'musicIndex'; //int
+const String keyMusicSeek = 'musicSeek'; //int
 
-const String packetPlayerNames = "playerNames";
-const String packetPlayerNumber = "playerNumber";
-const String packetPlayerEnabled = "playerEnables";
-const String packetPlayerReady = "playerReady";
-const String packetPlayerTeams = "playerTeams";
-const String packetMapNumber = "mapNumber";
-const String packetGameStart = "gameStart";
-const String packetFire = "fireInfo";
-const String packetPlayersTurn = "playerTurn";
-const String packetGameEnd = "gameEnd";
+const String packetPlayerNames = 'playerNames';
+const String packetPlayerNumber = 'playerNumber';
+const String packetPlayerEnabled = 'playerEnables';
+const String packetPlayerReady = 'playerReady';
+const String packetPlayerTeams = 'playerTeams';
+const String packetMapNumber = 'mapNumber';
+const String packetGameStart = 'gameStart';
+const String packetFire = 'fireInfo';
+const String packetPlayersTurn = 'playerTurn';
+const String packetGameEnd = 'gameEnd';
 
 const String helpMultiplayerHome =
-    "On local device is currently the only supported. Multiplayer on the same Wifi Network is coming soon...";
+    'On local device is currently the only supported. Multiplayer on the same Wifi Network is coming soon...';
 const String helpMultiplayerLocal =
-    "Betweeen 2 and 4 players can be selected and the choice of map can be chosen.\nThe Hills map is one large hill in the centre.\nThe Desert map is a flat landscape good for practicing shooting and learning the game.\nThe moon is a funky map with a few different sized hills";
-const String helpMultiplayerHost = "";
-const String helpMultiplayerClient = "";
-const String helpSinglePlayer = "";
+    'Betweeen 2 and 4 players can be selected and the choice of map can be chosen.\nThe Hills map is one large hill in the centre.\nThe Desert map is a flat landscape good for practicing shooting and learning the game.\nThe moon is a funky map with a few different sized hills';
+const String helpMultiplayerHost = '';
+const String helpMultiplayerClient = '';
+const String helpSinglePlayer = '';
 const String helpSettings =
-    "The toggles on the right allow different settings to be changed.";
-const String helpAchievements = "";
+    'The toggles on the right allow different settings to be changed.';
+const String helpAchievements = '';
 
-const List<String> defaultTeamNames = ["Red", "Green", "Blue", "Yellow"];
-const List<String> playerAmounts = ["2", "3", "4"];
+const List<String> defaultTeamNames = ['Red', 'Green', 'Blue', 'Yellow'];
+const List<String> playerAmounts = ['2', '3', '4'];
 const List<String> shootOptions = [shootIntensity, shootAngle];
-const List<String> winningPlayerIs = ["The winner is player ", " from team "];
+const List<String> winningPlayerIs = ['The winner is player ', ' from team '];
 const List<String> playerNames = [_host, _client, _client, _client];
-const List<String> mapNames = ["Hills", "Desert", "Moon"];
-const List<String> mapQualityString = ["Low", "Medium", "High"];
+const List<String> mapNames = ['Hills', 'Desert', 'Moon'];
+const List<String> mapQualityString = ['Low', 'Medium', 'High'];
 
 List<AssetImage> backgrounds = [
-  AssetImage("assets/images/1.png"),
-  AssetImage("assets/images/2.png"),
-  AssetImage("assets/images/3.png"),
-  AssetImage("assets/images/4.png"),
-  AssetImage("assets/images/5.png"),
-  AssetImage("assets/images/6.png"),
+  AssetImage('assets/images/1.png'),
+  AssetImage('assets/images/2.png'),
+  AssetImage('assets/images/3.png'),
+  AssetImage('assets/images/4.png'),
+  AssetImage('assets/images/5.png'),
+  AssetImage('assets/images/6.png'),
   //maps
-  AssetImage("assets/images/hills.png"),
-  AssetImage("assets/images/desert.png"),
-  AssetImage("assets/images/moon.png"),
+  AssetImage('assets/images/hills.png'),
+  AssetImage('assets/images/desert.png'),
+  AssetImage('assets/images/moon.png'),
 ];
 
 /*List<Audio> songs = [
-  Audio("assets/music/1.ogg"),
-  Audio("assets/music/2.ogg"),
-  Audio("assets/music/3.ogg"),
-  Audio("assets/music/4.ogg"),
-  Audio("assets/music/5.ogg"),
-  Audio("assets/music/6.ogg")
+  Audio('assets/music/1.ogg'),
+  Audio('assets/music/2.ogg'),
+  Audio('assets/music/3.ogg'),
+  Audio('assets/music/4.ogg'),
+  Audio('assets/music/5.ogg'),
+  Audio('assets/music/6.ogg')
 ];*/
 
 const double smallWidth = 0.2;
@@ -300,19 +300,19 @@ extension GameExtension on GameType {
   String get string {
     switch (this) {
       case GameType.singlePlayer:
-        return "singlePlayer";
+        return 'singlePlayer';
         break;
       case GameType.multiLocal:
-        return "multiLocal";
+        return 'multiLocal';
         break;
       case GameType.multiHost:
-        return "multiHost";
+        return 'multiHost';
         break;
       case GameType.multiClient:
-        return "multiClient";
+        return 'multiClient';
         break;
       default:
-        return "";
+        return '';
         break;
     }
   }
@@ -354,16 +354,16 @@ extension GameExtension on GameType {
 
 GameType gameTypefromString(String s) {
   switch (s) {
-    case "singlePlayer":
+    case 'singlePlayer':
       return GameType.singlePlayer;
       break;
-    case "multiLocal":
+    case 'multiLocal':
       return GameType.multiLocal;
       break;
-    case "multiHost":
+    case 'multiHost':
       return GameType.multiHost;
       break;
-    case "multiClient":
+    case 'multiClient':
       return GameType.multiClient;
       break;
     default:

@@ -21,7 +21,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
   //build UI
   @override
   Widget build(BuildContext context) {
-    Scaffold page = UI.scaffoldWithBackground(children: [
+    var page = UI.scaffoldWithBackground(children: [
       UI.topTitle(
           titleText: globals.achievements,
           context: context,
