@@ -27,7 +27,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
   List<String> playerNames = List.from(globals.playerNames);
   List<bool> playerConnected = List.filled(4, false);
   List<bool> playerReady = List.filled(4, false);
-  String userNameText = "";
+  String userNameText = '';
 
   //functions
   void playerNameChange(String text) {
@@ -57,7 +57,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
     setState(() {
       UI.dataInputPopup(context, [],
           title: globals.mapChosen,
-          child: UI.settingsEntry("", mapNumberChange, context,
+          child: UI.settingsEntry('', mapNumberChange, context,
               texts: globals.mapNames, ints: [0, 1, 2], intVar: chosenMap),
           numericData: List.filled(globals.mapNames.length, true));
     });
@@ -86,7 +86,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
     });
     globals.server.discoverNodes();
     await Future<dynamic>.delayed(const Duration(seconds: 2));
-    for (int i = 0;
+    for (var i = 0;
         i < globals.server.clientsConnected.length && i < playerNames.length;
         i++) {
       //update playerNames
@@ -107,14 +107,14 @@ class _LocalMultiPageState extends State<HostMultiPage> {
   }
 
   void dataReceived(DataPacket data) {
-    int clientNo = data.clientNo(globals.server);
+    var clientNo = data.clientNo(globals.server);
     if (!gameStarting) {
       if (clientNo != null && clientNo < playerNames.length) {
         //deal with data
         switch (data.title) {
           case globals.packetPlayerReady:
             setState(() {
-              playerReady[clientNo + 1] = data.payload == "true";
+              playerReady[clientNo + 1] = data.payload == 'true';
               checkgameReadyToStart();
             });
             break;
@@ -125,14 +125,14 @@ class _LocalMultiPageState extends State<HostMultiPage> {
             });
             break;
           default:
-            debugPrint("Error packet not known title");
-            debugPrint("$data");
+            debugPrint('Error packet not known title');
+            debugPrint('$data');
             break;
         }
       } else {
         //not known player so ignore
-        debugPrint("Not known player $clientNo");
-        debugPrint("$data");
+        debugPrint('Not known player $clientNo');
+        debugPrint('$data');
       }
     }
   }
@@ -142,13 +142,13 @@ class _LocalMultiPageState extends State<HostMultiPage> {
         playerConnected[1] == true &&
         !gameStarting) {
       //create players as list only of players that have started
-      List<int> players = List.empty(growable: true);
-      for (int i = 0; i < playerConnected.length; i++) {
+      var players = List<int>.empty(growable: true);
+      for (var i = 0; i < playerConnected.length; i++) {
         if (playerConnected[i]) players.add(playerTeams[i]);
       }
 
       //start game
-      print("game starting");
+      print('game starting');
       gameStarting = true;
       sendToEveryone(globals.packetGameStart, gameStarting);
       UI.startNewPage(context, players,
@@ -179,15 +179,16 @@ class _LocalMultiPageState extends State<HostMultiPage> {
 
   @override
   void dispose() {
-    if (globals.server != null) if (globals.server.isRunning && !gameStarting)
-      globals.server.dispose();
+    if (globals.server != null) {
+      if (globals.server.isRunning && !gameStarting) globals.server.dispose();
+    }
     super.dispose();
   }
 
   //build UI
   @override
   Widget build(BuildContext context) {
-    Scaffold page = UI.scaffoldWithBackground(children: [
+    var page = UI.scaffoldWithBackground(children: [
       UI.topTitle(
           titleText: globals.hostMulti,
           context: context,

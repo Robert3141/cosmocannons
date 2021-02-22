@@ -21,7 +21,7 @@ class _SingleplayerPageState extends State<SingleplayerPage> {
   //functions
   void checkStartGame() async {
     //check save
-    bool savedGame = await UI.dataLoad(globals.keySavedGame, "bool") ?? false;
+    bool savedGame = await UI.dataLoad(globals.keySavedGame, 'bool') ?? false;
 
     if (savedGame) {
       setState(() {
@@ -38,8 +38,8 @@ class _SingleplayerPageState extends State<SingleplayerPage> {
 
   void beginGame() {
     // add players to list
-    List<int> playerTeams = List.empty(growable: true);
-    for (int i = 0; i < amountOfPlayers; i++) {
+    var playerTeams = List<int>.empty(growable: true);
+    for (var i = 0; i < amountOfPlayers; i++) {
       playerTeams.add(i);
     }
     UI.startNewPage(context, playerTeams,
@@ -49,7 +49,7 @@ class _SingleplayerPageState extends State<SingleplayerPage> {
   //build UI
   @override
   Widget build(BuildContext context) {
-    Scaffold page = UI.scaffoldWithBackground(children: [
+    var page = UI.scaffoldWithBackground(children: [
       UI.topTitle(
           titleText: globals.singleplayer,
           context: context,

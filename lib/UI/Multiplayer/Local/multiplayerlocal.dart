@@ -20,7 +20,7 @@ class _LocalMultiPageState extends State<LocalMultiPage> {
   //functions
   void checkStartGame() async {
     //check save
-    bool savedGame = await UI.dataLoad(globals.keySavedGame, "bool") ?? false;
+    bool savedGame = await UI.dataLoad(globals.keySavedGame, 'bool') ?? false;
 
     if (savedGame) {
       setState(() {
@@ -37,8 +37,8 @@ class _LocalMultiPageState extends State<LocalMultiPage> {
 
   void beginGame() {
     // add players to list
-    List<int> playerTeams = List.empty(growable: true);
-    for (int i = 0; i < amountOfPlayers; i++) {
+    var playerTeams = List<int>.empty(growable: true);
+    for (var i = 0; i < amountOfPlayers; i++) {
       playerTeams.add(i);
     }
     UI.startNewPage(context, playerTeams, chosenMap: mapSelected);
@@ -47,7 +47,7 @@ class _LocalMultiPageState extends State<LocalMultiPage> {
   //build UI
   @override
   Widget build(BuildContext context) {
-    Scaffold page = UI.scaffoldWithBackground(children: [
+    var page = UI.scaffoldWithBackground(children: [
       UI.topTitle(
           titleText: globals.localMulti,
           context: context,

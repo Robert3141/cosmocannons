@@ -18,7 +18,7 @@ class MainGamePage extends StatefulWidget {
   MainGamePage(
       {@required this.playerTeams,
       Key key,
-      this.title = "",
+      this.title = '',
       this.type = globals.GameType.multiLocal,
       this.resumed = false,
       this.mapNo = globals.defaultMap})
@@ -47,7 +47,7 @@ class _MainGamePageState extends State<MainGamePage> {
   bool movedPlayer = false;
   BuildContext pageContext;
   TapDownDetails tapDetails;
-  String updaterText = "";
+  String updaterText = '';
 
   ///
   /// FUNCTIONS
@@ -72,7 +72,7 @@ class _MainGamePageState extends State<MainGamePage> {
 
   void moveScrollerToRelativePosition(List<double> pos) {
     try {
-      double offsetX = globals.gameScroller.position.maxScrollExtent * pos[0];
+      var offsetX = globals.gameScroller.position.maxScrollExtent * pos[0];
       setState(() {
         globals.gameScroller.animateTo(offsetX,
             curve: Curves.bounceIn,
@@ -87,17 +87,18 @@ class _MainGamePageState extends State<MainGamePage> {
     try {
       //save data
       List<double> aX =
-          await UI.dataLoad(globals.keyPlayerPosX, "List<double>");
+          await UI.dataLoad(globals.keyPlayerPosX, 'List<double>');
       List<double> aY =
-          await UI.dataLoad(globals.keyPlayerPosY, "List<double>");
+          await UI.dataLoad(globals.keyPlayerPosY, 'List<double>');
       List<double> health =
-          await UI.dataLoad(globals.keyPlayerHealth, "List<double>");
-      List<int> team = await UI.dataLoad(globals.keyPlayerTeams, "List<int>");
+          await UI.dataLoad(globals.keyPlayerHealth, 'List<double>');
+      List<int> team = await UI.dataLoad(globals.keyPlayerTeams, 'List<int>');
       //loop through
       globals.players = List.empty(growable: true);
-      for (int i = 0; i < aX.length; i++)
+      for (var i = 0; i < aX.length; i++) {
         globals.players.add(Player.withHealth(
             Offset(aX[i], aY[i]), team[i], health[i], updateUI, context));
+      }
     } catch (e) {
       print(e.toString());
     }
@@ -110,12 +111,12 @@ class _MainGamePageState extends State<MainGamePage> {
       });
 
       //resume data
-      globals.mapNo = await UI.dataLoad(globals.keyMapNo, "int");
+      globals.mapNo = await UI.dataLoad(globals.keyMapNo, 'int');
       globals.currentPlayer =
-          await UI.dataLoad(globals.keyCurrentPlayer, "int");
-      globals.thisPlayer = await UI.dataLoad(globals.keyThisPlayer, "int");
+          await UI.dataLoad(globals.keyCurrentPlayer, 'int');
+      globals.thisPlayer = await UI.dataLoad(globals.keyThisPlayer, 'int');
       globals.currentMap =
-          await UI.dataLoad(globals.keyGameMap, "List<double>");
+          await UI.dataLoad(globals.keyGameMap, 'List<double>');
 
       //load players
       await loadPlayerData();
@@ -134,9 +135,10 @@ class _MainGamePageState extends State<MainGamePage> {
 
       //singleplayer play AI of current player
       if (globals.type == globals.GameType.singlePlayer &&
-          globals.currentPlayer != 0)
+          globals.currentPlayer != 0) {
         globals.players[globals.currentPlayer]
             .playAI(updateUI, globals.currentPlayer);
+      }
     } catch (e) {
       print(e.toString());
       //outputError(e);
@@ -156,9 +158,10 @@ class _MainGamePageState extends State<MainGamePage> {
 
       //create players
       globals.players = List.empty(growable: true);
-      for (int i = 0; i < widget.playerTeams.length; i++)
+      for (var i = 0; i < widget.playerTeams.length; i++) {
         globals.players.add(Player.fromListCreated(i, widget.playerTeams.length,
             widget.playerTeams[i], globals.currentMap, updateUI, context));
+      }
 
       //play music
       UI.playMusic();
@@ -167,10 +170,12 @@ class _MainGamePageState extends State<MainGamePage> {
       globals.popup = false;
 
       //set data receivers
-      if (globals.type == globals.GameType.multiHost)
+      if (globals.type == globals.GameType.multiHost) {
         globals.server.dataResponse.listen(dataReceiver);
-      if (globals.type == globals.GameType.multiClient)
+      }
+      if (globals.type == globals.GameType.multiClient) {
         globals.client.dataResponse.listen(dataReceiver);
+      }
     } catch (e) {
       outputError(e);
     }
@@ -178,8 +183,8 @@ class _MainGamePageState extends State<MainGamePage> {
 
   void moveScroller(double increase) {
     try {
-      double currentPos = globals.gameScroller.offset;
-      double newPos = currentPos + increase;
+      var currentPos = globals.gameScroller.offset;
+      var newPos = currentPos + increase;
       globals.gameScroller.animateTo(newPos,
           duration: Duration(milliseconds: 100), curve: Curves.ease);
     } catch (e) {
@@ -189,8 +194,8 @@ class _MainGamePageState extends State<MainGamePage> {
 
   Future<bool> savePlayerData(List<Player> playerData) async {
     //locals
-    bool savedCorrectly = true;
-    int length = globals.players.length;
+    var savedCorrectly = true;
+    var length = globals.players.length;
 
     //save data
     savedCorrectly &= await UI.dataStore(globals.keyPlayerPosX,
@@ -221,7 +226,7 @@ class _MainGamePageState extends State<MainGamePage> {
   }
 
   void quitWithSaving() async {
-    bool savedCorrectly = true;
+    var savedCorrectly = true;
     try {
       //show saving popup
       setState(() {
@@ -248,11 +253,11 @@ class _MainGamePageState extends State<MainGamePage> {
           // only report as saved if saving worked
           await UI.dataStore(globals.keySavedGame, savedCorrectly);
         } on ArgumentError catch (e) {
-          if (e.name == "minified") {
+          if (e.name == 'minified') {
             await UI.dataStore(globals.keySavedGame, false);
           } else {
-            print("$e");
-            throw ("One of data being stored is not correct type");
+            print('$e');
+            throw ('One of data being stored is not correct type');
           }
         }
       } else {
@@ -284,14 +289,14 @@ class _MainGamePageState extends State<MainGamePage> {
       if (key.runtimeType == RawKeyDownEvent) {
         //only take most inputs when not paused
         if (!paused & !globals.firing) {
-          String keyChar = key.data.keyLabel ?? "";
-          KeyboardKey keyPress = key.logicalKey;
+          var keyChar = key.data.keyLabel ?? '';
+          var keyPress = key.logicalKey;
           switch (keyChar) {
-            case "a":
+            case 'a':
               //move left
               moveScroller(-globals.scrollAmount);
               break;
-            case "d":
+            case 'd':
               //move right
               moveScroller(globals.scrollAmount);
               break;
@@ -321,10 +326,11 @@ class _MainGamePageState extends State<MainGamePage> {
 
   void updateUI() {
     //mounted ensures this only updates UI if dispose hasn't been called
-    if (mounted)
+    if (mounted) {
       setState(() {
-        updaterText = updaterText == "" ? " " : "";
+        updaterText = updaterText == '' ? ' ' : '';
       });
+    }
   }
 
   /// Receives data from the server/client
@@ -372,14 +378,14 @@ class _MainGamePageState extends State<MainGamePage> {
         UI.startNewPage(context, [], newPage: LauncherPage());
         break;
       default:
-        debugPrint("Error packet not known title");
-        debugPrint("$data");
+        debugPrint('Error packet not known title');
+        debugPrint('$data');
         break;
     }
   }
 
   void outputError(dynamic e) {
-    String output = globals.errorOccurred + e.toString();
+    var output = globals.errorOccurred + e.toString();
     setState(() {
       UI.textDisplayPopup(context, output,
           style: TextStyle(color: globals.textColor));
@@ -407,11 +413,11 @@ class _MainGamePageState extends State<MainGamePage> {
       pageContext = context;
       if (loaded) {
         playersTurn = globals.thisPlayer == globals.currentPlayer;
-        Color playerButtonColour =
+        var playerButtonColour =
             globals.players[globals.currentPlayer].teamColour ??
                 globals.textColor;
-        double sWidth = UI.screenWidth(context);
-        double sHeight = UI.screenHeight(context);
+        var sWidth = UI.screenWidth(context);
+        var sHeight = UI.screenHeight(context);
         zoom = (16 * sHeight) / (9 * sWidth);
         if (zoom < 1) zoom = 1;
         globals.canvasSize =
@@ -620,25 +626,23 @@ class _MainGamePageState extends State<MainGamePage> {
         ], context: context);
       }
     } catch (e) {
-      if (page == null) {
-        page = UI.scaffoldWithBackground(children: [
-          Flex(
-            direction: Axis.horizontal,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                height: UI.screenHeight(context) * 0.9,
-              ),
-              Text(
-                globals.errorOccurred + e.toString(),
-                style: UI.defaultText(true),
-                textAlign: TextAlign.center,
-              )
-            ],
-          ),
-        ], context: context);
-      }
-      print("Erorr: $e");
+      page ??= UI.scaffoldWithBackground(children: [
+        Flex(
+          direction: Axis.horizontal,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: UI.screenHeight(context) * 0.9,
+            ),
+            Text(
+              globals.errorOccurred + e.toString(),
+              style: UI.defaultText(true),
+              textAlign: TextAlign.center,
+            )
+          ],
+        ),
+      ], context: context);
+      print('Erorr: $e');
     }
     return page;
   }

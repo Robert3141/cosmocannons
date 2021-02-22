@@ -27,7 +27,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
   List<int> playerTeams = List.from(globals.playerTeams);
   List<String> playerNames = List.from(globals.playerNames);
   List<bool> playerConnected = List.filled(4, false);
-  String userNameText = "";
+  String userNameText = '';
 
   //functions
   void playerNameChange(String text) {
@@ -63,7 +63,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
   }
 
   void dataReceived(DataPacket data) {
-    print("received $data");
+    print('received $data');
     switch (data.title) {
       case globals.packetPlayerNumber:
         playerNumber = int.parse(data.payload) + 2;
@@ -95,22 +95,22 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
       case globals.packetGameStart:
         if (!gameStarting) {
           //create players as list only of players that have started
-          List<int> players = List.empty(growable: true);
-          for (int i = 0; i < playerConnected.length; i++) {
+          var players = List<int>.empty(growable: true);
+          for (var i = 0; i < playerConnected.length; i++) {
             if (playerConnected[i]) players.add(playerTeams[i]);
           }
 
           //start game
           gameStarting = true;
-          print("game starting");
+          print('game starting');
           globals.thisPlayer = playerNumber - 1;
           UI.startNewPage(context, players,
               chosenMap: mapChosen, type: globals.GameType.multiClient);
         }
         break;
       default:
-        debugPrint("Error packet not known title");
-        debugPrint("$data");
+        debugPrint('Error packet not known title');
+        debugPrint('$data');
         break;
     }
   }
@@ -133,15 +133,16 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
   @override
   void dispose() {
     //TODO handle clients leaving mid lobby
-    if (globals.client != null) if (globals.client.isRunning && !gameStarting)
-      globals.client.dispose();
+    if (globals.client != null) {
+      if (globals.client.isRunning && !gameStarting) globals.client.dispose();
+    }
     super.dispose();
   }
 
   //build UI
   @override
   Widget build(BuildContext context) {
-    Scaffold page = UI.scaffoldWithBackground(children: [
+    var page = UI.scaffoldWithBackground(children: [
       UI.topTitle(
           titleText: globals.clientMulti,
           context: context,

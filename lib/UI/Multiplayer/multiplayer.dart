@@ -38,11 +38,11 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
   Widget build(BuildContext context) {
     //locals
     var platform = Theme.of(context).platform;
-    bool kIsAndroid = platform == TargetPlatform.android;
-    //bool kIsIOS = platform == TargetPlatform.iOS;
-    bool kIsMobile = kIsAndroid;
+    var kIsAndroid = platform == TargetPlatform.android;
+    //var kIsIOS = platform == TargetPlatform.iOS;
+    var kIsMobile = kIsAndroid;
 
-    Scaffold page = UI.scaffoldWithBackground(
+    var page = UI.scaffoldWithBackground(
       context: context,
       backgroundNo: 2,
       children: [

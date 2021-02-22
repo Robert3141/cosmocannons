@@ -21,7 +21,7 @@ class _SettingsPageState extends State<SettingsPage> {
   //build UI
   @override
   Widget build(BuildContext context) {
-    Scaffold page = UI.scaffoldWithBackground(children: [
+    var page = UI.scaffoldWithBackground(children: [
       UI.topTitle(
           titleText: globals.settings,
           context: context,

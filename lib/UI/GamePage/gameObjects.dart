@@ -302,7 +302,7 @@ class Projectile extends GameObject {
 
     //destroy now
     globals.projectiles.remove(this);
-    if (globals.projectiles.length >= 0) {
+    if (globals.projectiles.isNotEmpty) {
       globals.firing = false;
       globals.popup = false;
     }

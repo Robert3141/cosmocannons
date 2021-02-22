@@ -28,8 +28,8 @@ class UI {
 
   // This returns an appropriate padding size so that the UI scale looks clean
   static double getPaddingSize(BuildContext context) {
-    double h = UI.screenHeight(context);
-    double w = UI.screenWidth(context);
+    var h = UI.screenHeight(context);
+    var w = UI.screenWidth(context);
     return h > w ? w * globals.paddingSize : h * globals.paddingSize;
   }
 
@@ -80,7 +80,7 @@ class UI {
   static Container topTitle(
           {@required String titleText,
           @required BuildContext context,
-          String helpText = "",
+          String helpText = '',
           bool root = false}) =>
       Container(
         width: screenWidth(context),
@@ -100,7 +100,7 @@ class UI {
             Container(
               width: screenWidth(context) / 2,
               child: AutoSizeText(
-                globals.popup ? "" : titleText,
+                globals.popup ? '' : titleText,
                 maxFontSize: globals.largeTextSize,
                 minFontSize: globals.smallTextSize,
                 maxLines: 1,
@@ -114,7 +114,7 @@ class UI {
                     text: globals.help,
                     onTap: () => UI.textDisplayPopup(context, helpText),
                     context: context,
-                    enabled: helpText != ""),
+                    enabled: helpText != ''),
           ],
         ),
       );
@@ -123,7 +123,7 @@ class UI {
   static GestureDetector largeButton(
       {@required Function onTap,
       @required BuildContext context,
-      String text = "",
+      String text = '',
       double width,
       double height,
       Color buttonFill = globals.buttonFill,
@@ -160,7 +160,7 @@ class UI {
                       : FilteringTextInputFormatter.singleLineFormatter,
                 ],
                 onChanged: (String newText) {
-                  newText ??= "";
+                  newText ??= '';
                   onTap(newText);
                 },
                 controller: controller ?? TextEditingController(text: text),
@@ -190,7 +190,7 @@ class UI {
   static GestureDetector halfButton({
     @required Function onTap,
     @required BuildContext context,
-    String text = "",
+    String text = '',
     bool enabled = true,
     bool quaterButton = false,
     IconData icon,
@@ -231,7 +231,7 @@ class UI {
 
   // This is a widget to provide a table like UI. This is primarily for the team selection interface.
   static InkWell tableCell(BuildContext context,
-          {String text = "",
+          {String text = '',
           Color textColor = globals.textColor,
           bool ticked = false,
           Function onTap}) =>
@@ -263,7 +263,7 @@ class UI {
           List<String> playerNames,
           @required List<int> playerTeams,
           @required List<bool> playerEnabled,
-          @required void changePlayerTeam(int playerNo, int newTeam)}) =>
+          void Function(int playerNo, int newTeam) changePlayerTeam}) =>
       Container(
         decoration: BoxDecoration(
           color: globals.buttonFill,
@@ -296,7 +296,7 @@ class UI {
                       // Left Column Cells
                       return tableCell(
                         context,
-                        text: playerEnabled[y - 1] ? playerNames[y - 1] : "",
+                        text: playerEnabled[y - 1] ? playerNames[y - 1] : '',
                         textColor: globals.teamColors[playerTeams[y - 1]],
                       );
                     } else if (y == 0) {
@@ -339,13 +339,12 @@ class UI {
       globals.GameType type = globals.GameType.multiLocal,
       bool resumed = false,
       int chosenMap = globals.defaultMap}) {
-    if (newPage == null)
-      newPage = MainGamePage(
-        playerTeams: playerTeams,
-        type: type,
-        resumed: resumed,
-        mapNo: chosenMap,
-      );
+    newPage ??= MainGamePage(
+      playerTeams: playerTeams,
+      type: type,
+      resumed: resumed,
+      mapNo: chosenMap,
+    );
     Navigator.of(context).pushAndRemoveUntil(
         PageTransition(
             type: PageTransitionType.scale,
@@ -444,9 +443,9 @@ class UI {
           ]));
 
   static Future textDisplayPopup(BuildContext context, String text,
-      {String title = "", bool dismissable = true, TextStyle style}) {
+      {String title = '', bool dismissable = true, TextStyle style}) {
     //local vars
-    List<Widget> children = [];
+    var children = <Widget>[];
 
     //popup
     globals.popup = true;
@@ -483,23 +482,29 @@ class UI {
 
   static Future dataInputPopup(
       BuildContext context, List<Function(String)> dataChange,
-      {List<String> dataTitle = const [""],
+      {List<String> dataTitle = const [''],
       List<bool> numericData = const [false],
-      List<String> data = const [""],
-      String title = "",
+      List<String> data = const [''],
+      String title = '',
       bool notInput = false,
       Widget child,
       bool barrierDismissable = true,
       Function(bool confirm) onFinish}) {
-    List<Widget> children = [];
+    var children = <Widget>[];
 
     //popup
     globals.popup = true;
 
     //make sure other arrays is same size and dataChange
-    while (dataTitle.length < dataChange.length) dataTitle.add("");
-    while (data.length < dataChange.length) data.add("");
-    while (numericData.length < dataChange.length) numericData.add(false);
+    while (dataTitle.length < dataChange.length) {
+      dataTitle.add('');
+    }
+    while (data.length < dataChange.length) {
+      data.add('');
+    }
+    while (numericData.length < dataChange.length) {
+      numericData.add(false);
+    }
     Function tempFinish = onFinish ?? (bool confirm) {};
     onFinish = (bool confirm) {
       globals.popup = false;
@@ -518,7 +523,7 @@ class UI {
       height: UI.getPaddingSize(context),
     ));
     //buttons
-    for (int i = 0; i < dataChange.length; i++) {
+    for (var i = 0; i < dataChange.length; i++) {
       children.add(Column(
         children: [
           UI.textWidget(dataTitle[i]),
@@ -565,20 +570,20 @@ class UI {
   static Dialog gamePopup(
       List<Widget> children,
       BuildContext context,
-      Function onFinish(bool confirm),
+      Function Function(bool confirm) onFinish,
       bool barrierDismissable,
       List<Function(String)> dataChange,
       {bool textPopup = false}) {
     //on enter:
-    FocusNode popupKeyboard = FocusNode();
-    Timer popupStart = Timer(Duration(milliseconds: 500), () {});
+    var popupKeyboard = FocusNode();
+    var popupStart = Timer(Duration(milliseconds: 500), () {});
     Widget confirmButton;
-    if (children == null) children = [];
+    children ??= [];
 
     //add confirm button
     if (children.length == dataChange.length + 2 ||
         textPopup ||
-        dataChange.length == 0) {
+        dataChange.isEmpty) {
       confirmButton = Column(children: [
         UI.largeButton(
             height: globals.smallHeight,
@@ -651,14 +656,15 @@ class UI {
 
   static int _position(List<int> list, int value) {
     if (list != null) {
-      for (int i = 0; i < list.length; i++) {
+      for (var i = 0; i < list.length; i++) {
         if (list[i] == value) {
           return i;
         }
       }
       return 0;
-    } else
+    } else {
       return 0;
+    }
   }
 
   static Row settingsEntry(
@@ -673,7 +679,7 @@ class UI {
         children: [
           UI.textWidget(key),
           UI.optionToggle(
-              items: icons == null ? texts : icons,
+              items: icons ?? texts,
               onTap: onTap,
               height: globals.iconSize * 2,
               context: context,
@@ -682,7 +688,7 @@ class UI {
         ],
       );
 
-  static bool _supportedMusicPlatform = kIsWeb || Platform.isAndroid;
+  static final bool _supportedMusicPlatform = kIsWeb || Platform.isAndroid;
 
   static Future playMusic() async {
     /*if (_supportedMusicPlatform) {

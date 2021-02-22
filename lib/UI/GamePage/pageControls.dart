@@ -72,22 +72,24 @@ class CustomGestureRecognizer extends OneSequenceGestureRecognizer {
     globals.popup = true;
 
     //shoot
-    Offset playerPos = globals.players[globals.currentPlayer].aPos;
-    Offset arrow = Offset(-(globals.arrowTop.dx - playerPos.dx),
+    var playerPos = globals.players[globals.currentPlayer].aPos;
+    var arrow = Offset(-(globals.arrowTop.dx - playerPos.dx),
         globals.arrowTop.dy - playerPos.dy);
-    double angle = arrow.direction;
-    double intensity = arrow.distance * globals.shootSF;
-    globals.projectiles.add(Projectile.radians(
-        intensity, angle, globals.currentPlayer, this.updateUI));
+    var angle = arrow.direction;
+    var intensity = arrow.distance * globals.shootSF;
+    globals.projectiles.add(
+        Projectile.radians(intensity, angle, globals.currentPlayer, updateUI));
 
     //share firing of projectile
-    Offset velocity = _angleToOffset(intensity, angle);
-    if (globals.type == globals.GameType.multiHost)
+    var velocity = _angleToOffset(intensity, angle);
+    if (globals.type == globals.GameType.multiHost) {
       globals.server
           .sendToEveryone(globals.packetFire, velocity, globals.players.length);
-    if (globals.type == globals.GameType.multiClient)
+    }
+    if (globals.type == globals.GameType.multiClient) {
       globals.client.sendData(globals.packetFire, velocity.toString(),
           globals.client.serverDetails.address);
+    }
   }
 
   Offset _angleToOffset(double intensity, double angleRadians) {

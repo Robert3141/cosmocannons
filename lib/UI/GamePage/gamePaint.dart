@@ -22,10 +22,10 @@ class GlobalPainter extends CustomPainter {
 
   double calcNearestHeight(List<double> terrainHeights, double relPos) {
     //return nearest index int
-    double blockWidth = 1 / terrainHeights.length;
-    double blockRight;
-    int nearestIndex = 0;
-    for (int x = 0; x < terrainHeights.length; x++) {
+    var blockWidth = 1 / terrainHeights.length;
+    var blockRight = 0.0;
+    var nearestIndex = 0;
+    for (var x = 0; x < terrainHeights.length; x++) {
       blockRight = (x) * blockWidth;
       if (relPos > blockRight) {
         //located on left of block x+1
@@ -59,7 +59,7 @@ class ShootPainter extends GlobalPainter {
     Projectile p;
     Offset start;
     Offset end;
-    for (int i = 0; i < globals.projectiles.length; i++) {
+    for (var i = 0; i < globals.projectiles.length; i++) {
       //draw projectile
       p = globals.projectiles[i];
       final paint = Paint()..color = p.teamColour;
@@ -104,7 +104,7 @@ class ShootPainter extends GlobalPainter {
   }
 
   void drawAimArrow(Canvas canvas, Player player, Offset endPos) {
-    Paint painter = Paint()
+    var painter = Paint()
       ..blendMode = BlendMode.plus
       ..color = player.teamColour;
     if (globals.dragGhost) {
@@ -116,9 +116,12 @@ class ShootPainter extends GlobalPainter {
   void paint(Canvas canvas, Size size) {
     super.paint(canvas, size);
     arrowTop = globals.arrowTop;
-    if (globals.projectiles != null) if (globals.projectiles.length >= 1)
-      canvas.drawCircle(
-          globals.projectiles[0].rPos, 3, Paint()..color = Colors.pink);
+    if (globals.projectiles != null) {
+      if (globals.projectiles.isNotEmpty) {
+        canvas.drawCircle(
+            globals.projectiles[0].rPos, 3, Paint()..color = Colors.pink);
+      }
+    }
 
     spawnProjectile(canvas);
     drawAimArrow(canvas, globals.players[globals.currentPlayer], arrowTop);
@@ -128,8 +131,8 @@ class ShootPainter extends GlobalPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     //return arrowTop != globals.arrowTop || dragGhost != globals.dragGhost;
     //check projectiles
-    bool updated = false;
-    for (int i = 0; i < globals.projectiles.length; i++) {
+    var updated = false;
+    for (var i = 0; i < globals.projectiles.length; i++) {
       updated |= globals.projectiles[i].updated;
     }
     //check arrow
@@ -152,10 +155,11 @@ class CharacterPainter extends GlobalPainter {
   ///
 
   void spawnInPlayers(List<double> terrainHeights, Canvas canvas) {
-    if (globals.players.isNotEmpty)
-      for (int p = 0; p < globals.players.length; p++) {
+    if (globals.players.isNotEmpty) {
+      for (var p = 0; p < globals.players.length; p++) {
         globals.players[p].draw(canvas);
       }
+    }
   }
 
   @override
@@ -168,8 +172,8 @@ class CharacterPainter extends GlobalPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     //check all players
-    bool updated = false;
-    for (int i = 0; i < globals.players.length; i++) {
+    var updated = false;
+    for (var i = 0; i < globals.players.length; i++) {
       updated |= globals.players[i].updated;
     }
     return updated;
@@ -192,22 +196,22 @@ class GamePainter extends GlobalPainter {
   ///
 
   void generateTerrain(List<double> terrainHeights, Canvas canvas, int mapNo) {
-    int xAmount = terrainHeights.length;
-    int yAmount = globals.terrainColumnsToRender;
-    int red;
-    int blue;
-    int green;
-    int minFractionFloor;
-    List<Color> colors = globals.terrainColors[mapNo];
+    var xAmount = terrainHeights.length;
+    var yAmount = globals.terrainColumnsToRender;
+    var red = 0;
+    var blue = 0;
+    var green = 0;
+    var minFractionFloor = 0;
+    var colors = globals.terrainColors[mapNo];
     Color blockColor;
     Color colorAbove;
     Color colorBelow;
-    double fractionThere;
-    double actualHeight;
-    double blockHeight;
-    double blockTop;
-    double blockWidth = 1 / xAmount;
-    double blockRight;
+    var fractionThere = 0.0;
+    var actualHeight = 0.0;
+    var blockHeight = 0.0;
+    var blockTop = 0.0;
+    var blockWidth = 1 / xAmount;
+    var blockRight = 0.0;
     Offset posBL;
     Offset posTR;
 
@@ -216,7 +220,7 @@ class GamePainter extends GlobalPainter {
     globals.terrainCacheColour = List.empty(growable: true);
 
     //loop through columns
-    for (int x = 0; x < xAmount; x++) {
+    for (var x = 0; x < xAmount; x++) {
       //calculate height
       actualHeight = terrainHeights[x];
 
@@ -227,7 +231,7 @@ class GamePainter extends GlobalPainter {
       blockRight = (x + 1) * blockWidth;
 
       //loop through rows
-      for (int y = 1; y < yAmount; y++) {
+      for (var y = 1; y < yAmount; y++) {
         //calculate top postion
         blockTop = blockHeight * y;
 
@@ -278,14 +282,14 @@ class GamePainter extends GlobalPainter {
   @override
   void paint(Canvas canvas, Size size) {
     super.paint(canvas, size);
-    List<double> gameMap = globals.currentMap;
+    var gameMap = globals.currentMap;
 
     //render terrain
     if (globals.firstRender) {
       generateTerrain(gameMap, canvas, globals.mapNo);
     } else {
       //use dirty canvas:
-      for (int i = 0; i < globals.terrainCacheLocation.length; i++) {
+      for (var i = 0; i < globals.terrainCacheLocation.length; i++) {
         final paint = Paint()
           ..color = globals.terrainCacheColour[i]
           ..strokeWidth = 1

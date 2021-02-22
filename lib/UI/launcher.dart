@@ -26,7 +26,7 @@ class _LauncherPageState extends State<LauncherPage> {
   bool firstBuild = true;
   bool _resumeGame = false;
   int amountOfPlays = 0;
-  String _versionString = "Loading . . .";
+  String _versionString = 'Loading . . .';
 
   //functions
 
@@ -37,9 +37,9 @@ class _LauncherPageState extends State<LauncherPage> {
   void resume() async {
     //resume with all previous data
     List<int> playerTeams =
-        await UI.dataLoad(globals.keyPlayerTeams, "List<int>");
-    globals.GameType type = globals
-        .gameTypefromString(await UI.dataLoad(globals.keyGameType, "String"));
+        await UI.dataLoad(globals.keyPlayerTeams, 'List<int>');
+    var type = globals
+        .gameTypefromString(await UI.dataLoad(globals.keyGameType, 'String'));
 
     //start
     UI.startNewPage(context, playerTeams, type: type, resumed: true);
@@ -76,23 +76,23 @@ class _LauncherPageState extends State<LauncherPage> {
 
   void loadVariables() async {
     globals.playAudio =
-        await UI.dataLoad(globals.keyVolume, "bool") ?? globals.playAudio;
+        await UI.dataLoad(globals.keyVolume, 'bool') ?? globals.playAudio;
     globals.playMusic =
-        await UI.dataLoad(globals.keyMusic, "bool") ?? globals.playMusic;
+        await UI.dataLoad(globals.keyMusic, 'bool') ?? globals.playMusic;
     try {
       globals.terrainColumnsToRender =
-          await UI.dataLoad(globals.keyRenderHeight, "int") ??
+          await UI.dataLoad(globals.keyRenderHeight, 'int') ??
               globals.terrainColumnsToRender;
     } catch (e) {}
   }
 
   void showResumeGame() async {
-    String _temp = _versionString;
-    bool _savedGame = false;
+    var _temp = _versionString;
+    var _savedGame = false;
 
-    _versionString = "bonk ...";
+    _versionString = 'bonk ...'; //TODO: change this
 
-    _savedGame = await UI.dataLoad(globals.keySavedGame, "bool") ?? false;
+    _savedGame = await UI.dataLoad(globals.keySavedGame, 'bool') ?? false;
     setState(() {
       _versionString = _temp;
       _resumeGame = _savedGame;
@@ -101,10 +101,14 @@ class _LauncherPageState extends State<LauncherPage> {
 
   void removeThreads() {
     //disposes of server and client if availiable
-    if (globals.server != null) if (globals.server.isRunning)
-      globals.server.dispose();
-    if (globals.client != null) if (globals.client.isRunning)
-      globals.client.dispose();
+    if (globals.server != null) {
+      if (globals.server.isRunning) {
+        globals.server.dispose();
+      }
+    }
+    if (globals.client != null) {
+      if (globals.client.isRunning) globals.client.dispose();
+    }
   }
 
   void firstBuilder() {
@@ -124,7 +128,7 @@ class _LauncherPageState extends State<LauncherPage> {
   Widget build(BuildContext context) {
     firstBuilder();
     UI.stopMusic();
-    Scaffold page = UI.scaffoldWithBackground(context: context, children: [
+    var page = UI.scaffoldWithBackground(context: context, children: [
       UI.topTitle(titleText: globals.gameTitle, context: context, root: true),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
