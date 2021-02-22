@@ -99,8 +99,12 @@ class Player extends GameObject {
     aX = aX + actualAmount;
 
     //players loop if they move out of zone
-    while (aX > 1) aX -= 1;
-    while (aX < 0) aX += 1;
+    while (aX > 1) {
+      aX -= 1;
+    }
+    while (aX < 0) {
+      aX += 1;
+    }
 
     //set y
     aY = GlobalPainter().calcNearestHeight(globals.currentMap, aX) +
@@ -115,16 +119,16 @@ class Player extends GameObject {
   void playAI(Function updater, int thisPlayer,
       {int teamToTarget, double accuracy}) async {
     //local vars
-    double timeSec = 2;
-    const Offset a = Offset(globals.Ax, globals.Ay);
-    double angleVariance;
-    double uX = 0;
-    double uY = 0;
-    int selectedPlayer =
+    var timeSec = 2.0;
+    const a = Offset(globals.Ax, globals.Ay);
+    var angleVariance = 0.0;
+    var uX = 0.0;
+    var uY = 0.0;
+    var selectedPlayer =
         _selectPlayer(teamToTarget, globals.players[thisPlayer].team);
     Offset u;
     Offset s;
-    Random rand = Random();
+    var rand = Random();
 
     //choose to move
     if (rand.nextInt(10) > 6) rand.nextBool() ? moveLeft() : moveRight();
@@ -151,39 +155,38 @@ class Player extends GameObject {
   @override
   void draw(Canvas canvas) {
     //define locals
-    double radiusX = globals.playerRadiusX.toRelativeX();
-    double radiusY = (1 - globals.playerRadiusY).toRelativeY();
-    double windowWidth = radiusX / 4;
-    Rect topOval = Rect.fromPoints(rPos.translate(-radiusX, -radiusY),
+    var radiusX = globals.playerRadiusX.toRelativeX();
+    var radiusY = (1 - globals.playerRadiusY).toRelativeY();
+    var windowWidth = radiusX / 4;
+    var topOval = Rect.fromPoints(rPos.translate(-radiusX, -radiusY),
         rPos.translate(radiusX, radiusY * 0.5));
-    Rect midArc = Rect.fromPoints(rPos.translate(-radiusX, radiusY * 2.5),
+    var midArc = Rect.fromPoints(rPos.translate(-radiusX, radiusY * 2.5),
         rPos.translate(radiusX, -radiusY * 0.5));
-    Rect bottomArc = Rect.fromPoints(
+    var bottomArc = Rect.fromPoints(
         rPos.translate(-radiusX * 0.7, radiusY * 0.4),
         rPos.translate(radiusX * 0.7, radiusY * 1.6));
 
     //define paints
-    final TextPainter playerHealthText = globals.defaultTextPaint
+    final playerHealthText = globals.defaultTextPaint
       ..text = TextSpan(
-          text: (this.health <= 0 ? 0 : this.health).toString(),
-          style: UI.defaultText())
+          text: (health <= 0 ? 0 : health).toString(), style: UI.defaultText())
       ..layout();
-    Paint playerFill = Paint()
-      ..color = this.teamColour
+    var playerFill = Paint()
+      ..color = teamColour
       ..strokeWidth = 3
       ..style = PaintingStyle.fill
       ..strokeCap = StrokeCap.round;
-    Paint whiteFill = Paint()
+    var whiteFill = Paint()
       ..color = Colors.white
       ..strokeWidth = 3
       ..style = PaintingStyle.fill
       ..strokeCap = StrokeCap.round;
-    Paint whiteEmpty = Paint()
+    var whiteEmpty = Paint()
       ..color = Colors.white
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
-    Paint blackFill = Paint()
+    var blackFill = Paint()
       ..color = Colors.black
       ..strokeWidth = 3
       ..style = PaintingStyle.fill
@@ -199,39 +202,40 @@ class Player extends GameObject {
     canvas.drawCircle(
         rPos.translate(0, -2 * radiusY / 3), windowWidth, whiteFill);
     //draw hitbox
-    if (drawHitbox)
+    if (drawHitbox) {
       canvas.drawRect(
           Rect.fromCenter(
               center: rPos, width: radiusX * 2, height: radiusY * 2),
           whiteEmpty);
+    }
     //draw text
     playerHealthText.paint(
         canvas,
-        this.rPos.translate(
+        rPos.translate(
             -playerHealthText.width / 2, -radiusY - playerHealthText.height));
   }
 
   @override
   String toString() {
-    return "Player(health:$health, team:$team, pos:$aPos)";
+    return 'Player(health:$health, team:$team, pos:$aPos)';
   }
 
   int _selectPlayer(int teamToTarget, int playerTeam) {
     //locals
-    List<int> playersToChoose = List<int>.empty(growable: true);
-    Random rand = new Random();
+    var playersToChoose = List<int>.empty(growable: true);
+    var rand = Random();
 
     // add players to target list
     if (teamToTarget != null &&
         teamToTarget != playerTeam &&
         globals.players.any((element) => element.team == teamToTarget)) {
       //teamToTarget exists in array
-      for (int i = 0; i < globals.players.length; i++) {
+      for (var i = 0; i < globals.players.length; i++) {
         if (globals.players[i].team == teamToTarget) playersToChoose.add(i);
       }
     } else {
       //select random player not on team
-      for (int i = 0; i < globals.players.length; i++) {
+      for (var i = 0; i < globals.players.length; i++) {
         if (globals.players[i].team != playerTeam) playersToChoose.add(i);
       }
     }
@@ -250,7 +254,7 @@ class Projectile extends GameObject {
 
   Offset get aU => _u;
   Offset get aA => _a;
-  Offset get aS => this.aPos;
+  Offset get aS => aPos;
   double get time => _timeSec;
   Offset get aStart => _startPos;
   int get playerInt => _player;
@@ -306,15 +310,16 @@ class Projectile extends GameObject {
 
     //singleplayer run AI
     if (globals.thisPlayer != globals.currentPlayer &&
-        globals.type == globals.GameType.singlePlayer)
+        globals.type == globals.GameType.singlePlayer) {
       globals.players[globals.currentPlayer]
           .playAI(updater, globals.currentPlayer);
+    }
   }
 
   Future<Offset> _animateProjectile() async {
     globals.firing = true;
-    const Duration length = Duration(milliseconds: globals.frameLengthMs);
-    const Duration check = Duration(milliseconds: globals.checkDoneMs);
+    const length = Duration(milliseconds: globals.frameLengthMs);
+    const check = Duration(milliseconds: globals.checkDoneMs);
     Timer timer;
 
     //run timer
@@ -334,9 +339,9 @@ class Projectile extends GameObject {
 
   void _renderCallback(Timer timer) {
     //set time
-    bool hitPlayer = false;
-    double terrainHeight;
-    int tick = timer.tick;
+    var hitPlayer = false;
+    var terrainHeight = 0.0;
+    var tick = timer.tick;
     _timeSec = (globals.frameLengthMs * tick) / 1000;
 
     //set new locations
@@ -352,7 +357,7 @@ class Projectile extends GameObject {
 
     //hit player?
     hitPlayer = false;
-    for (int p = 0; p < globals.players.length; p++) {
+    for (var p = 0; p < globals.players.length; p++) {
       if (globals.players[p].team != playerObj.team) {
         if (checkInRadius(aPos, globals.players[p].aPos, globals.playerRadiusX,
             globals.playerRadiusY)) {
@@ -380,24 +385,27 @@ class Projectile extends GameObject {
   void _nextPlayer() {
     //next player
     globals.currentPlayer++;
-    if (globals.currentPlayer >= globals.players.length)
+    if (globals.currentPlayer >= globals.players.length) {
       globals.currentPlayer = 0;
-    if (globals.type.showPlayerUI(globals.currentPlayer))
+    }
+    if (globals.type.showPlayerUI(globals.currentPlayer)) {
       globals.thisPlayer = globals.currentPlayer;
-    print("projectile ${this._player}");
+    }
+    print('projectile $_player');
     print(globals.thisPlayer);
     print(globals.currentPlayer);
     //server get's final choice over who is playing
-    if (globals.type == globals.GameType.multiHost)
+    if (globals.type == globals.GameType.multiHost) {
       globals.server.sendToEveryone(globals.packetPlayersTurn,
           globals.currentPlayer, globals.players.length);
+    }
   }
 
   void _giveDamage(Offset position) {
     //locals
 
     //check all players
-    for (int i = 0; i < globals.players.length; i++) {
+    for (var i = 0; i < globals.players.length; i++) {
       //check player not in team
       if (globals.players[i].team != playerInt) {
         // check player in blast radius
@@ -430,21 +438,22 @@ class Projectile extends GameObject {
       //Players wiped each other out
     } else {
       //check amount of teams in play
-      List<int> teamsLeft = List<int>.empty(growable: true);
+      var teamsLeft = List<int>.empty(growable: true);
       int playersTeam;
 
-      for (int p = 0; p < globals.players.length; p++) {
+      for (var p = 0; p < globals.players.length; p++) {
         playersTeam = globals.players[p].team;
         //team not in list
-        if (teamsLeft.lastIndexOf(playersTeam) == -1)
+        if (teamsLeft.lastIndexOf(playersTeam) == -1) {
           teamsLeft.add(playersTeam);
+        }
       }
 
       if (teamsLeft.length == 1) {
         // last team wins
         UI.dataInputPopup(context, [null],
             notInput: true,
-            data: ["Team ${globals.defaultTeamNames[teamsLeft[0]]} has won!"],
+            data: ['Team ${globals.defaultTeamNames[teamsLeft[0]]} has won!'],
             onFinish: (bool b) {
           UI.startNewPage(context, [], newPage: LauncherPage());
         });
