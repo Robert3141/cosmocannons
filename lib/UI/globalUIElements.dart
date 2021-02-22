@@ -53,6 +53,7 @@ class UI {
           int backgroundNo = 1,
           bool padding = true}) =>
       Scaffold(
+        backgroundColor: Colors.black,
         body: DecoratedBox(
           position: DecorationPosition.background,
           decoration: BoxDecoration(
@@ -62,6 +63,8 @@ class UI {
                 fit: BoxFit.cover),
           ),
           child: Container(
+            width: screenWidth(context),
+            height: screenHeight(context),
             padding: padding
                 ? EdgeInsets.all(getPaddingSize(context))
                 : EdgeInsets.zero,

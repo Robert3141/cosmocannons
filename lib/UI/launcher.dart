@@ -153,6 +153,9 @@ class _LauncherPageState extends State<LauncherPage> {
               context: context),
         ],
       ),
+      Container(
+        height: globals.paddingSize * UI.screenHeight(context),
+      ),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

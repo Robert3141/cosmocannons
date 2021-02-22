@@ -148,6 +148,9 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
           titleText: globals.clientMulti,
           context: context,
           helpText: globals.helpMultiplayerClient),
+      Container(
+        height: globals.paddingSize * UI.screenHeight(context),
+      ),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

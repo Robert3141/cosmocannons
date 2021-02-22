@@ -196,6 +196,9 @@ class _LocalMultiPageState extends State<HostMultiPage> {
           titleText: globals.hostMulti,
           context: context,
           helpText: globals.helpMultiplayerHost),
+      Container(
+        height: globals.paddingSize * UI.screenHeight(context),
+      ),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

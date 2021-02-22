@@ -26,6 +26,9 @@ class _SettingsPageState extends State<SettingsPage> {
           titleText: globals.settings,
           context: context,
           helpText: globals.helpSettings),
+      Container(
+        height: globals.paddingSize * UI.screenHeight(context),
+      ),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
