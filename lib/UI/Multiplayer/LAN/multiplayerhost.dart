@@ -1,3 +1,4 @@
+import 'package:cosmocannons/UI/launcher.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -67,6 +68,8 @@ class _LocalMultiPageState extends State<HostMultiPage> {
     globals.server = ServerNode(
       name: userNameText,
       verbose: kDebugMode,
+      onDispose: () => UI.gotoNewPage(context, LauncherPage()),
+      clientDispose: (n) => scanClients,
     );
     await globals.server.init();
     await globals.server.onReady;

@@ -1,4 +1,5 @@
 import 'package:client_server_lan/client_server_lan.dart';
+import 'package:cosmocannons/UI/launcher.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -51,6 +52,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
     globals.client = ClientNode(
       name: userNameText,
       verbose: kDebugMode,
+      onDispose: () => UI.gotoNewPage(context, LauncherPage()),
     );
     await globals.client.init();
     await globals.client.onReady;
@@ -132,7 +134,6 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
 
   @override
   void dispose() {
-    //TODO handle clients leaving mid lobby
     if (globals.client != null) {
       if (globals.client.isRunning && !gameStarting) globals.client.dispose();
     }
