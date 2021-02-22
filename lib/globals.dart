@@ -230,6 +230,7 @@ bool playAudio = false;
 bool dragGhost = false;
 bool firing = false;
 bool inGame = false;
+bool terrainUpdated = true;
 
 int mapNo;
 int terrainColumnsToRender = kIsWeb ? mapQualitySizes[0] : mapQualitySizes[1];

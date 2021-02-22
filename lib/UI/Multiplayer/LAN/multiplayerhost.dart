@@ -50,7 +50,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
       Navigator.of(context).pop();
     });
     mapSelectPopup();
-    sendToEveryone(globals.packetMapNumber, chosenMap);
+    sendToEveryone(globals.packetMapNumber, chosenMap.toString());
   }
 
   void mapSelectPopup() {
@@ -95,12 +95,12 @@ class _LocalMultiPageState extends State<HostMultiPage> {
         playerConnected[i + 1] = true;
       });
       //tell them their numbers
-      await globals.server.sendData(globals.packetPlayerNumber, i.toString(),
+      await globals.server.sendData(i.toString(), globals.packetPlayerNumber,
           globals.server.clientsConnected[i].address);
     }
     //tell players all the player names
-    sendToEveryone(globals.packetPlayerNames, playerNames);
-    sendToEveryone(globals.packetPlayerEnabled, playerConnected);
+    sendToEveryone(globals.packetPlayerNames, playerNames.toString());
+    sendToEveryone(globals.packetPlayerEnabled, playerConnected.toString());
     setState(() {
       scanning = false;
     });
@@ -121,7 +121,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
           case globals.packetPlayerTeams:
             setState(() {
               playerTeams[clientNo + 1] = int.parse(data.payload);
-              sendToEveryone(globals.packetPlayerTeams, playerTeams);
+              sendToEveryone(globals.packetPlayerTeams, playerTeams.toString());
             });
             break;
           default:
@@ -150,7 +150,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
       //start game
       print('game starting');
       gameStarting = true;
-      sendToEveryone(globals.packetGameStart, gameStarting);
+      sendToEveryone(globals.packetGameStart, gameStarting.toString());
       UI.startNewPage(context, players,
           chosenMap: chosenMap, type: globals.GameType.multiHost);
     }
@@ -163,7 +163,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
         playerTeams[playerNo - 1] = newTeam;
       });
       //send  updated data
-      sendToEveryone(globals.packetPlayerTeams, playerTeams);
+      sendToEveryone(globals.packetPlayerTeams, playerTeams.toString());
     }
   }
 
@@ -174,7 +174,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
     checkgameReadyToStart();
   }
 
-  void sendToEveryone(String title, dynamic payload) =>
+  void sendToEveryone(String title, String payload) =>
       globals.server.sendToEveryone(title, payload, playerNames.length);
 
   @override

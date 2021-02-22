@@ -28,7 +28,7 @@ dependencies:
   # import external packages
   page_transition: ^1.1.5
   auto_size_text: ^2.1.0
-  client_server_lan: ^2.0.0
+  client_server_lan: ^2.0.3
   #assets_audio_player: ^2.0.13+1
   #shared_preferences: ^0.5.12+2
   shared_preferences_moretypes: ^2.4.1

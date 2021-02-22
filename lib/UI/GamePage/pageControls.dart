@@ -83,11 +83,11 @@ class CustomGestureRecognizer extends OneSequenceGestureRecognizer {
     //share firing of projectile
     var velocity = _angleToOffset(intensity, angle);
     if (globals.type == globals.GameType.multiHost) {
-      globals.server
-          .sendToEveryone(globals.packetFire, velocity, globals.players.length);
+      globals.server.sendToEveryone(
+          globals.packetFire, velocity.toString(), globals.players.length);
     }
     if (globals.type == globals.GameType.multiClient) {
-      globals.client.sendData(globals.packetFire, velocity.toString(),
+      globals.client.sendData(velocity.toString(), globals.packetFire,
           globals.client.serverDetails.address);
     }
   }

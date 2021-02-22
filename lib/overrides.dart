@@ -129,18 +129,18 @@ extension StringExtender on String {
 }
 
 extension ServerExtender on ServerNode {
-  void sendToEveryone(String title, dynamic payload, int amountOfPlayers) {
+  void sendToEveryone(String title, String payload, int amountOfPlayers) {
     for (var i = 0;
         i < globals.server.clientsConnected.length && i < amountOfPlayers;
         i++) {
       var address = globals.server.clientsConnected[i].address;
-      globals.server.sendData(title, payload, address);
+      globals.server.sendData(payload, title, address);
     }
   }
 
   void disposer() {
     //tell them all
-    sendToEveryone(globals.packetGameEnd, true, globals.players.length);
+    sendToEveryone(globals.packetGameEnd, 'true', globals.players.length);
     //run dispose
     dispose();
   }
@@ -148,6 +148,6 @@ extension ServerExtender on ServerNode {
 
 extension ClientExtender on ClientNode {
   void disposer() {
-    sendData(globals.packetGameEnd, true.toString(), serverDetails.address);
+    sendData(true.toString(), globals.packetGameEnd, serverDetails.address);
   }
 }

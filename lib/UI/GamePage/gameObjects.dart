@@ -395,7 +395,7 @@ class Projectile extends GameObject {
     //server get's final choice over who is playing
     if (globals.type == globals.GameType.multiHost) {
       globals.server.sendToEveryone(globals.packetPlayersTurn,
-          globals.currentPlayer, globals.players.length);
+          globals.currentPlayer.toString(), globals.players.length);
     }
   }
 

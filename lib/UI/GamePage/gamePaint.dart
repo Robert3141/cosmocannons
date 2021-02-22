@@ -285,6 +285,7 @@ class GamePainter extends GlobalPainter {
     var gameMap = globals.currentMap;
 
     //render terrain
+    globals.terrainUpdated = false;
     if (globals.firstRender) {
       generateTerrain(gameMap, canvas, globals.mapNo);
     } else {
@@ -307,7 +308,6 @@ class GamePainter extends GlobalPainter {
 
   @override
   bool shouldRepaint(CustomPainter old) {
-    //TODO: FIX THIS
-    return false;
+    return globals.terrainUpdated;
   }
 }

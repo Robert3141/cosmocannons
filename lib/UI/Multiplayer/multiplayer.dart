@@ -38,9 +38,10 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
   Widget build(BuildContext context) {
     //locals
     var platform = Theme.of(context).platform;
-    var kIsAndroid = platform == TargetPlatform.android;
+    var kIsAndroid = !kIsWeb && (platform == TargetPlatform.android);
+    var kIsWindows = !kIsWeb && (platform == TargetPlatform.windows);
     //var kIsIOS = platform == TargetPlatform.iOS;
-    var kIsMobile = kIsAndroid;
+    var kIsSupported = kIsAndroid || kIsWindows;
 
     var page = UI.scaffoldWithBackground(
       context: context,
@@ -59,7 +60,7 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
                 text: globals.localMulti,
                 onTap: () => localMutli(),
                 context: context),
-            kIsMobile
+            kIsSupported
                 ? Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

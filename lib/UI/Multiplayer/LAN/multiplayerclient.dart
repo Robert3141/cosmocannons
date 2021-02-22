@@ -117,7 +117,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
 
   void changePlayerTeam(int playerNo, int newTeam) {
     if (playerNo == playerNumber) {
-      globals.client.sendData(globals.packetPlayerTeams, newTeam.toString(),
+      globals.client.sendData(newTeam.toString(), globals.packetPlayerTeams,
           globals.client.serverDetails.address);
     }
   }
@@ -125,8 +125,8 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
   void toggleReady() {
     setState(() {
       readyForPlay = !readyForPlay;
-      globals.client.sendData(globals.packetPlayerReady,
-          readyForPlay.toString(), globals.client.serverDetails.address);
+      globals.client.sendData(readyForPlay.toString(),
+          globals.packetPlayerReady, globals.client.serverDetails.address);
     });
   }
 
