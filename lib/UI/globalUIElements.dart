@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:cosmocannons/UI/GamePage/mainGame.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cosmocannons/globals.dart' as globals;
@@ -688,8 +687,8 @@ class UI {
         ],
       );
 
-  static final bool _supportedMusicPlatform = kIsWeb || Platform.isAndroid;
-
+  //static final bool _supportedMusicPlatform = kIsWeb || Platform.isAndroid;
+  // TODO: get music working again
   static Future playMusic() async {
     /*if (_supportedMusicPlatform) {
       globals.playMusic = await UI.dataLoad(globals.keyMusic, "bool") ?? true;

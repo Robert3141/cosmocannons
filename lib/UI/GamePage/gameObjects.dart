@@ -54,11 +54,9 @@ class Player extends GameObject {
   // attributes
   bool drawHitbox = false;
   double health = globals.defaultPlayerHealth;
-  Offset _lastShot = Offset.zero;
   BuildContext _context;
 
   //getters
-  Offset get lastShot => _lastShot;
 
   //setters
 

@@ -83,7 +83,7 @@ class _LauncherPageState extends State<LauncherPage> {
       globals.terrainColumnsToRender =
           await UI.dataLoad(globals.keyRenderHeight, 'int') ??
               globals.terrainColumnsToRender;
-    } catch (e) {}
+    } finally {}
   }
 
   void showResumeGame() async {

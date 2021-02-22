@@ -84,7 +84,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
     setState(() {
       scanning = true;
     });
-    globals.server.discoverNodes();
+    await globals.server.discoverNodes();
     await Future<dynamic>.delayed(const Duration(seconds: 2));
     for (var i = 0;
         i < globals.server.clientsConnected.length && i < playerNames.length;
@@ -95,7 +95,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
         playerConnected[i + 1] = true;
       });
       //tell them their numbers
-      globals.server.sendData(globals.packetPlayerNumber, i.toString(),
+      await globals.server.sendData(globals.packetPlayerNumber, i.toString(),
           globals.server.clientsConnected[i].address);
     }
     //tell players all the player names

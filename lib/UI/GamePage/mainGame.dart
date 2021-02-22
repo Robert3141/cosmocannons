@@ -12,6 +12,7 @@ import 'package:cosmocannons/UI/GamePage/gamePaint.dart';
 import 'package:flutter/services.dart';
 import 'package:cosmocannons/UI/GamePage/gameObjects.dart';
 import 'package:cosmocannons/overrides.dart';
+import 'package:pedantic/pedantic.dart';
 
 class MainGamePage extends StatefulWidget {
   //constructor of class
@@ -126,7 +127,7 @@ class _MainGamePageState extends State<MainGamePage> {
       globals.popup = false;
 
       //play music
-      UI.playMusic();
+      unawaited(UI.playMusic());
 
       //rerender with new setup
       setState(() {
@@ -164,7 +165,7 @@ class _MainGamePageState extends State<MainGamePage> {
       }
 
       //play music
-      UI.playMusic();
+      unawaited(UI.playMusic());
 
       //cancel popup
       globals.popup = false;

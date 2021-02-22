@@ -68,7 +68,7 @@ extension DoubleExtender on double {
   }
 }
 
-extension packetExtender on DataPacket {
+extension PacketExtender on DataPacket {
   /// Gets int no of connected client
   int clientNo(ServerNode server) {
     int clientNo;
