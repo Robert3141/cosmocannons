@@ -68,7 +68,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
     globals.server = ServerNode(
       name: userNameText,
       verbose: kDebugMode,
-      onDispose: () => UI.gotoNewPage(context, LauncherPage()),
+      onDispose: onDispose,
       clientDispose: (n) => scanClients,
     );
     await globals.server.init();
@@ -81,6 +81,13 @@ class _LocalMultiPageState extends State<HostMultiPage> {
     });
     //pass data
     globals.server.dataResponse.listen(dataReceived);
+  }
+
+  void onDispose() async {
+    //tell clients to dispose
+    sendToEveryone(globals.packetPlayerDispose, '');
+    //go to new page
+    UI.gotoNewPage(context, LauncherPage());
   }
 
   void scanClients() async {
@@ -117,13 +124,13 @@ class _LocalMultiPageState extends State<HostMultiPage> {
         switch (data.title) {
           case globals.packetPlayerReady:
             setState(() {
-              playerReady[clientNo + 1] = data.payload == 'true';
+              playerReady[clientNo + 1] = data.payload.toString() == 'true';
               checkgameReadyToStart();
             });
             break;
           case globals.packetPlayerTeams:
             setState(() {
-              playerTeams[clientNo + 1] = int.parse(data.payload);
+              playerTeams[clientNo + 1] = int.parse(data.payload.toString());
               sendToEveryone(globals.packetPlayerTeams, playerTeams.toString());
             });
             break;

@@ -68,7 +68,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
     print('received $data');
     switch (data.title) {
       case globals.packetPlayerNumber:
-        playerNumber = int.parse(data.payload) + 2;
+        playerNumber = int.parse(data.payload.toString()) + 2;
         setState(() {
           connecting = false;
           connectedToServer = true;
@@ -91,7 +91,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
         break;
       case globals.packetMapNumber:
         setState(() {
-          mapChosen = int.parse(data.payload);
+          mapChosen = int.parse(data.payload.toString());
         });
         break;
       case globals.packetGameStart:
@@ -109,6 +109,9 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
           UI.startNewPage(context, players,
               chosenMap: mapChosen, type: globals.GameType.multiClient);
         }
+        break;
+      case globals.packetPlayerDispose:
+        dispose();
         break;
       default:
         debugPrint('Error packet not known title');

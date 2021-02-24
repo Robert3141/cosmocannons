@@ -343,8 +343,8 @@ class _MainGamePageState extends State<MainGamePage> {
           globals.firing = true;
           if (globals.type == globals.GameType.multiHost) {
             // Server
-            globals.server.sendToEveryone(
-                globals.packetFire, data.payload, globals.players.length);
+            globals.server.sendToEveryone(globals.packetFire,
+                data.payload.toString(), globals.players.length);
           }
           //render firing
           globals.projectiles.add(Projectile.velocity(
@@ -428,48 +428,53 @@ class _MainGamePageState extends State<MainGamePage> {
             alignment: Alignment.center,
             children: [
               //main terrain
-              SingleChildScrollView(
-                controller: globals.gameScroller,
-                scrollDirection: Axis.horizontal,
-                //scrollable based on pause
-                physics: paused
-                    ? NeverScrollableScrollPhysics()
-                    : AlwaysScrollableScrollPhysics(),
-                child: RawKeyboardListener(
-                  autofocus: true,
-                  onKey: keyPresses,
-                  focusNode: globals.gameInputs,
-                  child: RawGestureDetector(
-                    gestures: <Type, GestureRecognizerFactory>{
-                      CustomGestureRecognizer:
-                          GestureRecognizerFactoryWithHandlers<
-                                  CustomGestureRecognizer>(
-                              () => CustomGestureRecognizer(updateUI, zoom),
-                              (CustomGestureRecognizer instance) {})
-                    },
-                    child: Stack(
-                      children: [
-                        //projectiles
-                        CustomPaint(
-                          willChange:
-                              globals.firing || (globals.dragGhost ?? false),
-                          size: globals.canvasSize,
-                          painter: ShootPainter(),
-                          child: Text(updaterText),
-                        ),
+              InteractiveViewer(
+                panEnabled: true,
+                minScale: 1,
+                maxScale: 4,
+                child: SingleChildScrollView(
+                  controller: globals.gameScroller,
+                  scrollDirection: Axis.horizontal,
+                  //scrollable based on pause
+                  physics: paused
+                      ? NeverScrollableScrollPhysics()
+                      : AlwaysScrollableScrollPhysics(),
+                  child: RawKeyboardListener(
+                    autofocus: true,
+                    onKey: keyPresses,
+                    focusNode: globals.gameInputs,
+                    child: RawGestureDetector(
+                      gestures: <Type, GestureRecognizerFactory>{
+                        CustomGestureRecognizer:
+                            GestureRecognizerFactoryWithHandlers<
+                                    CustomGestureRecognizer>(
+                                () => CustomGestureRecognizer(updateUI, zoom),
+                                (CustomGestureRecognizer instance) {})
+                      },
+                      child: Stack(
+                        children: [
+                          //projectiles
+                          CustomPaint(
+                            willChange:
+                                globals.firing || (globals.dragGhost ?? false),
+                            size: globals.canvasSize,
+                            painter: ShootPainter(),
+                            child: Text(updaterText),
+                          ),
 
-                        //terrain
-                        CustomPaint(
-                          isComplex: true,
-                          size: globals.canvasSize,
-                          painter: GamePainter(),
-                        ),
-                        //players
-                        CustomPaint(
-                          size: globals.canvasSize,
-                          painter: CharacterPainter(),
-                        ),
-                      ],
+                          //terrain
+                          CustomPaint(
+                            isComplex: true,
+                            size: globals.canvasSize,
+                            painter: GamePainter(),
+                          ),
+                          //players
+                          CustomPaint(
+                            size: globals.canvasSize,
+                            painter: CharacterPainter(),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
