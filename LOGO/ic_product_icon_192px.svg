@@ -384,7 +384,7 @@
      inkscape:window-x="1358"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="layer1"
      inkscape:document-rotation="0" /><g
      inkscape:groupmode="layer"
      id="layer2"
@@ -1259,13 +1259,13 @@
          inkscape:label="bottom" /></g><ellipse
        style="fill:#f44336;fill-opacity:1;stroke-width:0.976854"
        id="path1441"
-       cx="64.017876"
+       cx="70.017876"
        cy="58.658684"
        rx="5.3500581"
        ry="5.3146944" /><ellipse
        style="fill:#2196f3;fill-opacity:1;stroke-width:0.98687"
        id="path1443"
-       cx="192.01843"
+       cx="186.01843"
        cy="58.674789"
        rx="5.2926331"
        ry="5.320868" /></g></svg>
