@@ -158,7 +158,7 @@ class _LocalMultiPageState extends State<HostMultiPage> {
       }
 
       //start game
-      print('game starting');
+      debugPrint('game starting');
       gameStarting = true;
       sendToEveryone(globals.packetGameStart, gameStarting.toString());
       UI.startNewPage(context, players,

@@ -65,7 +65,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
   }
 
   void dataReceived(DataPacket data) {
-    print('received $data');
+    debugPrint('received $data');
     switch (data.title) {
       case globals.packetPlayerNumber:
         playerNumber = int.parse(data.payload.toString()) + 2;
@@ -104,7 +104,7 @@ class _ClientMultiPageState extends State<ClientMultiPage> {
 
           //start game
           gameStarting = true;
-          print('game starting');
+          debugPrint('game starting');
           globals.thisPlayer = playerNumber - 1;
           UI.startNewPage(context, players,
               chosenMap: mapChosen, type: globals.GameType.multiClient);

@@ -300,7 +300,7 @@ class Projectile extends GameObject {
 
     //destroy now
     globals.projectiles.remove(this);
-    if (globals.projectiles.isNotEmpty) {
+    if (globals.projectiles.isEmpty) {
       globals.firing = false;
       globals.popup = false;
     }
@@ -389,9 +389,6 @@ class Projectile extends GameObject {
     if (globals.type.showPlayerUI(globals.currentPlayer)) {
       globals.thisPlayer = globals.currentPlayer;
     }
-    print('projectile $_player');
-    print(globals.thisPlayer);
-    print(globals.currentPlayer);
     //server get's final choice over who is playing
     if (globals.type == globals.GameType.multiHost) {
       globals.server.sendToEveryone(globals.packetPlayersTurn,
