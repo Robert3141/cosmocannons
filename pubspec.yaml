@@ -33,9 +33,7 @@ dev_dependencies:
 flutter_icons:
   android: "ic_launcher"
   ios: true
-  image_path: "./LOGO/ic_product_icon_192px_foregroundx.png"
-  #adaptive_icon_foreground: "./LOGO/ic_product_icon_192px_foregroundx.png"
-  #adaptive_icon_background: "#000000"
+  image_path: "LOGO/ic_product_icon_192px.png"
 
 # The following section is specific to Flutter.
 flutter:
