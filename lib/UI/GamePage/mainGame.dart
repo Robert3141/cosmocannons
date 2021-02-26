@@ -12,7 +12,6 @@ import 'package:cosmocannons/UI/GamePage/gamePaint.dart';
 import 'package:flutter/services.dart';
 import 'package:cosmocannons/UI/GamePage/gameObjects.dart';
 import 'package:cosmocannons/overrides.dart';
-import 'package:pedantic/pedantic.dart';
 
 class MainGamePage extends StatefulWidget {
   //constructor of class
@@ -127,7 +126,7 @@ class _MainGamePageState extends State<MainGamePage> {
       globals.popup = false;
 
       //play music
-      unawaited(UI.playMusic());
+      //unawaited(UI.playMusic());
 
       //rerender with new setup
       setState(() {
@@ -165,7 +164,7 @@ class _MainGamePageState extends State<MainGamePage> {
       }
 
       //play music
-      unawaited(UI.playMusic());
+      //unawaited(UI.playMusic());
 
       //cancel popup
       globals.popup = false;
@@ -213,7 +212,7 @@ class _MainGamePageState extends State<MainGamePage> {
 
   void quitNoSave() async {
     //stop music
-    await UI.stopMusic();
+    //await UI.stopMusic();
 
     //dispose LAN
     if (globals.type == globals.GameType.multiHost) globals.server.disposer();
@@ -267,7 +266,7 @@ class _MainGamePageState extends State<MainGamePage> {
       }
 
       //stop music
-      await UI.stopMusic();
+      //await UI.stopMusic();
 
       //disable pause menu
       globals.popup = false;
@@ -370,7 +369,7 @@ class _MainGamePageState extends State<MainGamePage> {
           globals.client.dispose();
         }
         //stop music
-        await UI.stopMusic();
+        //await UI.stopMusic();
 
         //disable pause menu
         globals.popup = false;
@@ -396,7 +395,7 @@ class _MainGamePageState extends State<MainGamePage> {
   @override
   void dispose() {
     //stop music
-    UI.stopMusic();
+    //UI.stopMusic();
 
     //dispose UI
     super.dispose();
@@ -534,12 +533,12 @@ class _MainGamePageState extends State<MainGamePage> {
                                         : Icons.music_off_rounded,
                                     onTap: () {
                                       setState(() {
-                                        globals.playMusic = !globals.playMusic;
+                                        /*globals.playMusic = !globals.playMusic;
                                         globals.playMusic
                                             ? UI.playMusic()
                                             : UI.stopMusic();
                                         UI.dataStore(globals.keyMusic,
-                                            globals.playMusic);
+                                            globals.playMusic);*/
                                       });
                                     },
                                     context: context,
