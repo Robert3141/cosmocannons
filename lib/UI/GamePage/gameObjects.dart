@@ -93,7 +93,19 @@ class Player extends GameObject {
   void moveLeft() => move(-globals.movementAmount);
 
   /// Positive is right
-  void move(double actualAmount) {
+  void move(double actualAmount, [bool fromPacket = false]) {
+    // LAN
+    if (globals.type == globals.GameType.multiHost) {
+      //server send to everyone
+      globals.server.sendToEveryone(globals.packetPlayerMove,
+          actualAmount.toString(), globals.players.length);
+    }
+    if (globals.type == globals.GameType.multiClient && !fromPacket) {
+      //client tell server if the event is not from packet (prevents feedback)
+      globals.client
+          .sendData(actualAmount.toString(), globals.packetPlayerMove);
+    }
+
     aX = aX + actualAmount;
 
     //players loop if they move out of zone

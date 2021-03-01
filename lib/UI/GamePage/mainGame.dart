@@ -377,6 +377,11 @@ class _MainGamePageState extends State<MainGamePage> {
         //quit without saving
         UI.startNewPage(context, [], newPage: LauncherPage());
         break;
+      case globals.packetPlayerMove:
+        //player movement
+        globals.players[globals.currentPlayer]
+            .move(double.parse(data.payload.toString()), true);
+        break;
       default:
         debugPrint('Error packet not known title');
         debugPrint('$data');
