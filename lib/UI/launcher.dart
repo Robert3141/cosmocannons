@@ -1,5 +1,6 @@
 import 'package:cosmocannons/UI/Multiplayer/multiplayer.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
+import 'package:cosmocannons/UI/introPage.dart';
 import 'package:cosmocannons/globals.dart' as globals;
 import 'package:cosmocannons/UI/Achievements/achievements.dart';
 import 'package:cosmocannons/UI/Settings/settings.dart';
@@ -84,6 +85,14 @@ class _LauncherPageState extends State<LauncherPage> {
           await UI.dataLoad(globals.keyRenderHeight, 'int') ??
               globals.terrainColumnsToRender;
     } finally {}
+
+    //show introPage
+    var showIntro = await UI.dataLoad(globals.keyIntro, 'bool') ?? false;
+    if (!showIntro) {
+      //update
+      await UI.dataStore(globals.keyIntro, true);
+      UI.startNewPage(context, [], newPage: IntroPage());
+    }
   }
 
   void showResumeGame() async {

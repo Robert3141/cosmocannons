@@ -20,12 +20,10 @@ dependencies:
   auto_size_text: ^2.1.0
   client_server_lan: ^3.0.1
   #assets_audio_player: ^2.0.13+8
-  #shared_preferences: ^0.5.12+2
   shared_preferences_moretypes: ^2.4.1
   draw_arrow: ^1.0.0
-  pedantic: ^1.9.2  
-  #shared_preferences_moretypes:
-  #  path: ../shared_preferences_moretypes
+  pedantic: ^1.9.2
+  intro_slider: ^2.3.4
 
 dev_dependencies:
   flutter_launcher_icons: "^0.8.0"

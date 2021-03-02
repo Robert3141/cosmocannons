@@ -74,6 +74,7 @@ const String keyMapNo = 'mapNo'; //int
 const String keyRenderHeight = 'graphics'; //int
 const String keyMusicIndex = 'musicIndex'; //int
 const String keyMusicSeek = 'musicSeek'; //int
+const String keyIntro = 'intro'; //bool
 
 const String packetPlayerNames = 'playerNames';
 const String packetPlayerNumber = 'playerNumber';
@@ -106,6 +107,11 @@ const List<String> winningPlayerIs = ['The winner is player ', ' from team '];
 const List<String> playerNames = [_host, _client, _client, _client];
 const List<String> mapNames = ['Hills', 'Desert', 'Moon'];
 const List<String> mapQualityString = ['Low', 'Medium', 'High'];
+const List<String> introTitles = ['Shooting'];
+const List<String> introBodies = [
+  'Drag from the player. A shooting guide of mini circles shows the direction of the shot.'
+];
+List<String> introImages = ['assets/images/player.png'];
 
 List<AssetImage> backgrounds = [
   AssetImage('assets/images/1.png'),
