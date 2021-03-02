@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 import 'package:cosmocannons/UI/GamePage/gameObjects.dart';
 import 'package:flutter/cupertino.dart';
@@ -103,12 +104,49 @@ class ShootPainter extends GlobalPainter {
     }
   }
 
+  List<Offset> calcPoints() {
+    var playerPos = globals.players[globals.currentPlayer].aPos;
+    var arrow = Offset(-(globals.arrowTop.dx - playerPos.dx),
+        globals.arrowTop.dy - playerPos.dy);
+    var angle = arrow.direction;
+    var intensity = arrow.distance * globals.shootSF;
+    var u = Offset(intensity * -cos(angle), intensity * sin(angle));
+    var a = Offset(globals.Ax, globals.Ay);
+    var shootProjections = List<Offset>.empty(growable: true);
+    var x = 0.0;
+    var y = 0.0;
+    var timeSec = 0.0;
+
+    //add positions
+    for (var i = 0; i < 10; i++) {
+      timeSec = i * 0.1;
+      x = playerPos.dx +
+          (u.dx * timeSec + 0.5 * a.dx * timeSec * timeSec) * globals.xSF;
+      y = playerPos.dy +
+          (u.dy * timeSec + 0.5 * a.dy * timeSec * timeSec) * globals.ySF;
+      shootProjections.add(Offset(x, y));
+    }
+    return shootProjections;
+  }
+
   void drawAimArrow(Canvas canvas, Player player, Offset endPos) {
-    var painter = Paint()
-      ..blendMode = BlendMode.plus
-      ..color = player.teamColour;
     if (globals.dragGhost) {
-      canvas.drawArrow(player.rPos, endPos.toRelative(), painter: painter);
+      if (!globals.useProjection) {
+        //use aim arrow
+        var painter = Paint()
+          ..blendMode = BlendMode.plus
+          ..color = player.teamColour;
+        canvas.drawArrow(player.rPos, endPos.toRelative(), painter: painter);
+      } else {
+        //draw projection
+        var painter = Paint()
+          ..blendMode = BlendMode.plus
+          ..color = Colors.white38;
+        var points = calcPoints();
+        for (var pos in points) {
+          canvas.drawCircle(pos.toRelative(), 3, painter);
+        }
+      }
     }
   }
 

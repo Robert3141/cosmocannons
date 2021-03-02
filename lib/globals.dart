@@ -230,6 +230,7 @@ bool popup = false;
 bool playMusic = false;
 bool playAudio = false;
 bool dragGhost = false;
+bool useProjection = true;
 bool firing = false;
 bool inGame = false;
 bool terrainUpdated = true;
