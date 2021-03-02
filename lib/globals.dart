@@ -107,11 +107,15 @@ const List<String> winningPlayerIs = ['The winner is player ', ' from team '];
 const List<String> playerNames = [_host, _client, _client, _client];
 const List<String> mapNames = ['Hills', 'Desert', 'Moon'];
 const List<String> mapQualityString = ['Low', 'Medium', 'High'];
-const List<String> introTitles = ['Shooting'];
+const List<String> introTitles = ['Intro - Shooting', 'Intro - Moving'];
 const List<String> introBodies = [
-  'Drag from the player. A shooting guide of mini circles shows the direction of the shot.'
+  'Drag from the player. A shooting guide of mini circles shows the direction of the shot.',
+  'Press the arrow keys to move. You can have one movement (left or right) each turn. This is done before shooting.'
 ];
-List<String> introImages = ['assets/images/player.png'];
+List<String> introImages = [
+  'assets/images/player.png',
+  'assets/images/left.png'
+];
 
 List<AssetImage> backgrounds = [
   AssetImage('assets/images/1.png'),
