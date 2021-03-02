@@ -22,6 +22,26 @@ class _IntroPageState extends State<IntroPage> {
   void backToLauncher() =>
       UI.startNewPage(context, [], newPage: LauncherPage());
 
+  Widget centerWidget(String imageAddress) {
+    switch (imageAddress) {
+      case 'arrows':
+        return Wrap(children: [
+          Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.green,
+            size: 200,
+          ),
+          Icon(
+            Icons.arrow_forward_ios_rounded,
+            color: Colors.green,
+            size: 200,
+          )
+        ]);
+      default:
+        return Image.asset(imageAddress);
+    }
+  }
+
   //build UI
   @override
   Widget build(BuildContext context) {
@@ -33,7 +53,8 @@ class _IntroPageState extends State<IntroPage> {
         (int i) => Slide(
             title: titles[i] ?? '',
             description: bodies[i] ?? '',
-            pathImage: images[i],
+            //pathImage: images[i],
+            centerWidget: centerWidget(images[i]),
             styleTitle: UI.defaultText(true),
             styleDescription: UI.defaultText(),
             backgroundColor: Colors.black));

@@ -112,10 +112,7 @@ const List<String> introBodies = [
   'Drag from the player. A shooting guide of mini circles shows the direction of the shot.',
   'Press the arrow keys to move. You can have one movement (left or right) each turn. This is done before shooting.'
 ];
-List<String> introImages = [
-  'assets/images/player.png',
-  'assets/images/left.png'
-];
+List<String> introImages = ['assets/images/player.png', 'arrows'];
 
 List<AssetImage> backgrounds = [
   AssetImage('assets/images/1.png'),
@@ -240,7 +237,7 @@ bool popup = false;
 bool playMusic = false;
 bool playAudio = false;
 bool dragGhost = false;
-bool useProjection = true;
+bool useProjection = false;
 bool firing = false;
 bool inGame = false;
 bool terrainUpdated = true;
