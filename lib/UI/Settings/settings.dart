@@ -1,3 +1,4 @@
+import 'package:cosmocannons/UI/introPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
@@ -81,6 +82,11 @@ class _SettingsPageState extends State<SettingsPage> {
                 Container(
                   height: UI.getPaddingSize(context),
                 ),
+                //TUTORIAL
+                UI.settingsButton(
+                    'Run Intro Guide',
+                    () => UI.startNewPage(context, [], newPage: IntroPage()),
+                    context),
               ],
             ),
           ),

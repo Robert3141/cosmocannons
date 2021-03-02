@@ -42,6 +42,9 @@ class _IntroPageState extends State<IntroPage> {
       slides: pages,
       onDonePress: backToLauncher,
       onSkipPress: backToLauncher,
+      styleNameDoneBtn: UI.defaultText(),
+      styleNamePrevBtn: UI.defaultText(),
+      styleNameSkipBtn: UI.defaultText(),
     );
     return page;
   }

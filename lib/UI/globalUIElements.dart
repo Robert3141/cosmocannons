@@ -195,6 +195,7 @@ class UI {
     String text = '',
     bool enabled = true,
     bool quaterButton = false,
+    bool halfHeight = false,
     IconData icon,
     Color buttonFill = globals.buttonFill,
   }) =>
@@ -207,7 +208,8 @@ class UI {
             : UI.getHalfWidth(context),
         height: UI.getHalfHeight(context) *
             globals.halfButton *
-            globals.heightMultiplier,
+            globals.heightMultiplier *
+            (halfHeight ? 0.5 : 1),
         enabled: enabled,
         buttonFill: buttonFill,
         icon: icon,
@@ -687,6 +689,17 @@ class UI {
               context: context,
               selectedBool: boolVar,
               selectedInt: _position(ints, intVar))
+        ],
+      );
+
+  static Row settingsButton(
+          String title, Function() onTap, BuildContext context) =>
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          UI.textWidget(title),
+          UI.halfButton(
+              text: title, onTap: onTap, context: context, halfHeight: true)
         ],
       );
 
