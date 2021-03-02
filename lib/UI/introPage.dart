@@ -29,16 +29,19 @@ class _IntroPageState extends State<IntroPage> {
           Icon(
             Icons.arrow_back_ios_rounded,
             color: Colors.green,
-            size: 200,
+            size: 150,
           ),
           Icon(
             Icons.arrow_forward_ios_rounded,
             color: Colors.green,
-            size: 200,
+            size: 150,
           )
         ]);
       default:
-        return Image.asset(imageAddress);
+        return Image.asset(
+          imageAddress,
+          height: 150,
+        );
     }
   }
 
@@ -48,14 +51,20 @@ class _IntroPageState extends State<IntroPage> {
     var titles = globals.introTitles;
     var bodies = globals.introBodies;
     var images = globals.introImages;
+    var titleTextStyle = TextStyle(
+      fontFamily: globals.fontName,
+      color: globals.textColor,
+      fontWeight: FontWeight.bold,
+      fontSize: 30,
+    );
     var pages = List<Slide>.generate(
         titles.length,
         (int i) => Slide(
             title: titles[i] ?? '',
             description: bodies[i] ?? '',
-            //pathImage: images[i],
+            marginTitle: EdgeInsets.zero,
             centerWidget: centerWidget(images[i]),
-            styleTitle: UI.defaultText(true),
+            styleTitle: titleTextStyle,
             styleDescription: UI.defaultText(),
             backgroundColor: Colors.black));
     ;

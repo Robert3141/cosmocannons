@@ -230,7 +230,7 @@ class _MainGamePageState extends State<MainGamePage> {
     try {
       //show saving popup
       setState(() {
-        UI.textDisplayPopup(context, globals.saving);
+        UI.textDisplayPopup(context, globals.saving, dismissable: false);
       });
 
       if (globals.players.length > 1) {
