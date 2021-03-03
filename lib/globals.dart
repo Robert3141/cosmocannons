@@ -107,12 +107,24 @@ const List<String> winningPlayerIs = ['The winner is player ', ' from team '];
 const List<String> playerNames = [_host, _client, _client, _client];
 const List<String> mapNames = ['Hills', 'Desert', 'Moon'];
 const List<String> mapQualityString = ['Low', 'Medium', 'High'];
-const List<String> introTitles = ['Intro - Shooting', 'Intro - Moving'];
-const List<String> introBodies = [
-  'Drag from the player. A shooting guide of mini circles shows the direction of the shot.',
-  'Press the arrow keys to move. You can have one movement (left or right) each turn. This is done before shooting.'
+const List<String> introTitles = [
+  'Intro - Moving',
+  'Intro - Shooting',
+  'Intro - Gameplay',
+  'Intro - Again'
 ];
-List<String> introImages = ['assets/images/player.png', 'arrows'];
+const List<String> introBodies = [
+  'Press the arrow keys (shown abovea) to move. You can have one movement (left or right) each turn. This is done before shooting.',
+  'Shooting is done by pulling back from the player (the space ship) with your finger/mouse. The further back you pull the further you shoot. Lift your finger off the screen (stop pressing the mouse) in order to fire',
+  'Gameplay consists of turn based games. Your turn is signified by the presence of the movement buttons. The buttons are the same colour as the current player.',
+  'This intro can be launched from settings. Enjoy!'
+];
+List<String> introImages = [
+  'arrows',
+  'assets/images/player.png',
+  'assets/images/help.jpg',
+  'settings'
+];
 
 List<AssetImage> backgrounds = [
   AssetImage('assets/images/1.png'),

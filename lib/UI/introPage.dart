@@ -23,24 +23,33 @@ class _IntroPageState extends State<IntroPage> {
       UI.startNewPage(context, [], newPage: LauncherPage());
 
   Widget centerWidget(String imageAddress) {
+    var imageHeight = UI.screenHeight(context) / 3;
     switch (imageAddress) {
       case 'arrows':
         return Wrap(children: [
           Icon(
             Icons.arrow_back_ios_rounded,
             color: Colors.green,
-            size: 150,
+            size: imageHeight,
           ),
           Icon(
             Icons.arrow_forward_ios_rounded,
             color: Colors.green,
-            size: 150,
+            size: imageHeight,
           )
+        ]);
+      case 'settings':
+        return Wrap(children: [
+          Icon(
+            Icons.settings,
+            color: Colors.green,
+            size: imageHeight,
+          ),
         ]);
       default:
         return Image.asset(
           imageAddress,
-          height: 150,
+          height: imageHeight,
         );
     }
   }
