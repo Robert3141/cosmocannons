@@ -440,9 +440,16 @@ class Projectile extends GameObject {
     updateUI();
   }
 
-  void _checkWinner(BuildContext context) {
+  void _checkWinner(BuildContext context) async {
     if (globals.players.isEmpty) {
       //Players wiped each other out
+      await UI.dataStore(globals.keySavedGame, false);
+      await UI.dataInputPopup(context, [null],
+          notInput: true,
+          data: ['You wiped each other out!'], onFinish: (bool b) {
+        UI.startNewPage(context, [], newPage: LauncherPage());
+      });
+      updateUI();
     } else {
       //check amount of teams in play
       var teamsLeft = List<int>.empty(growable: true);
@@ -458,7 +465,8 @@ class Projectile extends GameObject {
 
       if (teamsLeft.length == 1) {
         // last team wins
-        UI.dataInputPopup(context, [null],
+        await UI.dataStore(globals.keySavedGame, false);
+        await UI.dataInputPopup(context, [null],
             notInput: true,
             data: ['Team ${globals.defaultTeamNames[teamsLeft[0]]} has won!'],
             onFinish: (bool b) {
