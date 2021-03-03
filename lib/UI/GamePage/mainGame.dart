@@ -151,7 +151,7 @@ class _MainGamePageState extends State<MainGamePage> {
       globals.currentPlayer = 0;
       globals.thisPlayer = globals.type.playerNumber;
       globals.mapNo = widget.mapNo;
-      globals.currentMap = globals.terrainMaps[widget.mapNo];
+      globals.currentMap = globals.terrainMaps[widget.mapNo].toList();
 
       //not start anymore
       startOfGame = false;

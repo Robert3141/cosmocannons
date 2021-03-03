@@ -323,8 +323,7 @@ class GamePainter extends GlobalPainter {
     var gameMap = globals.currentMap;
 
     //render terrain
-    globals.terrainUpdated = false;
-    if (globals.firstRender) {
+    if (globals.firstRender || globals.terrainUpdated) {
       generateTerrain(gameMap, canvas, globals.mapNo);
     } else {
       //use dirty canvas:
@@ -342,6 +341,7 @@ class GamePainter extends GlobalPainter {
 
     //place in characters
     globals.firstRender = false;
+    globals.terrainUpdated = false;
   }
 
   @override

@@ -307,6 +307,7 @@ class Projectile extends GameObject {
     impactPos = await _animateProjectile();
 
     _giveDamage(impactPos);
+    _damageTerrain(impactPos);
     _nextPlayer();
     _checkWinner(playerObj._context);
 
@@ -437,6 +438,53 @@ class Projectile extends GameObject {
         }
       }
     }
+    updateUI();
+  }
+
+  void _damageTerrain(Offset impactPos) {
+    //find nearest terrain
+    var currentBar = (impactPos.dx * globals.currentMap.length).truncate();
+    if (currentBar < 0) {
+      currentBar = 0;
+    }
+    if (currentBar >= globals.currentMap.length) {
+      currentBar = globals.currentMap.length - 1;
+    }
+
+    //decrease terrain and surrounding terrain
+    var mainDecrease = 0.04;
+    var craterSize = 4;
+    globals.currentMap[currentBar] =
+        globals.currentMap[currentBar] >= mainDecrease
+            ? globals.currentMap[currentBar] - mainDecrease
+            : 0;
+    //create sinusoidal terrain deformation (i.e circle shape)
+    for (var i = 0; i < craterSize; i++) {
+      var currentSize = mainDecrease * cos(((i + 1) * pi) / (craterSize * 2));
+      if (currentBar + i > 0) {
+        print(globals.currentMap[currentBar - 1 - i] - currentSize);
+        globals.currentMap[currentBar - 1 - i] =
+            globals.currentMap[currentBar - 1 - i] >= currentSize
+                ? globals.currentMap[currentBar - 1 - i] - currentSize
+                : 0;
+      }
+      if (currentBar + 1 + i < globals.currentMap.length) {
+        globals.currentMap[currentBar + 1 + i] =
+            globals.currentMap[currentBar + 1 + i] >= currentSize
+                ? globals.currentMap[currentBar + 1 + i] - currentSize
+                : 0;
+      }
+    }
+
+    //update player positions so they are not floating
+    for (var i = 0; i < globals.players.length; i++) {
+      globals.players[i].aY = GamePainter()
+              .calcNearestHeight(globals.currentMap, globals.players[i].aX) +
+          globals.playerRadiusY;
+    }
+
+    //update UI
+    globals.terrainUpdated = true;
     updateUI();
   }
 

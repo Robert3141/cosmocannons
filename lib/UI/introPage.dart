@@ -57,17 +57,17 @@ class _IntroPageState extends State<IntroPage> {
       fontWeight: FontWeight.bold,
       fontSize: 30,
     );
+    var windowSize = UI.screenHeight(context) > 500;
     var pages = List<Slide>.generate(
         titles.length,
         (int i) => Slide(
             title: titles[i] ?? '',
             description: bodies[i] ?? '',
-            marginTitle: EdgeInsets.zero,
+            marginTitle: windowSize ? EdgeInsets.all(20) : EdgeInsets.zero,
             centerWidget: centerWidget(images[i]),
             styleTitle: titleTextStyle,
             styleDescription: UI.defaultText(),
             backgroundColor: Colors.black));
-    ;
     var page = IntroSlider(
       slides: pages,
       onDonePress: backToLauncher,

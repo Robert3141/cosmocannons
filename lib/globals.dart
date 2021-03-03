@@ -249,7 +249,7 @@ int musicSeek = 0;
 int currentPlayer;
 int thisPlayer;
 
-List<double> currentMap;
+List<double> currentMap = terrainMaps[0];
 
 List<List<Offset>> terrainCacheLocation;
 
