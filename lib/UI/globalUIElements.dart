@@ -769,4 +769,19 @@ class UI {
       globals.musicPlayer = AssetsAudioPlayer();
     }
   }
+
+  static Future<void> addAchievement(int no) async {
+    //load
+    List<bool> achieved =
+        await UI.dataLoad(globals.keyAchievements, 'List<bool>') ?? [false];
+
+    //populate
+    while (achieved.length < no + 1) {
+      achieved.add(false);
+    }
+    achieved[no] = true;
+
+    //save
+    await UI.dataStore(globals.keyAchievements, achieved);
+  }
 }

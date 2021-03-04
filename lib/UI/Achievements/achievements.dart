@@ -15,12 +15,19 @@ class AchievementsPage extends StatefulWidget {
 
 class _AchievementsPageState extends State<AchievementsPage> {
   //locals
+  bool firstBuild = true;
+  List<bool> achievements;
 
   //functions
+  void getAchievements() async {
+    achievements =
+        await UI.dataLoad(globals.keyAchievements, 'List<bool>') ?? [false];
+  }
 
   //build UI
   @override
   Widget build(BuildContext context) {
+    if (firstBuild) getAchievements();
     var page = UI.scaffoldWithBackground(children: [
       UI.topTitle(
           titleText: globals.achievements,
@@ -40,7 +47,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
                     UI.achievementsEntry(
                         globals.achievementTitles[i],
                         globals.achievementDescription[i],
-                        i % 2 == 0,
+                        achievements.length > i ? achievements[i] : false,
                         context)),
           )
         ],

@@ -15,10 +15,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  //locals
-
-  //functions
-
   //build UI
   @override
   Widget build(BuildContext context) {

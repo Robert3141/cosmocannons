@@ -75,6 +75,7 @@ const String keyRenderHeight = 'graphics'; //int
 const String keyMusicIndex = 'musicIndex'; //int
 const String keyMusicSeek = 'musicSeek'; //int
 const String keyIntro = 'intro'; //bool
+const String keyAchievements = 'achieve'; //List<bool>
 
 const String packetPlayerNames = 'playerNames';
 const String packetPlayerNumber = 'playerNumber';
@@ -130,8 +131,8 @@ const List<String> introImages = [
   'settings'
 ];
 const List<String> achievementTitles = [
-  'First Shot',
-  'Champion',
+  'First Shot', //added
+  'Champion', //in progress
   'Maximum Health'
 ];
 const List<String> achievementDescription = [

@@ -290,7 +290,8 @@ class Projectile extends GameObject {
         intensity * -cos(angleRadians), intensity * sin(angleRadians));
   }
 
-  void _projectileRunner(Offset velocity, int player, Function updater) async {
+  void _projectileRunner(Offset velocity, int player, Function updater,
+      {firstShot = false}) async {
     //set stuff up
     updateUI = updater;
     _player = player;
@@ -306,7 +307,7 @@ class Projectile extends GameObject {
 
     impactPos = await _animateProjectile();
 
-    _giveDamage(impactPos);
+    _giveDamage(impactPos, firstShot);
     _damageTerrain(impactPos);
     _nextPlayer();
     _checkWinner(playerObj._context);
@@ -409,7 +410,7 @@ class Projectile extends GameObject {
     }
   }
 
-  void _giveDamage(Offset position) {
+  void _giveDamage(Offset position, bool firstShot) async {
     //locals
 
     //check all players
@@ -422,6 +423,8 @@ class Projectile extends GameObject {
           //player in blast radius administer damage
           globals.players[i].health -= globals.blastDamage;
           globals.players[i].updated = true;
+
+          if (firstShot) await UI.addAchievement(0);
 
           //remove dead players
           if (globals.players[i].health <= 0) {
@@ -512,6 +515,12 @@ class Projectile extends GameObject {
 
       if (teamsLeft.length == 1) {
         // last team wins
+        if (teamsLeft[0] == 0 &&
+            globals.type == globals.GameType.singlePlayer) {
+          await UI.addAchievement(1);
+        }
+
+        //unsave last game
         await UI.dataStore(globals.keySavedGame, false);
         await UI.dataInputPopup(context, [null],
             notInput: true,
