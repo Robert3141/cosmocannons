@@ -136,7 +136,7 @@ class _LauncherPageState extends State<LauncherPage> {
   @override
   Widget build(BuildContext context) {
     firstBuilder();
-    //UI.stopMusic();
+    UI.stopMusic();
     var page = UI.scaffoldWithBackground(context: context, children: [
       UI.topTitle(titleText: globals.gameTitle, context: context, root: true),
       Row(

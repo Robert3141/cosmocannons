@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:math';
 import 'package:cosmocannons/UI/GamePage/mainGame.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cosmocannons/globals.dart' as globals;
@@ -8,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:shared_preferences_moretypes/shared_preferences_moretypes.dart';
-//import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 
 class UI {
   // simplified methods to get the screen details
@@ -703,7 +705,7 @@ class UI {
         ],
       );
 
-  /*static final bool _supportedMusicPlatform = kIsWeb; //|| Platform.isAndroid;
+  static final bool _supportedMusicPlatform = kIsWeb || Platform.isAndroid;
   // TODO: get music working again
   static Future playMusic() async {
     if (_supportedMusicPlatform) {
@@ -739,5 +741,5 @@ class UI {
       await globals.musicPlayer.stop();
       globals.musicPlayer = AssetsAudioPlayer();
     }
-  }*/
+  }
 }

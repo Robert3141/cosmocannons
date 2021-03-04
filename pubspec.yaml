@@ -19,7 +19,10 @@ dependencies:
   page_transition: ^1.1.5
   auto_size_text: ^2.1.0
   client_server_lan: ^3.0.1
-  #assets_audio_player: ^2.0.13+8
+  assets_audio_player:
+    git:
+      url: https://github.com/offline-first/Flutter-AssetsAudioPlayer.git
+      ref: android_api_30
   shared_preferences_moretypes: ^2.4.1
   draw_arrow: ^1.0.0
   pedantic: ^1.9.2

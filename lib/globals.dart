@@ -9,7 +9,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/mapData.dart' as maps;
 import 'package:cosmocannons/UI/globalUIElements.dart';
-//import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 
 /// CONSTANTS
 
@@ -139,14 +139,14 @@ List<AssetImage> backgrounds = [
   AssetImage('assets/images/moon.png'),
 ];
 
-/*List<Audio> songs = [
+List<Audio> songs = [
   Audio('assets/music/1.ogg'),
   Audio('assets/music/2.ogg'),
   Audio('assets/music/3.ogg'),
   Audio('assets/music/4.ogg'),
   Audio('assets/music/5.ogg'),
   Audio('assets/music/6.ogg')
-];*/
+];
 
 const double smallWidth = 0.2;
 const double smallHeight = 0.2;
@@ -257,7 +257,7 @@ bool terrainUpdated = true;
 int mapNo;
 int terrainColumnsToRender = kIsWeb ? mapQualitySizes[0] : mapQualitySizes[1];
 int musicSeek = 0;
-//int musicTrack = Random().nextInt(songs.length - 1);
+int musicTrack = Random().nextInt(songs.length - 1);
 int currentPlayer;
 int thisPlayer;
 
@@ -289,7 +289,7 @@ ScrollController gameScroller = ScrollController();
 
 FocusNode gameInputs = FocusNode();
 
-//AssetsAudioPlayer musicPlayer = AssetsAudioPlayer();
+AssetsAudioPlayer musicPlayer = AssetsAudioPlayer();
 
 final TextPainter defaultTextPaint = TextPainter(
     text: TextSpan(style: UI.defaultText()),
