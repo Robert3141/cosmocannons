@@ -462,7 +462,6 @@ class Projectile extends GameObject {
     for (var i = 0; i < craterSize; i++) {
       var currentSize = mainDecrease * cos(((i + 1) * pi) / (craterSize * 2));
       if (currentBar + i > 0) {
-        print(globals.currentMap[currentBar - 1 - i] - currentSize);
         globals.currentMap[currentBar - 1 - i] =
             globals.currentMap[currentBar - 1 - i] >= currentSize
                 ? globals.currentMap[currentBar - 1 - i] - currentSize
