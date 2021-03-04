@@ -5,7 +5,7 @@ description: A space shooter game.
 # pub.dev using `pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.1+2
+version: 1.0.2+3
 
 environment:
   #sdk: '>=2.12.0-0 <3.0.0'
@@ -21,14 +21,14 @@ dependencies:
   client_server_lan: ^3.0.1
   assets_audio_player:
     git:
-      url: https://github.com/Robert3141/Flutter-AssetsAudioPlayer.git
-      ref: master
-  shared_preferences_moretypes: ^3.0.0
+      url: https://github.com/offline-first/Flutter-AssetsAudioPlayer.git
+      ref: android_api_30
+  shared_preferences_moretypes: ^2.4.2
   draw_arrow: ^1.0.0
   pedantic: ^1.9.2
   intro_slider: ^2.3.4
   toast: ^0.1.5
-  shared_preferences: ^2.0.3
+  shared_preferences: ^0.5.12+4
 
 dev_dependencies:
   flutter_launcher_icons: "^0.8.0"
