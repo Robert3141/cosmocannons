@@ -176,7 +176,7 @@ class _LauncherPageState extends State<LauncherPage> {
           UI.smallButton(
               text: globals.achievements,
               onTap: () => achievements(),
-              enabled: false,
+              //enabled: false,
               context: context),
         ],
       ),

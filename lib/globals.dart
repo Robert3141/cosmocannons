@@ -90,15 +90,19 @@ const String packetPlayerDispose = 'playerDispose';
 const String packetPlayerMove = 'playerMove';
 
 const String helpMultiplayerHome =
-    'On local device is currently the only supported. Multiplayer on the same Wifi Network is coming soon...';
+    'On local device involves passing to the next player after every shot. \nMultiplayer on the same Wifi is split into Host and Client. One person is host and the rest connect to them as client. This involves everybody having the app downloaded.';
 const String helpMultiplayerLocal =
     'Betweeen 2 and 4 players can be selected and the choice of map can be chosen.\nThe Hills map is one large hill in the centre.\nThe Desert map is a flat landscape good for practicing shooting and learning the game.\nThe moon is a funky map with a few different sized hills';
-const String helpMultiplayerHost = '';
-const String helpMultiplayerClient = '';
-const String helpSinglePlayer = '';
+const String helpMultiplayerHost =
+    'First a name needs to be chosen. Then the server can be started and you can scan for clients. You can change your team colour by pressing on the table in your row. The map can also be changed.';
+const String helpMultiplayerClient =
+    'First a name needs to be chosen. Then the client can be started and you have to wait for the host to press scan for clients. You can change your team colour by pressing on the table in your row.';
+const String helpSinglePlayer =
+    'The amoount of players (you and the AI) can be chosen. The map can also be changed (a preview of the map is shown as the background).';
 const String helpSettings =
     'The toggles on the right allow different settings to be changed.';
-const String helpAchievements = '';
+const String helpAchievements =
+    'The achievements can be earned by doing certain things within the game. Click on an achievement to show how it can be gained.';
 
 const List<String> defaultTeamNames = ['Red', 'Green', 'Blue', 'Yellow'];
 const List<String> playerAmounts = ['2', '3', '4'];
