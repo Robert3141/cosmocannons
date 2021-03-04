@@ -772,8 +772,10 @@ class UI {
 
   static Future<void> addAchievement(int no) async {
     //load
-    List<bool> achieved =
+    List<dynamic> data =
         await UI.dataLoad(globals.keyAchievements, 'List<bool>') ?? [false];
+    var achieved =
+        List<bool>.generate(data.length, (i) => data[i].toString() == 'true');
 
     //populate
     while (achieved.length < no + 1) {

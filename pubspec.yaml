@@ -21,12 +21,13 @@ dependencies:
   client_server_lan: ^3.0.1
   assets_audio_player:
     git:
-      url: https://github.com/offline-first/Flutter-AssetsAudioPlayer.git
-      ref: android_api_30
-  shared_preferences_moretypes: ^2.4.1
+      url: https://github.com/Robert3141/Flutter-AssetsAudioPlayer.git
+      ref: master
+  shared_preferences_moretypes: ^3.0.0
   draw_arrow: ^1.0.0
   pedantic: ^1.9.2
   intro_slider: ^2.3.4
+  path_provider: ^2.0.1
 
 dev_dependencies:
   flutter_launcher_icons: "^0.8.0"

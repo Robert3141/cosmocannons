@@ -515,9 +515,15 @@ class Projectile extends GameObject {
 
       if (teamsLeft.length == 1) {
         // last team wins
+        // achievement: Champion
         if (teamsLeft[0] == 0 &&
             globals.type == globals.GameType.singlePlayer) {
           await UI.addAchievement(1);
+        }
+        // achievement: Maximum Health
+        if (globals.players[0].health == globals.defaultPlayerHealth &&
+            globals.type == globals.GameType.singlePlayer) {
+          await UI.addAchievement(2);
         }
 
         //unsave last game

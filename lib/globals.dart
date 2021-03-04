@@ -131,9 +131,9 @@ const List<String> introImages = [
   'settings'
 ];
 const List<String> achievementTitles = [
-  'First Shot', //added
-  'Champion', //in progress
-  'Maximum Health'
+  'First Shot', //in progress
+  'Champion', //added
+  'Maximum Health' //added
 ];
 const List<String> achievementDescription = [
   'Hit an opponent in the first shot of the game.',

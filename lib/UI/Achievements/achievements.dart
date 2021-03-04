@@ -16,12 +16,16 @@ class AchievementsPage extends StatefulWidget {
 class _AchievementsPageState extends State<AchievementsPage> {
   //locals
   bool firstBuild = true;
-  List<bool> achievements;
+  List<bool> achievements = [false];
 
   //functions
   void getAchievements() async {
     achievements =
         await UI.dataLoad(globals.keyAchievements, 'List<bool>') ?? [false];
+    print(achievements);
+    setState(() {
+      firstBuild = false;
+    });
   }
 
   //build UI
