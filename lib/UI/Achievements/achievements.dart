@@ -26,7 +26,25 @@ class _AchievementsPageState extends State<AchievementsPage> {
           titleText: globals.achievements,
           context: context,
           helpText: globals.helpAchievements),
-      Row(),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Container(
+            height: globals.halfButton *
+                globals.heightMultiplier *
+                UI.screenHeight(context),
+            width: UI.screenWidth(context) - 2 * UI.getPaddingSize(context),
+            child: ListView.builder(
+                itemCount: globals.achievementTitles.length,
+                itemBuilder: (BuildContext context, int i) =>
+                    UI.achievementsEntry(
+                        globals.achievementTitles[i],
+                        globals.achievementDescription[i],
+                        i % 2 == 0,
+                        context)),
+          )
+        ],
+      ),
     ], context: context, backgroundNo: 2);
 
     return page;

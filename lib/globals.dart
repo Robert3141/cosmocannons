@@ -118,16 +118,26 @@ const List<String> introTitles = [
   'Intro - Again'
 ];
 const List<String> introBodies = [
-  'Press the arrow keys (shown abovea) to move. You can have one movement (left or right) each turn. This is done before shooting.',
+  'Press the arrow keys (shown above) to move. You can have one movement (left or right) each turn. This is done before shooting.',
   'Shooting is done by pulling back from the player (the space ship) with your finger/mouse. The further back you pull the further you shoot. Lift your finger off the screen (stop pressing the mouse) in order to fire',
   'Gameplay consists of turn based games. Your turn is signified by the presence of the movement buttons. The buttons are the same colour as the current player.',
   'This intro can be launched from settings. Enjoy!'
 ];
-List<String> introImages = [
+const List<String> introImages = [
   'arrows',
   'assets/images/player.png',
   'assets/images/help.jpg',
   'settings'
+];
+const List<String> achievementTitles = [
+  'First Shot',
+  'Champion',
+  'Maximum Health'
+];
+const List<String> achievementDescription = [
+  'Hit an opponent in the first shot of the game.',
+  'Win your first singleplayer game.',
+  'Win a singleplayer game without taking any damage.'
 ];
 
 List<AssetImage> backgrounds = [

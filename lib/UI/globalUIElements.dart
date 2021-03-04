@@ -19,10 +19,12 @@ class UI {
   static double screenHeight(context) => screenSize(context).height;
 
   // The standard text style used throughou the app
-  static TextStyle defaultText([bool titleText = false, bool enabled = true]) =>
+  static TextStyle defaultText(
+          [bool titleText = false, bool enabled = true, Color fontColor]) =>
       TextStyle(
         fontFamily: globals.fontName,
-        color: enabled ? globals.textColor : globals.disabledText,
+        color:
+            fontColor ?? (enabled ? globals.textColor : globals.disabledText),
         fontWeight: FontWeight.bold,
         fontSize: titleText ? globals.largeTextSize : globals.smallTextSize,
       );
@@ -561,11 +563,13 @@ class UI {
   }
 
   static Widget textWidget(String text,
-          {TextAlign spacing = TextAlign.center, double fontSize = 1}) =>
+          {TextAlign spacing = TextAlign.center,
+          double fontSize = 1,
+          Color fontColor}) =>
       AutoSizeText(
         text,
         textAlign: spacing,
-        style: defaultText(),
+        style: defaultText(false, true, fontColor),
         maxFontSize: globals.smallTextSize,
         minFontSize: 6,
         maxLines: 1,
@@ -704,6 +708,29 @@ class UI {
               text: title, onTap: onTap, context: context, halfHeight: true)
         ],
       );
+
+  static Widget achievementsEntry(
+      String title, String desc, bool completed, BuildContext context) {
+    return ExpansionTile(
+      title: Container(
+        height: globals.iconSize * 2,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            UI.textWidget(title),
+            Icon(
+              completed ? Icons.check_circle : Icons.dangerous,
+              color: Colors.white,
+              size: globals.iconSize,
+            )
+          ],
+        ),
+      ),
+      expandedAlignment: Alignment.bottomLeft,
+      childrenPadding: EdgeInsets.all(UI.getPaddingSize(context)),
+      children: [UI.textWidget(desc, fontColor: Colors.white54)],
+    );
+  }
 
   static final bool _supportedMusicPlatform = kIsWeb || Platform.isAndroid;
   // TODO: get music working again
