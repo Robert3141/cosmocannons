@@ -11,6 +11,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:shared_preferences_moretypes/shared_preferences_moretypes.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:toast/toast.dart';
 
 class UI {
   // simplified methods to get the screen details
@@ -733,7 +734,6 @@ class UI {
   }
 
   static final bool _supportedMusicPlatform = kIsWeb || Platform.isAndroid;
-  // TODO: get music working again
   static Future playMusic() async {
     if (_supportedMusicPlatform) {
       globals.playMusic = await UI.dataLoad(globals.keyMusic, 'bool') ?? false;
@@ -770,7 +770,7 @@ class UI {
     }
   }
 
-  static Future<void> addAchievement(int no) async {
+  static Future<void> addAchievement(int no, BuildContext context) async {
     //load
     List<dynamic> data =
         await UI.dataLoad(globals.keyAchievements, 'List<bool>') ?? [false];
@@ -780,6 +780,13 @@ class UI {
     //populate
     while (achieved.length < no + 1) {
       achieved.add(false);
+    }
+    if (!achieved[no]) {
+      //toast
+      Toast.show('New Achievement: ${globals.achievementTitles[no]}', context,
+          backgroundColor: globals.buttonFill,
+          textColor: globals.textColor,
+          duration: 5);
     }
     achieved[no] = true;
 

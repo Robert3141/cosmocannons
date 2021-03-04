@@ -307,7 +307,7 @@ class Projectile extends GameObject {
 
     impactPos = await _animateProjectile();
 
-    _giveDamage(impactPos, firstShot);
+    _giveDamage(impactPos, firstShot, playerObj._context);
     _damageTerrain(impactPos);
     _nextPlayer();
     _checkWinner(playerObj._context);
@@ -410,7 +410,8 @@ class Projectile extends GameObject {
     }
   }
 
-  void _giveDamage(Offset position, bool firstShot) async {
+  void _giveDamage(
+      Offset position, bool firstShot, BuildContext context) async {
     //locals
 
     //check all players
@@ -424,7 +425,7 @@ class Projectile extends GameObject {
           globals.players[i].health -= globals.blastDamage;
           globals.players[i].updated = true;
 
-          if (firstShot) await UI.addAchievement(0);
+          if (firstShot) await UI.addAchievement(0, context);
 
           //remove dead players
           if (globals.players[i].health <= 0) {
@@ -518,12 +519,12 @@ class Projectile extends GameObject {
         // achievement: Champion
         if (teamsLeft[0] == 0 &&
             globals.type == globals.GameType.singlePlayer) {
-          await UI.addAchievement(1);
+          await UI.addAchievement(1, context);
         }
         // achievement: Maximum Health
         if (globals.players[0].health == globals.defaultPlayerHealth &&
             globals.type == globals.GameType.singlePlayer) {
-          await UI.addAchievement(2);
+          await UI.addAchievement(2, context);
         }
 
         //unsave last game

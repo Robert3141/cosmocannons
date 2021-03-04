@@ -1,8 +1,10 @@
 import 'package:cosmocannons/UI/introPage.dart';
+import 'package:cosmocannons/UI/launcher.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/UI/globalUIElements.dart';
 import 'package:cosmocannons/globals.dart' as globals;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
   //constructor of class
@@ -83,6 +85,25 @@ class _SettingsPageState extends State<SettingsPage> {
                     'Run Intro Guide',
                     () => UI.startNewPage(context, [], newPage: IntroPage()),
                     context),
+                Container(
+                  height: UI.getPaddingSize(context),
+                ),
+                //REST
+                UI.settingsButton(
+                    'Reset Entire App',
+                    () => UI.dataInputPopup(context, [null],
+                            notInput: true,
+                            data: [
+                              'Are you sure you want to reset the entire app. All the achievements and settings will be reset.'
+                            ], onFinish: (bool b) async {
+                          if (b) {
+                            var prefs = await SharedPreferences.getInstance();
+                            await prefs.clear();
+                            UI.startNewPage(context, [],
+                                newPage: LauncherPage());
+                          }
+                        }),
+                    context)
               ],
             ),
           ),

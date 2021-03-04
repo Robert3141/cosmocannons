@@ -20,9 +20,11 @@ class _AchievementsPageState extends State<AchievementsPage> {
 
   //functions
   void getAchievements() async {
-    achievements =
+    //load
+    List<dynamic> data =
         await UI.dataLoad(globals.keyAchievements, 'List<bool>') ?? [false];
-    print(achievements);
+    achievements =
+        List<bool>.generate(data.length, (i) => data[i].toString() == 'true');
     setState(() {
       firstBuild = false;
     });
