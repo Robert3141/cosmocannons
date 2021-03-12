@@ -118,8 +118,8 @@ class ShootPainter extends GlobalPainter {
     var timeSec = 0.0;
 
     //add positions
-    for (var i = 0; i < 10; i++) {
-      timeSec = i * 0.1;
+    for (var i = 0; i < globals.projectionParticles; i++) {
+      timeSec = i * globals.projectionLength;
       x = playerPos.dx +
           (u.dx * timeSec + 0.5 * a.dx * timeSec * timeSec) * globals.xSF;
       y = playerPos.dy +
