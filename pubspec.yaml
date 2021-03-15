@@ -29,6 +29,7 @@ dependencies:
   intro_slider: ^2.3.4
   toast: ^0.1.5
   shared_preferences: ^0.5.12+4
+  particles_flutter: ^0.1.2
 
 dev_dependencies:
   flutter_launcher_icons: "^0.8.0"

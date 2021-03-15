@@ -270,6 +270,7 @@ bool useProjection = true;
 bool firing = false;
 bool inGame = false;
 bool terrainUpdated = true;
+bool useExplosions = true;
 
 int mapNo;
 int terrainColumnsToRender = kIsWeb ? mapQualitySizes[0] : mapQualitySizes[1];
@@ -277,6 +278,7 @@ int musicSeek = 0;
 int musicTrack = Random().nextInt(songs.length - 1);
 int currentPlayer;
 int thisPlayer;
+Color explosionColor;
 
 List<double> currentMap = terrainMaps[0];
 
@@ -284,7 +286,10 @@ List<List<Offset>> terrainCacheLocation;
 
 List<Color> terrainCacheColour;
 
+List<Offset> explosionParticles = List<Offset>.empty(growable: true);
+
 Offset arrowTop = Offset.zero;
+Offset explosionLocation = Offset.zero;
 
 Size canvasSize;
 

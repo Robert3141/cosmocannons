@@ -24,16 +24,19 @@ class CustomGestureRecognizer extends OneSequenceGestureRecognizer {
   @override
   void addPointer(PointerDownEvent event) {
     //check in position
-    if (event.localPosition.checkInRadius(
-            globals.players[globals.currentPlayer].rPos,
-            globals.playerRadius) &&
-        !globals.popup &&
+    // improve performance of drag drop
+    if (!globals.popup &&
         !globals.firing &&
         globals.currentPlayer == globals.thisPlayer) {
-      //in player position
-      _onPanStart(event.localPosition);
-      startTrackingPointer(event.pointer);
-      resolve(GestureDisposition.accepted);
+      if (event.localPosition.checkInRadius(
+          globals.players[globals.currentPlayer].rPos, globals.playerRadius)) {
+        //in player position
+        _onPanStart(event.localPosition);
+        startTrackingPointer(event.pointer);
+        resolve(GestureDisposition.accepted);
+      } else {
+        stopTrackingPointer(event.pointer);
+      }
     } else {
       stopTrackingPointer(event.pointer);
     }

@@ -150,19 +150,39 @@ class ShootPainter extends GlobalPainter {
     }
   }
 
+  void drawExplosion(Canvas canvas) {
+    //var p = globals.players[globals.currentPlayer];
+    var painter = Paint()
+      ..blendMode = BlendMode.plus
+      ..color = globals.explosionColor;
+    var delete = false;
+    var distance = Offset.zero;
+    for (var i = 0; i < globals.explosionParticles.length; i++) {
+      //draw
+      canvas.drawCircle(globals.explosionParticles[i], 1, painter);
+      //move further away or delete
+      distance = globals.explosionLocation - globals.explosionParticles[i];
+      delete |= distance.distanceSquared > 3600;
+      if (!delete) {
+        globals.explosionParticles[i] -=
+            Offset.fromDirection(distance.direction) * distance.distanceSquared;
+      }
+    }
+    if (delete) {
+      globals.explosionParticles = List<Offset>.empty(growable: true);
+    }
+    print(globals.explosionParticles);
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
     super.paint(canvas, size);
     arrowTop = globals.arrowTop;
-    if (globals.projectiles != null) {
-      if (globals.projectiles.isNotEmpty) {
-        canvas.drawCircle(
-            globals.projectiles[0].rPos, 3, Paint()..color = Colors.pink);
-      }
-    }
 
+    //draw stuff
     spawnProjectile(canvas);
     drawAimArrow(canvas, globals.players[globals.currentPlayer], arrowTop);
+    drawExplosion(canvas);
   }
 
   @override
@@ -175,6 +195,8 @@ class ShootPainter extends GlobalPainter {
     }
     //check arrow
     updated |= arrowTop != globals.arrowTop;
+    //check explosion
+    updated |= globals.explosionParticles.isNotEmpty;
     return updated;
   }
 }
