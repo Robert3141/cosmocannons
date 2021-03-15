@@ -460,8 +460,8 @@ class _MainGamePageState extends State<MainGamePage> {
                         children: [
                           //projectiles
                           CustomPaint(
-                            willChange:
-                                globals.firing || (globals.dragGhost ?? false),
+                            willChange: (globals.firing ?? false) ||
+                                (globals.dragGhost ?? false),
                             size: globals.canvasSize,
                             painter: ShootPainter(),
                             child: Text(updaterText),

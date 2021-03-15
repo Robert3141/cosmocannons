@@ -216,6 +216,7 @@ const int maxFlightLength = 20;
 const int checkDoneMs = 100;
 const int defaultMap = 0;
 const int projectionParticles = 10;
+const int explosionMax = 20;
 
 const List<int> playerTeams = [0, 1, 2, 3];
 const List<int> mapQualitySizes = [5, 25, 50];

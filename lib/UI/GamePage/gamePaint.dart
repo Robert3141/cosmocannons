@@ -159,7 +159,7 @@ class ShootPainter extends GlobalPainter {
     var distance = Offset.zero;
     for (var i = 0; i < globals.explosionParticles.length; i++) {
       //draw
-      canvas.drawCircle(globals.explosionParticles[i], 1, painter);
+      canvas.drawCircle(globals.explosionParticles[i], 2, painter);
       //move further away or delete
       distance = globals.explosionLocation - globals.explosionParticles[i];
       delete |= distance.distanceSquared > 3600;
@@ -171,7 +171,6 @@ class ShootPainter extends GlobalPainter {
     if (delete) {
       globals.explosionParticles = List<Offset>.empty(growable: true);
     }
-    print(globals.explosionParticles);
   }
 
   @override

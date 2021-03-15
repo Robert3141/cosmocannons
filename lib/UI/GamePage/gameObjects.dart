@@ -330,21 +330,14 @@ class Projectile extends GameObject {
   }
 
   void _createExplosion(Offset impactPos) {
-    //locals
-    var amount = 40;
-    var rand = Random();
-    var pos = Offset.zero;
-    var angle = 1.0;
-
-    //set position
-    globals.explosionLocation = impactPos;
-    globals.explosionColor = teamColour;
-
-    //add particles
+    //add first particles
     globals.explosionParticles = List<Offset>.empty(growable: true);
-    for (var i = 0; i < amount; i++) {
-      angle = rand.nextDouble() * pi * 2;
-      pos = impactPos.translate(sin(angle), cos(angle));
+    globals.explosionLocation = impactPos;
+    var rand = Random();
+    var amount = globals.explosionMax;
+    for (var i = 0; i < rand.nextInt(amount); i++) {
+      var angle = rand.nextDouble() * pi * 2;
+      var pos = globals.explosionLocation.translate(sin(angle), cos(angle));
       globals.explosionParticles.add(pos);
     }
 
@@ -354,9 +347,27 @@ class Projectile extends GameObject {
   }
 
   void _explosionCallback(Timer timer) {
+    //locals
+    var amount = globals.explosionMax;
+    var rand = Random();
+    var pos = Offset.zero;
+    var angle = 1.0;
+
+    //set position
+    globals.explosionColor = teamColour;
+
     if (globals.explosionParticles.isEmpty) {
+      updateUI();
       timer.cancel();
     } else {
+      //add particles
+      for (var i = 0; i < rand.nextInt(amount); i++) {
+        angle = rand.nextDouble() * pi * 2;
+        pos = globals.explosionLocation.translate(sin(angle), cos(angle));
+        globals.explosionParticles.add(pos);
+      }
+
+      //render
       updateUI();
     }
   }
