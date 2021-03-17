@@ -13,7 +13,7 @@ class GameObject {
   // VARIABLES
 
   int _team;
-  Function updateUI;
+  void Function(VoidCallback) updateUI;
   bool updated = false;
   double aX = 0; // x pos between 0 and 1 (left to right)
   double aY = 0; // y pos between 0 and 1 (bottom to top)
@@ -61,7 +61,8 @@ class Player extends GameObject {
   //setters
 
   // constructors
-  Player(Offset pos, int team, Function updater, BuildContext context) {
+  Player(Offset pos, int team, void Function(VoidCallback) updater,
+      BuildContext context) {
     updateUI = updater;
     aPos = pos;
     _team = team;
@@ -69,7 +70,7 @@ class Player extends GameObject {
     _context = context;
   }
   Player.fromListCreated(int p, int n, int team, List<double> terrainHeights,
-      Function updater, BuildContext context) {
+      void Function(VoidCallback) updater, BuildContext context) {
     updateUI = updater;
     aX = (p + 1) / (n + 1);
     aY = GamePainter().calcNearestHeight(terrainHeights, aX) +
@@ -78,8 +79,8 @@ class Player extends GameObject {
     health = globals.defaultPlayerHealth;
     _context = context;
   }
-  Player.withHealth(
-      Offset pos, int team, double h, Function updater, BuildContext context) {
+  Player.withHealth(Offset pos, int team, double h,
+      void Function(VoidCallback) updater, BuildContext context) {
     updateUI = updater;
     aPos = pos;
     _team = team;
@@ -105,28 +106,28 @@ class Player extends GameObject {
       globals.client
           .sendData(actualAmount.toString(), globals.packetPlayerMove);
     }
+    updateUI(() {
+      aX = aX + actualAmount;
 
-    aX = aX + actualAmount;
+      //players loop if they move out of zone
+      while (aX > 1) {
+        aX -= 1;
+      }
+      while (aX < 0) {
+        aX += 1;
+      }
 
-    //players loop if they move out of zone
-    while (aX > 1) {
-      aX -= 1;
-    }
-    while (aX < 0) {
-      aX += 1;
-    }
+      //set y
+      aY = GlobalPainter().calcNearestHeight(globals.currentMap, aX) +
+          globals.playerRadiusY;
 
-    //set y
-    aY = GlobalPainter().calcNearestHeight(globals.currentMap, aX) +
-        globals.playerRadiusY;
-
-    updated = true;
-    updateUI();
+      updated = true;
+    });
   }
 
   /// Randomly picks a player not on it's team unless given specific team.
   /// Accuracy is given between 0 (very innacurate) and 1 (very accurate)
-  void playAI(Function updater, int thisPlayer,
+  void playAI(void Function(VoidCallback) updater, int thisPlayer,
       {int teamToTarget, double accuracy}) async {
     //local vars
     var timeSec = 2.0;
@@ -270,15 +271,16 @@ class Projectile extends GameObject {
   int get playerInt => _player;
   Player get playerObj => globals.players[playerInt];
 
-  Projectile.velocity(Offset velocity, int player, Function updater) {
+  Projectile.velocity(
+      Offset velocity, int player, void Function(VoidCallback) updater) {
     _projectileRunner(velocity, player, updater);
   }
-  Projectile.radians(
-      double intensity, double angleRadians, int player, Function updater) {
+  Projectile.radians(double intensity, double angleRadians, int player,
+      void Function(VoidCallback) updater) {
     _projectileRunner(angleToOffset(intensity, angleRadians), player, updater);
   }
-  Projectile.degrees(
-      double intensity, double angleDegrees, int player, Function updater) {
+  Projectile.degrees(double intensity, double angleDegrees, int player,
+      void Function(VoidCallback) updater) {
     _projectileRunner(
         angleToOffset(intensity, angleDegrees * globals.degreesToRadians),
         player,
@@ -290,7 +292,8 @@ class Projectile extends GameObject {
         intensity * -cos(angleRadians), intensity * sin(angleRadians));
   }
 
-  void _projectileRunner(Offset velocity, int player, Function updater,
+  void _projectileRunner(
+      Offset velocity, int player, void Function(VoidCallback) updater,
       {firstShot = false}) async {
     //set stuff up
     updateUI = updater;
@@ -314,12 +317,13 @@ class Projectile extends GameObject {
     _checkWinner(playerObj._context);
 
     //destroy now
-    globals.projectiles.remove(this);
-    if (globals.projectiles.isEmpty) {
-      globals.firing = false;
-      globals.popup = false;
-    }
-    updateUI();
+    updateUI(() {
+      globals.projectiles.remove(this);
+      if (globals.projectiles.isEmpty) {
+        globals.firing = false;
+        globals.popup = false;
+      }
+    });
 
     //singleplayer run AI
     if (globals.thisPlayer != globals.currentPlayer &&
@@ -357,18 +361,18 @@ class Projectile extends GameObject {
     globals.explosionColor = teamColour;
 
     if (globals.explosionParticles.isEmpty) {
-      updateUI();
-      timer.cancel();
+      updateUI(() {
+        timer.cancel();
+      });
     } else {
       //add particles
-      for (var i = 0; i < rand.nextInt(amount); i++) {
-        angle = rand.nextDouble() * pi * 2;
-        pos = globals.explosionLocation.translate(sin(angle), cos(angle));
-        globals.explosionParticles.add(pos);
-      }
-
-      //render
-      updateUI();
+      updateUI(() {
+        for (var i = 0; i < rand.nextInt(amount); i++) {
+          angle = rand.nextDouble() * pi * 2;
+          pos = globals.explosionLocation.translate(sin(angle), cos(angle));
+          globals.explosionParticles.add(pos);
+        }
+      });
     }
   }
 
@@ -400,14 +404,17 @@ class Projectile extends GameObject {
     var tick = timer.tick;
     _timeSec = (globals.frameLengthMs * tick) / 1000;
 
-    //set new locations
-    updated = true;
-    // s = ut + 0.5att
-    aX = playerObj.aX +
-        (_u.dx * _timeSec + 0.5 * _a.dx * _timeSec * _timeSec) * globals.xSF;
-    aY = playerObj.aY +
-        (_u.dy * _timeSec + 0.5 * _a.dy * _timeSec * _timeSec) * globals.ySF;
-    if (tick % 1 == 0) updateUI();
+    updateUI(() {
+      //set new locations
+      updated = true;
+
+      // s = ut + 0.5att
+      aX = playerObj.aX +
+          (_u.dx * _timeSec + 0.5 * _a.dx * _timeSec * _timeSec) * globals.xSF;
+      aY = playerObj.aY +
+          (_u.dy * _timeSec + 0.5 * _a.dy * _timeSec * _timeSec) * globals.ySF;
+    });
+
     // hit terrain?
     terrainHeight = GlobalPainter().calcNearestHeight(globals.currentMap, aX);
 
@@ -466,27 +473,30 @@ class Projectile extends GameObject {
         if (checkInRadius(position, globals.players[i].aPos,
             globals.playerRadiusX, globals.playerRadiusY)) {
           //player in blast radius administer damage
-          globals.players[i].health -= globals.blastDamage;
-          globals.players[i].updated = true;
+          updateUI(() {
+            globals.players[i].health -= globals.blastDamage;
+            globals.players[i].updated = true;
+          });
 
           if (firstShot) await UI.addAchievement(0, context);
 
           //remove dead players
-          if (globals.players[i].health <= 0) {
-            globals.players.removeAt(i);
-            //if player killed is below the current player then the current player needs updating
-            if (i < globals.currentPlayer) {
-              globals.currentPlayer--;
-              _player--;
-            }
+          updateUI(() {
+            if (globals.players[i].health <= 0) {
+              globals.players.removeAt(i);
+              //if player killed is below the current player then the current player needs updating
+              if (i < globals.currentPlayer) {
+                globals.currentPlayer--;
+                _player--;
+              }
 
-            //count from after the player removed
-            i--;
-          }
+              //count from after the player removed
+              i--;
+            }
+          });
         }
       }
     }
-    updateUI();
   }
 
   void _damageTerrain(Offset impactPos) {
@@ -502,37 +512,47 @@ class Projectile extends GameObject {
     //decrease terrain and surrounding terrain
     var mainDecrease = 0.04;
     var craterSize = 4;
-    globals.currentMap[currentBar] =
-        globals.currentMap[currentBar] >= mainDecrease
-            ? globals.currentMap[currentBar] - mainDecrease
-            : 0;
+    updateUI(() {
+      globals.currentMap[currentBar] =
+          globals.currentMap[currentBar] >= mainDecrease
+              ? globals.currentMap[currentBar] - mainDecrease
+              : 0;
+    });
+
     //create sinusoidal terrain deformation (i.e circle shape)
     for (var i = 0; i < craterSize; i++) {
       var currentSize = mainDecrease * cos(((i + 1) * pi) / (craterSize * 2));
       if (currentBar + i > 0) {
-        globals.currentMap[currentBar - 1 - i] =
-            globals.currentMap[currentBar - 1 - i] >= currentSize
-                ? globals.currentMap[currentBar - 1 - i] - currentSize
-                : 0;
+        updateUI(() {
+          globals.currentMap[currentBar - 1 - i] =
+              globals.currentMap[currentBar - 1 - i] >= currentSize
+                  ? globals.currentMap[currentBar - 1 - i] - currentSize
+                  : 0;
+        });
       }
       if (currentBar + 1 + i < globals.currentMap.length) {
-        globals.currentMap[currentBar + 1 + i] =
-            globals.currentMap[currentBar + 1 + i] >= currentSize
-                ? globals.currentMap[currentBar + 1 + i] - currentSize
-                : 0;
+        updateUI(() {
+          globals.currentMap[currentBar + 1 + i] =
+              globals.currentMap[currentBar + 1 + i] >= currentSize
+                  ? globals.currentMap[currentBar + 1 + i] - currentSize
+                  : 0;
+        });
       }
     }
 
     //update player positions so they are not floating
-    for (var i = 0; i < globals.players.length; i++) {
-      globals.players[i].aY = GamePainter()
-              .calcNearestHeight(globals.currentMap, globals.players[i].aX) +
-          globals.playerRadiusY;
-    }
+    updateUI(() {
+      for (var i = 0; i < globals.players.length; i++) {
+        globals.players[i].aY = GamePainter()
+                .calcNearestHeight(globals.currentMap, globals.players[i].aX) +
+            globals.playerRadiusY;
+      }
+    });
 
     //update UI
-    globals.terrainUpdated = true;
-    updateUI();
+    updateUI(() {
+      globals.terrainUpdated = true;
+    });
   }
 
   void _checkWinner(BuildContext context) async {
@@ -544,7 +564,7 @@ class Projectile extends GameObject {
           data: ['You wiped each other out!'], onFinish: (bool b) {
         UI.startNewPage(context, [], newPage: LauncherPage());
       });
-      updateUI();
+      updateUI(() {});
     } else {
       //check amount of teams in play
       var teamsLeft = List<int>.empty(growable: true);
@@ -579,7 +599,7 @@ class Projectile extends GameObject {
             onFinish: (bool b) {
           UI.startNewPage(context, [], newPage: LauncherPage());
         });
-        updateUI();
+        updateUI(() {});
       }
     }
   }

@@ -9,7 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CustomGestureRecognizer extends OneSequenceGestureRecognizer {
-  final Function updateUI;
+  final void Function(VoidCallback) updateUI;
   final double zoom;
   CustomGestureRecognizer(this.updateUI, this.zoom);
 
@@ -56,18 +56,24 @@ class CustomGestureRecognizer extends OneSequenceGestureRecognizer {
   }
 
   void _onPanStart(Offset pos) {
-    globals.dragGhost = true;
-    globals.arrowTop = globals.players[globals.currentPlayer].aPos;
+    updateUI(() {
+      globals.dragGhost = true;
+      globals.arrowTop = globals.players[globals.currentPlayer].aPos;
+    });
   }
 
   void _onPanUpdate(Offset delta) {
-    //set arrowPos
-    globals.arrowTop += Offset(-delta.dx.toActualX(), 1 - delta.dy.toActualY());
-    updateUI();
+    updateUI(() {
+      //set arrowPos
+      globals.arrowTop +=
+          Offset(-delta.dx.toActualX(), 1 - delta.dy.toActualY());
+    });
   }
 
   void _onPanCancel() {
-    globals.dragGhost = false;
+    updateUI(() {
+      globals.dragGhost = false;
+    });
   }
 
   void _onPanEnd(Offset pos) {

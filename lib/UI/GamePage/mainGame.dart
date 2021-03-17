@@ -48,7 +48,6 @@ class _MainGamePageState extends State<MainGamePage> {
   bool movedPlayer = false;
   BuildContext pageContext;
   TapDownDetails tapDetails;
-  String updaterText = '';
 
   ///
   /// FUNCTIONS
@@ -98,7 +97,7 @@ class _MainGamePageState extends State<MainGamePage> {
       globals.players = List.empty(growable: true);
       for (var i = 0; i < aX.length; i++) {
         globals.players.add(Player.withHealth(
-            Offset(aX[i], aY[i]), team[i], health[i], updateUI, context));
+            Offset(aX[i], aY[i]), team[i], health[i], setState, context));
       }
     } catch (e) {
       print(e.toString());
@@ -138,7 +137,7 @@ class _MainGamePageState extends State<MainGamePage> {
       if (globals.type == globals.GameType.singlePlayer &&
           globals.currentPlayer != 0) {
         globals.players[globals.currentPlayer]
-            .playAI(updateUI, globals.currentPlayer);
+            .playAI(setState, globals.currentPlayer);
       }
     } catch (e) {
       print(e.toString());
@@ -161,7 +160,7 @@ class _MainGamePageState extends State<MainGamePage> {
       globals.players = List.empty(growable: true);
       for (var i = 0; i < widget.playerTeams.length; i++) {
         globals.players.add(Player.fromListCreated(i, widget.playerTeams.length,
-            widget.playerTeams[i], globals.currentMap, updateUI, context));
+            widget.playerTeams[i], globals.currentMap, setState, context));
       }
 
       //play music
@@ -325,15 +324,6 @@ class _MainGamePageState extends State<MainGamePage> {
     }
   }
 
-  void updateUI() {
-    //mounted ensures this only updates UI if dispose hasn't been called
-    if (mounted) {
-      setState(() {
-        updaterText = updaterText == '' ? ' ' : '';
-      });
-    }
-  }
-
   /// Receives data from the server/client
   void dataReceiver(DataPacket data) async {
     switch (data.title) {
@@ -350,7 +340,7 @@ class _MainGamePageState extends State<MainGamePage> {
           globals.projectiles.add(Projectile.velocity(
               data.payload.toString().parseOffset(),
               globals.currentPlayer,
-              updateUI));
+              setState));
         }
         break;
       case globals.packetPlayersTurn:
@@ -392,10 +382,12 @@ class _MainGamePageState extends State<MainGamePage> {
 
   void outputError(dynamic e) {
     var output = globals.errorOccurred + e.toString();
-    setState(() {
-      UI.textDisplayPopup(context, output,
-          style: TextStyle(color: globals.textColor));
-    });
+    if (!context.debugDoingBuild) {
+      setState(() {
+        UI.textDisplayPopup(context, output,
+            style: TextStyle(color: globals.textColor));
+      });
+    }
   }
 
   @override
@@ -453,7 +445,7 @@ class _MainGamePageState extends State<MainGamePage> {
                         CustomGestureRecognizer:
                             GestureRecognizerFactoryWithHandlers<
                                     CustomGestureRecognizer>(
-                                () => CustomGestureRecognizer(updateUI, zoom),
+                                () => CustomGestureRecognizer(setState, zoom),
                                 (CustomGestureRecognizer instance) {})
                       },
                       child: Stack(
@@ -464,9 +456,20 @@ class _MainGamePageState extends State<MainGamePage> {
                                 (globals.dragGhost ?? false),
                             size: globals.canvasSize,
                             painter: ShootPainter(),
-                            child: Text(updaterText),
                           ),
-
+                          globals.projectiles.isNotEmpty
+                              ? AnimatedPositioned(
+                                  duration: Duration(
+                                      milliseconds: globals.frameLengthMs),
+                                  left: globals.projectiles[0].rX,
+                                  top: globals.projectiles[0].rY,
+                                  child: CircleAvatar(
+                                    foregroundColor:
+                                        globals.projectiles[0].teamColour,
+                                    radius: 3,
+                                  ),
+                                )
+                              : Container(),
                           //terrain
                           CustomPaint(
                             isComplex: true,
@@ -647,13 +650,13 @@ class _MainGamePageState extends State<MainGamePage> {
             ),
             Text(
               globals.errorOccurred + e.toString(),
-              style: UI.defaultText(true),
+              style: UI.defaultText(false),
               textAlign: TextAlign.center,
             )
           ],
         ),
       ], context: context);
-      print('Erorr: $e');
+      print('Error: $e');
     }
     return page;
   }

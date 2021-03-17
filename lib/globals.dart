@@ -273,13 +273,13 @@ bool inGame = false;
 bool terrainUpdated = true;
 bool useExplosions = true;
 
-int mapNo;
+int mapNo = 0;
 int terrainColumnsToRender = kIsWeb ? mapQualitySizes[0] : mapQualitySizes[1];
 int musicSeek = 0;
 int musicTrack = Random().nextInt(songs.length - 1);
-int currentPlayer;
-int thisPlayer;
-Color explosionColor;
+int currentPlayer = 0;
+int thisPlayer = 0;
+Color explosionColor = Colors.black;
 
 List<double> currentMap = terrainMaps[0];
 
