@@ -179,7 +179,8 @@ class ShootPainter extends GlobalPainter {
     arrowTop = globals.arrowTop;
 
     //draw stuff
-    spawnProjectile(canvas);
+    //TODO: finish removal
+    //spawnProjectile(canvas);
     drawAimArrow(canvas, globals.players[globals.currentPlayer], arrowTop);
     drawExplosion(canvas);
   }

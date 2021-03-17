@@ -464,7 +464,7 @@ class _MainGamePageState extends State<MainGamePage> {
                                   left: globals.projectiles[0].rX,
                                   top: globals.projectiles[0].rY,
                                   child: CircleAvatar(
-                                    foregroundColor:
+                                    backgroundColor:
                                         globals.projectiles[0].teamColour,
                                     radius: 3,
                                   ),
