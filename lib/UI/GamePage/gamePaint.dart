@@ -21,19 +21,24 @@ class GlobalPainter extends CustomPainter {
   /// FUNCTIONS
   ///
 
-  double calcNearestHeight(List<double> terrainHeights, double relPos) {
+  int nearestIndex(double relPos, int length) {
     //return nearest index int
-    var blockWidth = 1 / terrainHeights.length;
+    var blockWidth = 1 / length;
     var blockRight = 0.0;
     var nearestIndex = 0;
-    for (var x = 0; x < terrainHeights.length; x++) {
+    for (var x = 0; x < length; x++) {
       blockRight = (x) * blockWidth;
       if (relPos > blockRight) {
         //located on left of block x+1
         nearestIndex = x;
       }
     }
-    return terrainHeights[nearestIndex];
+    return nearestIndex;
+  }
+
+  double calcNearestHeight(List<double> terrainHeights, double relPos) {
+    //return nearest indexed number
+    return terrainHeights[nearestIndex(relPos, terrainHeights.length)];
   }
 
   ///
@@ -150,7 +155,7 @@ class ShootPainter extends GlobalPainter {
     }
   }
 
-  void drawExplosion(Canvas canvas) {
+  /*void drawExplosion(Canvas canvas) {
     //var p = globals.players[globals.currentPlayer];
     var painter = Paint()
       ..blendMode = BlendMode.plus
@@ -171,7 +176,7 @@ class ShootPainter extends GlobalPainter {
     if (delete) {
       globals.explosionParticles = List<Offset>.empty(growable: true);
     }
-  }
+  }*/
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -182,7 +187,7 @@ class ShootPainter extends GlobalPainter {
     //TODO: finish removal
     //spawnProjectile(canvas);
     drawAimArrow(canvas, globals.players[globals.currentPlayer], arrowTop);
-    drawExplosion(canvas);
+    //drawExplosion(canvas);
   }
 
   @override
@@ -190,13 +195,8 @@ class ShootPainter extends GlobalPainter {
     //return arrowTop != globals.arrowTop || dragGhost != globals.dragGhost;
     //check projectiles
     var updated = false;
-    for (var i = 0; i < globals.projectiles.length; i++) {
-      updated |= globals.projectiles[i].updated;
-    }
     //check arrow
     updated |= arrowTop != globals.arrowTop;
-    //check explosion
-    updated |= globals.explosionParticles.isNotEmpty;
     return updated;
   }
 }

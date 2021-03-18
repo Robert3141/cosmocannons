@@ -48,6 +48,11 @@ class GameObject {
     //draw projectile
     canvas.drawCircle(rPos, 3, paint);
   }
+
+  @override
+  String toString() {
+    return 'GameObject(aPos:$aPos,rPos:$rPos,team:$team)';
+  }
 }
 
 class Player extends GameObject {
@@ -312,7 +317,6 @@ class Projectile extends GameObject {
 
     if (globals.useExplosions) _createExplosion(impactPos.toRelative());
     _giveDamage(impactPos, firstShot, playerObj._context);
-    _damageTerrain(impactPos);
     _nextPlayer();
     _checkWinner(playerObj._context);
 
@@ -334,43 +338,34 @@ class Projectile extends GameObject {
   }
 
   void _createExplosion(Offset impactPos) {
-    //add first particles
-    globals.explosionParticles = List<Offset>.empty(growable: true);
-    globals.explosionLocation = impactPos;
-    var rand = Random();
-    var amount = globals.explosionMax;
-    for (var i = 0; i < rand.nextInt(amount); i++) {
-      var angle = rand.nextDouble() * pi * 2;
-      var pos = globals.explosionLocation.translate(sin(angle), cos(angle));
-      globals.explosionParticles.add(pos);
-    }
-
-    //updateUI
-    Timer.periodic(
-        Duration(milliseconds: globals.frameLengthMs), _explosionCallback);
+    //update UI periodically
+    void Function(Timer time) callback = (Timer time) {
+      _explosionCallback(time, impactPos);
+    };
+    Timer.periodic(Duration(milliseconds: globals.frameLengthMs), callback);
   }
 
-  void _explosionCallback(Timer timer) {
+  void _explosionCallback(Timer timer, Offset impactPos) {
     //locals
-    var amount = globals.explosionMax;
+    var max = 10;
+    var min = 2;
     var rand = Random();
-    var pos = Offset.zero;
     var angle = 1.0;
 
     //set position
-    globals.explosionColor = teamColour;
 
-    if (globals.explosionParticles.isEmpty) {
-      updateUI(() {
+    if (timer.tick > 20) {
+      updateUI(() {});
+      if (globals.particles.isEmpty) {
         timer.cancel();
-      });
+      }
     } else {
       //add particles
       updateUI(() {
-        for (var i = 0; i < rand.nextInt(amount); i++) {
+        for (var i = 0; i < rand.nextInt(max - min) + max - min; i++) {
           angle = rand.nextDouble() * pi * 2;
-          pos = globals.explosionLocation.translate(sin(angle), cos(angle));
-          globals.explosionParticles.add(pos);
+          globals.particles.add(
+              ExplosionParticle(Offset.fromDirection(angle), impactPos, team));
         }
       });
     }
@@ -499,62 +494,6 @@ class Projectile extends GameObject {
     }
   }
 
-  void _damageTerrain(Offset impactPos) {
-    //find nearest terrain
-    var currentBar = (impactPos.dx * globals.currentMap.length).truncate();
-    if (currentBar < 0) {
-      currentBar = 0;
-    }
-    if (currentBar >= globals.currentMap.length) {
-      currentBar = globals.currentMap.length - 1;
-    }
-
-    //decrease terrain and surrounding terrain
-    var mainDecrease = 0.04;
-    var craterSize = 4;
-    updateUI(() {
-      globals.currentMap[currentBar] =
-          globals.currentMap[currentBar] >= mainDecrease
-              ? globals.currentMap[currentBar] - mainDecrease
-              : 0;
-    });
-
-    //create sinusoidal terrain deformation (i.e circle shape)
-    for (var i = 0; i < craterSize; i++) {
-      var currentSize = mainDecrease * cos(((i + 1) * pi) / (craterSize * 2));
-      if (currentBar + i > 0) {
-        updateUI(() {
-          globals.currentMap[currentBar - 1 - i] =
-              globals.currentMap[currentBar - 1 - i] >= currentSize
-                  ? globals.currentMap[currentBar - 1 - i] - currentSize
-                  : 0;
-        });
-      }
-      if (currentBar + 1 + i < globals.currentMap.length) {
-        updateUI(() {
-          globals.currentMap[currentBar + 1 + i] =
-              globals.currentMap[currentBar + 1 + i] >= currentSize
-                  ? globals.currentMap[currentBar + 1 + i] - currentSize
-                  : 0;
-        });
-      }
-    }
-
-    //update player positions so they are not floating
-    updateUI(() {
-      for (var i = 0; i < globals.players.length; i++) {
-        globals.players[i].aY = GamePainter()
-                .calcNearestHeight(globals.currentMap, globals.players[i].aX) +
-            globals.playerRadiusY;
-      }
-    });
-
-    //update UI
-    updateUI(() {
-      globals.terrainUpdated = true;
-    });
-  }
-
   void _checkWinner(BuildContext context) async {
     if (globals.players.isEmpty) {
       //Players wiped each other out
@@ -602,5 +541,17 @@ class Projectile extends GameObject {
         updateUI(() {});
       }
     }
+  }
+}
+
+class ExplosionParticle extends GameObject {
+  /// The normalised vector of the player direction
+  Offset direction;
+  DateTime time;
+  ExplosionParticle(Offset _direction, Offset locationActual, int team) {
+    rPos = locationActual;
+    direction = _direction / _direction.distance;
+    time = DateTime.now();
+    _team = team;
   }
 }

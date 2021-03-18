@@ -216,7 +216,6 @@ const int maxFlightLength = 20;
 const int checkDoneMs = 100;
 const int defaultMap = 0;
 const int projectionParticles = 10;
-const int explosionMax = 20;
 
 const List<int> playerTeams = [0, 1, 2, 3];
 const List<int> mapQualitySizes = [5, 25, 50];
@@ -279,7 +278,6 @@ int musicSeek = 0;
 int musicTrack = Random().nextInt(songs.length - 1);
 int currentPlayer = 0;
 int thisPlayer = 0;
-Color explosionColor = Colors.black;
 
 List<double> currentMap = terrainMaps[0];
 
@@ -287,10 +285,7 @@ List<List<Offset>> terrainCacheLocation;
 
 List<Color> terrainCacheColour;
 
-List<Offset> explosionParticles = List<Offset>.empty(growable: true);
-
 Offset arrowTop = Offset.zero;
-Offset explosionLocation = Offset.zero;
 
 Size canvasSize;
 
@@ -302,6 +297,8 @@ ClientNode client;
 //objects
 List<Player> players = List<Player>.empty(growable: true);
 List<Projectile> projectiles = List<Projectile>.empty(growable: true);
+List<ExplosionParticle> particles =
+    List<ExplosionParticle>.empty(growable: true);
 
 // Global UI based vars
 

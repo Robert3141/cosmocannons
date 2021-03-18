@@ -380,6 +380,90 @@ class _MainGamePageState extends State<MainGamePage> {
     }
   }
 
+  void terrainDeformation(ExplosionParticle particle) {
+    setState(() {
+      if (globals.currentMap[GamePainter()
+              .nearestIndex(particle.aX, globals.currentMap.length)] >
+          particle.aY) {
+        //update map
+        globals.currentMap[GamePainter().nearestIndex(
+            particle.aX, globals.currentMap.length)] = particle.aY;
+        //update player pos
+        for (var i = 0; i < globals.players.length; i++) {
+          globals.players[i].aY = GamePainter().calcNearestHeight(
+                  globals.currentMap, globals.players[i].aX) +
+              globals.playerRadiusY;
+        }
+      }
+      globals.terrainUpdated = true;
+    });
+  }
+
+  List<Widget> gameGraphics() {
+    var w = List<Widget>.empty(growable: true);
+    //aim arrow
+    w.add(CustomPaint(
+      willChange: (globals.firing ?? false) || (globals.dragGhost ?? false),
+      size: globals.canvasSize,
+      painter: ShootPainter(),
+    ));
+
+    //projectiles
+    for (var i in globals.projectiles) {
+      w.add(AnimatedPositioned(
+        duration: Duration(milliseconds: globals.frameLengthMs),
+        left: i.rX,
+        top: i.rY,
+        child: CircleAvatar(
+          backgroundColor: i.teamColour,
+          radius: 3,
+        ),
+      ));
+    }
+
+    //explosion particles
+    for (var i = 0; i < globals.particles.length; i++) {
+      if (globals.particles[i].time.difference(DateTime.now()) >
+          Duration(milliseconds: -600)) {
+        //move particle
+        globals.particles[i].aPos +=
+            globals.particles[i].direction.scale(0.003, 0.003);
+
+        //draw particle
+        w.add(AnimatedPositioned(
+          duration: Duration(milliseconds: globals.frameLengthMs),
+          left: globals.particles[i].rX,
+          top: globals.particles[i].rY,
+          child: CircleAvatar(
+            backgroundColor: globals.particles[i].teamColour,
+            radius: 1,
+          ),
+        ));
+        //update terrain
+        terrainDeformation(globals.particles[i]);
+      } else {
+        // remove particle
+        globals.particles.removeAt(i);
+        i--;
+      }
+    }
+
+    //terrain
+    w.add(CustomPaint(
+      isComplex: true,
+      size: globals.canvasSize,
+      painter: GamePainter(),
+    ));
+
+    //players
+    w.add(CustomPaint(
+      size: globals.canvasSize,
+      painter: CharacterPainter(),
+    ));
+
+    return w;
+  }
+
   void outputError(dynamic e) {
     var output = globals.errorOccurred + e.toString();
     if (!context.debugDoingBuild) {
@@ -449,39 +533,7 @@ class _MainGamePageState extends State<MainGamePage> {
                                 (CustomGestureRecognizer instance) {})
                       },
                       child: Stack(
-                        children: [
-                          //projectiles
-                          CustomPaint(
-                            willChange: (globals.firing ?? false) ||
-                                (globals.dragGhost ?? false),
-                            size: globals.canvasSize,
-                            painter: ShootPainter(),
-                          ),
-                          globals.projectiles.isNotEmpty
-                              ? AnimatedPositioned(
-                                  duration: Duration(
-                                      milliseconds: globals.frameLengthMs),
-                                  left: globals.projectiles[0].rX,
-                                  top: globals.projectiles[0].rY,
-                                  child: CircleAvatar(
-                                    backgroundColor:
-                                        globals.projectiles[0].teamColour,
-                                    radius: 3,
-                                  ),
-                                )
-                              : Container(),
-                          //terrain
-                          CustomPaint(
-                            isComplex: true,
-                            size: globals.canvasSize,
-                            painter: GamePainter(),
-                          ),
-                          //players
-                          CustomPaint(
-                            size: globals.canvasSize,
-                            painter: CharacterPainter(),
-                          ),
-                        ],
+                        children: gameGraphics(),
                       ),
                     ),
                   ),
