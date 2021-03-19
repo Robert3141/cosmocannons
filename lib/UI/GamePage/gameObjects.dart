@@ -60,22 +60,26 @@ class Player extends GameObject {
   bool drawHitbox = false;
   double health = globals.defaultPlayerHealth;
   BuildContext _context;
+  bool _isAI = false;
+  int playerID;
 
   //getters
+  bool get isAI => _isAI;
 
   //setters
 
   // constructors
-  Player(Offset pos, int team, void Function(VoidCallback) updater,
+  /*Player(Offset pos, int team, void Function(VoidCallback) updater,
       BuildContext context) {
     updateUI = updater;
     aPos = pos;
     _team = team;
     health = globals.defaultPlayerHealth;
     _context = context;
-  }
+  }*/
   Player.fromListCreated(int p, int n, int team, List<double> terrainHeights,
-      void Function(VoidCallback) updater, BuildContext context) {
+      void Function(VoidCallback) updater, BuildContext context,
+      {bool isAI = false}) {
     updateUI = updater;
     aX = (p + 1) / (n + 1);
     aY = GamePainter().calcNearestHeight(terrainHeights, aX) +
@@ -83,14 +87,19 @@ class Player extends GameObject {
     _team = team;
     health = globals.defaultPlayerHealth;
     _context = context;
+    _isAI = isAI;
+    playerID = p;
   }
   Player.withHealth(Offset pos, int team, double h,
-      void Function(VoidCallback) updater, BuildContext context) {
+      void Function(VoidCallback) updater, BuildContext context, int playerNo,
+      {bool isAI = false}) {
     updateUI = updater;
     aPos = pos;
     _team = team;
     health = h;
     _context = context;
+    _isAI = isAI;
+    playerID = playerNo;
   }
 
   //methods
@@ -315,8 +324,11 @@ class Projectile extends GameObject {
 
     impactPos = await _animateProjectile();
 
-    if (globals.useExplosions) _createExplosion(impactPos.toRelative());
-    _giveDamage(impactPos, firstShot, playerObj._context);
+    if (globals.useExplosions) {
+      _createExplosion(impactPos.toRelative());
+    } else {
+      _giveDamage(impactPos, firstShot, playerObj._context);
+    }
     _nextPlayer();
     _checkWinner(playerObj._context);
 
@@ -330,7 +342,7 @@ class Projectile extends GameObject {
     });
 
     //singleplayer run AI
-    if (globals.thisPlayer != globals.currentPlayer &&
+    if (globals.players[globals.currentPlayer].isAI &&
         globals.type == globals.GameType.singlePlayer) {
       globals.players[globals.currentPlayer]
           .playAI(updater, globals.currentPlayer);
@@ -548,10 +560,32 @@ class ExplosionParticle extends GameObject {
   /// The normalised vector of the player direction
   Offset direction;
   DateTime time;
+  Map<int, double> potentialCollision;
+
+  num quadratic1(num a, num b, num c) {
+    return (-b + sqrt(b * b - 4 * a * c)) / (2 * a);
+  }
+
+  num quadratic2(num a, num b, num c) {
+    return (-b - sqrt(b * b - 4 * a * c)) / (2 * a);
+  }
+
   ExplosionParticle(Offset _direction, Offset locationActual, int team) {
+    //update properties
     rPos = locationActual;
     direction = _direction / _direction.distance;
     time = DateTime.now();
     _team = team;
+
+    //calculate potential collision
+    var t;
+    var x;
+    var y;
+    for (var i = 0; i < globals.players.length; i++) {
+      // s = ut + 0.5att => t = s / u
+      x = globals.players[i].aPos.dx / direction.dx;
+      y = globals.players[i].aPos.dy / direction.dy;
+      t = sqrt(x * x + y * y); //TODO continue this
+    }
   }
 }

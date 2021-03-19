@@ -382,7 +382,9 @@ extension GameExtension on GameType {
   int get playerNumber {
     switch (this) {
       case GameType.singlePlayer:
-        return 0;
+        return players.isNotEmpty
+            ? players.indexWhere((element) => !element.isAI)
+            : 0;
       case GameType.multiHost:
         return 0;
       case GameType.multiClient:

@@ -97,7 +97,8 @@ class _MainGamePageState extends State<MainGamePage> {
       globals.players = List.empty(growable: true);
       for (var i = 0; i < aX.length; i++) {
         globals.players.add(Player.withHealth(
-            Offset(aX[i], aY[i]), team[i], health[i], setState, context));
+            Offset(aX[i], aY[i]), team[i], health[i], setState, context,
+            isAI: i != 0));
       }
     } catch (e) {
       print(e.toString());
@@ -135,7 +136,7 @@ class _MainGamePageState extends State<MainGamePage> {
 
       //singleplayer play AI of current player
       if (globals.type == globals.GameType.singlePlayer &&
-          globals.currentPlayer != 0) {
+          globals.players[globals.currentPlayer].isAI) {
         globals.players[globals.currentPlayer]
             .playAI(setState, globals.currentPlayer);
       }
@@ -156,11 +157,15 @@ class _MainGamePageState extends State<MainGamePage> {
       //not start anymore
       startOfGame = false;
 
+      //explosions aren't support in LAN
+      globals.useExplosions = !globals.type.isLAN;
+
       //create players
       globals.players = List.empty(growable: true);
       for (var i = 0; i < widget.playerTeams.length; i++) {
         globals.players.add(Player.fromListCreated(i, widget.playerTeams.length,
-            widget.playerTeams[i], globals.currentMap, setState, context));
+            widget.playerTeams[i], globals.currentMap, setState, context,
+            isAI: i != 0));
       }
 
       //play music
@@ -380,7 +385,8 @@ class _MainGamePageState extends State<MainGamePage> {
     }
   }
 
-  void terrainDeformation(ExplosionParticle particle) {
+  void terrainDeformation(int particleNo) {
+    var particle = globals.particles[particleNo];
     setState(() {
       if (globals.currentMap[GamePainter()
               .nearestIndex(particle.aX, globals.currentMap.length)] >
@@ -388,12 +394,17 @@ class _MainGamePageState extends State<MainGamePage> {
         //update map
         globals.currentMap[GamePainter().nearestIndex(
             particle.aX, globals.currentMap.length)] = particle.aY;
+
         //update player pos
         for (var i = 0; i < globals.players.length; i++) {
           globals.players[i].aY = GamePainter().calcNearestHeight(
                   globals.currentMap, globals.players[i].aX) +
               globals.playerRadiusY;
         }
+
+        // reduce particle velocity
+        globals.particles[particleNo].direction =
+            globals.particles[particleNo].direction.scale(0.9, 0.9);
       }
       globals.terrainUpdated = true;
     });
@@ -440,7 +451,7 @@ class _MainGamePageState extends State<MainGamePage> {
           ),
         ));
         //update terrain
-        terrainDeformation(globals.particles[i]);
+        terrainDeformation(i);
       } else {
         // remove particle
         globals.particles.removeAt(i);
