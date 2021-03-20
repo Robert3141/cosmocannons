@@ -97,7 +97,7 @@ class _MainGamePageState extends State<MainGamePage> {
       globals.players = List.empty(growable: true);
       for (var i = 0; i < aX.length; i++) {
         globals.players.add(Player.withHealth(
-            Offset(aX[i], aY[i]), team[i], health[i], setState, context,
+            Offset(aX[i], aY[i]), team[i], health[i], setState, context, i,
             isAI: i != 0));
       }
     } catch (e) {

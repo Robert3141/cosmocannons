@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:cosmocannons/UI/GamePage/gamePaint.dart';
 import 'package:cosmocannons/UI/launcher.dart';
+import 'package:equations/equations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmocannons/globals.dart' as globals;
@@ -39,6 +40,55 @@ class GameObject {
   set rPos(Offset pos) {
     rX = pos.dx;
     rY = pos.dy;
+  }
+
+  List<List<double>> enterPlayerHitboxes(
+      Offset actualVelocity, Offset startPos) {
+    var playerTimes = List<List<double>>.empty(growable: true);
+    List<Complex> times;
+    var uX = actualVelocity.dx * globals.shootSF;
+    var uY = actualVelocity.dy * globals.shootSF;
+    var accelX = globals.Ax;
+    var accelY = globals.Ay;
+    var startX = startPos.dx;
+    var startY = startPos.dy;
+    var hitboxRadius = 0.01;
+
+    //every player
+    for (var i = 0; i < globals.players.length; i++) {
+      var playerX = globals.players[i].aX;
+      var playerY = globals.players[i].aY;
+
+      // get times for x and y
+      times = Quartic(
+              a: Complex(0.25 * (accelX + accelY), 0),
+              b: Complex(accelX * uX + accelY * uY, 0),
+              c: Complex(
+                  accelX * (startX - playerX) +
+                      uX * uX +
+                      accelY * (startY - playerY) +
+                      uY * uY,
+                  0),
+              d: Complex(
+                  2 * uX * (startX - playerX) + 2 * uY * (startY - playerY), 0),
+              e: Complex(
+                  startX * startX +
+                      playerX * playerX -
+                      2 * startX * playerX +
+                      startY * startY +
+                      playerY * playerY -
+                      2 * startY * playerY -
+                      hitboxRadius * hitboxRadius,
+                  0))
+          .solutions();
+      playerTimes.add(List<double>.empty(growable: true));
+      for (var t in times) {
+        if (t.imaginary == 0 && t.real > 0) {
+          playerTimes[i].add(t.real);
+        }
+      }
+    }
+    return playerTimes;
   }
 
   void draw(Canvas canvas) {
@@ -561,14 +611,6 @@ class ExplosionParticle extends GameObject {
   Offset direction;
   DateTime time;
   Map<int, double> potentialCollision;
-
-  num quadratic1(num a, num b, num c) {
-    return (-b + sqrt(b * b - 4 * a * c)) / (2 * a);
-  }
-
-  num quadratic2(num a, num b, num c) {
-    return (-b - sqrt(b * b - 4 * a * c)) / (2 * a);
-  }
 
   ExplosionParticle(Offset _direction, Offset locationActual, int team) {
     //update properties
