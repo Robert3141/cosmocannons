@@ -213,7 +213,6 @@ const int defualtPlayerAmount = 2;
 const int terrainRowsToRender = 50;
 const int frameLengthMs = 16;
 const int maxFlightLength = 20;
-const int checkDoneMs = 100;
 const int defaultMap = 0;
 const int projectionParticles = 10;
 

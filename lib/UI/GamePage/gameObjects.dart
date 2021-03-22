@@ -46,13 +46,13 @@ class GameObject {
       Offset actualVelocity, Offset startPos) {
     var playerTimes = List<List<double>>.empty(growable: true);
     List<Complex> times;
-    var uX = actualVelocity.dx * globals.shootSF;
-    var uY = actualVelocity.dy * globals.shootSF;
+    var uX = actualVelocity.dx;
+    var uY = actualVelocity.dy;
     var accelX = globals.Ax;
     var accelY = globals.Ay;
     var startX = startPos.dx;
     var startY = startPos.dy;
-    var hitboxRadius = 0.01;
+    var hitboxRadius = 0.5;
 
     //every player
     for (var i = 0; i < globals.players.length; i++) {
@@ -60,34 +60,40 @@ class GameObject {
       var playerY = globals.players[i].aY;
 
       // get times for x and y
-      times = Quartic(
-              a: Complex(0.25 * (accelX + accelY), 0),
-              b: Complex(accelX * uX + accelY * uY, 0),
-              c: Complex(
-                  accelX * (startX - playerX) +
-                      uX * uX +
-                      accelY * (startY - playerY) +
-                      uY * uY,
-                  0),
-              d: Complex(
-                  2 * uX * (startX - playerX) + 2 * uY * (startY - playerY), 0),
-              e: Complex(
-                  startX * startX +
-                      playerX * playerX -
-                      2 * startX * playerX +
-                      startY * startY +
-                      playerY * playerY -
-                      2 * startY * playerY -
-                      hitboxRadius * hitboxRadius,
-                  0))
-          .solutions();
+      var quartic = Quartic(
+          a: Complex(0.25 * (accelX * accelX + accelY * accelY), 0),
+          b: Complex(accelX * uX + accelY * uY, 0),
+          c: Complex(
+              accelX * (startX - playerX) +
+                  uX * uX +
+                  accelY * (startY - playerY) +
+                  uY * uY,
+              0),
+          d: Complex(
+              2 * uX * (startX - playerX) + 2 * uY * (startY - playerY), 0),
+          e: Complex(
+              startX * startX +
+                  playerX * playerX -
+                  2 * startX * playerX +
+                  startY * startY +
+                  playerY * playerY -
+                  2 * startY * playerY -
+                  hitboxRadius * hitboxRadius,
+              0));
+      print('$i = ${quartic.toString()}');
+      times = quartic.solutions();
+      print('player $i solutions:');
       playerTimes.add(List<double>.empty(growable: true));
       for (var t in times) {
-        if (t.imaginary == 0 && t.real > 0) {
+        print('    r=${t.real}');
+        print('    i=${t.imaginary}');
+        print('');
+        if (t.real > 0 && double.parse(t.imaginary.toStringAsFixed(5)) == 0) {
           playerTimes[i].add(t.real);
         }
       }
     }
+    print('returns: $playerTimes');
     return playerTimes;
   }
 
@@ -107,7 +113,7 @@ class GameObject {
 
 class Player extends GameObject {
   // attributes
-  bool drawHitbox = false;
+  bool drawHitbox = true;
   double health = globals.defaultPlayerHealth;
   BuildContext _context;
   bool _isAI = false;
@@ -278,10 +284,8 @@ class Player extends GameObject {
         rPos.translate(0, -2 * radiusY / 3), windowWidth, whiteFill);
     //draw hitbox
     if (drawHitbox) {
-      canvas.drawRect(
-          Rect.fromCenter(
-              center: rPos, width: radiusX * 2, height: radiusY * 2),
-          whiteEmpty);
+      canvas.drawCircle(rPos, 0.05.toRelativeX(), whiteEmpty);
+      //canvas.drawCircle(rPos, 0.05.toRelativeY(), whiteEmpty);
     }
     //draw text
     playerHealthText.paint(
@@ -364,20 +368,17 @@ class Projectile extends GameObject {
     _player = player;
     _team = playerObj.team;
 
-    //local vars
-    Offset impactPos;
-
     //set set u,a,s
     _u = velocity;
     _a = Offset(globals.Ax, globals.Ay);
     aPos = playerObj.aPos;
 
-    impactPos = await _animateProjectile();
+    var playerHit = await _animateProjectile();
 
     if (globals.useExplosions) {
-      _createExplosion(impactPos.toRelative());
+      _createExplosion(rPos);
     } else {
-      _giveDamage(impactPos, firstShot, playerObj._context);
+      _giveDamage(playerHit, firstShot, playerObj._context);
     }
     _nextPlayer();
     _checkWinner(playerObj._context);
@@ -433,28 +434,50 @@ class Projectile extends GameObject {
     }
   }
 
-  Future<Offset> _animateProjectile() async {
+  Future<int> _animateProjectile() async {
     globals.firing = true;
     const length = Duration(milliseconds: globals.frameLengthMs);
-    const check = Duration(milliseconds: globals.checkDoneMs);
+    const check = Duration(milliseconds: globals.frameLengthMs);
     Timer timer;
 
-    //run timer
+    //set projectile
     _timeSec = 0;
     aPos = playerObj.aPos;
-    timer = Timer.periodic(length, (timer) => _renderCallback(timer));
+
+    //calculate hitbox entires
+    var hitboxTimes = enterPlayerHitboxes(_u, aPos);
+    var smallestTime = double.infinity;
+    var playerHit = -1;
+    //player hitting
+    print(hitboxTimes);
+    for (var i = 0; i < hitboxTimes.length; i++) {
+      if (hitboxTimes[i].isNotEmpty && globals.players[i].team != team) {
+        print('player $i team=${globals.players[i].team} projectile=$team');
+        print('${hitboxTimes[i][0]}');
+        if (hitboxTimes[i][0] < smallestTime) {
+          smallestTime = hitboxTimes[i][0];
+          playerHit = i;
+        }
+        ;
+      }
+    }
+
+    //fire projectile
+    timer = Timer.periodic(length, (timer) {
+      _renderCallback(timer, smallestTime);
+    });
 
     // wait until flight over or long flight
-    while (timer.isActive && _timeSec <= globals.maxFlightLength) {
+    while (timer.isActive) {
       await Future.delayed(check);
     }
 
     //cancel ticker and remove from UI
     timer.cancel();
-    return aPos;
+    return playerHit;
   }
 
-  void _renderCallback(Timer timer) {
+  void _renderCallback(Timer timer, double smallestTime) {
     //set time
     var hitPlayer = false;
     var terrainHeight = 0.0;
@@ -476,20 +499,12 @@ class Projectile extends GameObject {
     terrainHeight = GlobalPainter().calcNearestHeight(globals.currentMap, aX);
 
     //hit player?
-    hitPlayer = false;
-    for (var p = 0; p < globals.players.length; p++) {
-      if (globals.players[p].team != playerObj.team) {
-        if (checkInRadius(aPos, globals.players[p].aPos, globals.playerRadiusX,
-            globals.playerRadiusY)) {
-          // player hit
-          hitPlayer = true;
-          p = globals.players.length;
-        }
-      }
-    }
+    hitPlayer = smallestTime <= _timeSec;
 
     //stop when done
-    if (terrainHeight >= aY || hitPlayer) {
+    if (terrainHeight >= aY ||
+        hitPlayer ||
+        _timeSec > globals.maxFlightLength) {
       timer.cancel();
     }
   }
@@ -518,40 +533,30 @@ class Projectile extends GameObject {
     }
   }
 
-  void _giveDamage(
-      Offset position, bool firstShot, BuildContext context) async {
+  void _giveDamage(int hitPlayer, bool firstShot, BuildContext context) async {
     //locals
 
-    //check all players
-    for (var i = 0; i < globals.players.length; i++) {
-      //check player not in team
-      if (globals.players[i].team != playerInt) {
-        // check player in blast radius
-        if (checkInRadius(position, globals.players[i].aPos,
-            globals.playerRadiusX, globals.playerRadiusY)) {
-          //player in blast radius administer damage
-          updateUI(() {
-            globals.players[i].health -= globals.blastDamage;
-            globals.players[i].updated = true;
-          });
+    if (hitPlayer != -1) {
+      if (globals.players[hitPlayer].team != playerInt) {
+        //player in blast radius administer damage
+        updateUI(() {
+          globals.players[hitPlayer].health -= globals.blastDamage;
+          globals.players[hitPlayer].updated = true;
+        });
 
-          if (firstShot) await UI.addAchievement(0, context);
+        if (firstShot) await UI.addAchievement(0, context);
 
-          //remove dead players
-          updateUI(() {
-            if (globals.players[i].health <= 0) {
-              globals.players.removeAt(i);
-              //if player killed is below the current player then the current player needs updating
-              if (i < globals.currentPlayer) {
-                globals.currentPlayer--;
-                _player--;
-              }
-
-              //count from after the player removed
-              i--;
+        //remove dead players
+        updateUI(() {
+          if (globals.players[hitPlayer].health <= 0) {
+            globals.players.removeAt(hitPlayer);
+            //if player killed is below the current player then the current player needs updating
+            if (hitPlayer < globals.currentPlayer) {
+              globals.currentPlayer--;
+              _player--;
             }
-          });
-        }
+          }
+        });
       }
     }
   }
@@ -609,25 +614,18 @@ class Projectile extends GameObject {
 class ExplosionParticle extends GameObject {
   /// The normalised vector of the player direction
   Offset direction;
-  DateTime time;
-  Map<int, double> potentialCollision;
 
-  ExplosionParticle(Offset _direction, Offset locationActual, int team) {
+  /// The time the explosion was created
+  DateTime time;
+
+  ExplosionParticle(Offset _direction, Offset locationRelative, int team) {
     //update properties
-    rPos = locationActual;
+    rPos = locationRelative;
     direction = _direction / _direction.distance;
     time = DateTime.now();
     _team = team;
 
     //calculate potential collision
-    var t;
-    var x;
-    var y;
-    for (var i = 0; i < globals.players.length; i++) {
-      // s = ut + 0.5att => t = s / u
-      x = globals.players[i].aPos.dx / direction.dx;
-      y = globals.players[i].aPos.dy / direction.dy;
-      t = sqrt(x * x + y * y); //TODO continue this
-    }
+    //enterPlayerHitboxes(direction, aPos); // TODO finish this
   }
 }
