@@ -47,17 +47,17 @@ class GameObject {
     var playerTimes = List<List<double>>.empty(growable: true);
     List<Complex> times;
     var uX = actualVelocity.dx;
-    var uY = actualVelocity.dy;
+    var uY = actualVelocity.dy * globals.ySF;
     var accelX = globals.Ax;
-    var accelY = globals.Ay;
+    var accelY = globals.Ay * globals.ySF;
     var startX = startPos.dx;
-    var startY = startPos.dy;
-    var hitboxRadius = 0.5;
+    var startY = startPos.dy * globals.ySF;
+    var hitboxRadius = 0.02 * 2;
 
     //every player
     for (var i = 0; i < globals.players.length; i++) {
       var playerX = globals.players[i].aX;
-      var playerY = globals.players[i].aY;
+      var playerY = globals.players[i].aY * globals.ySF;
 
       // get times for x and y
       var quartic = Quartic(
@@ -88,8 +88,8 @@ class GameObject {
         print('    r=${t.real}');
         print('    i=${t.imaginary}');
         print('');
-        if (t.real > 0 && double.parse(t.imaginary.toStringAsFixed(5)) == 0) {
-          playerTimes[i].add(t.real);
+        if (t.real > 0 && double.parse(t.imaginary.toStringAsFixed(3)) == 0) {
+          playerTimes[i].add(t.real * 10);
         }
       }
     }
@@ -284,8 +284,8 @@ class Player extends GameObject {
         rPos.translate(0, -2 * radiusY / 3), windowWidth, whiteFill);
     //draw hitbox
     if (drawHitbox) {
-      canvas.drawCircle(rPos, 0.05.toRelativeX(), whiteEmpty);
-      //canvas.drawCircle(rPos, 0.05.toRelativeY(), whiteEmpty);
+      canvas.drawCircle(rPos, 0.02.toRelativeX(), whiteEmpty);
+      //canvas.drawCircle(rPos, 0.05.toRelativeY() / 10, whiteEmpty);
     }
     //draw text
     playerHealthText.paint(
