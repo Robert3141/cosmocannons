@@ -7,9 +7,6 @@ Features:
 - Multiplayer on device and on same wifi (LAN).
 - Opensource
 
-Permissions:
-- NONE
-
 ### Download
 | [<img alt="Play Store" src="https://developer.android.com/images/brand/en_generic_rgb_wo_60.png" style="width:100px"/>](https://play.google.com/store/apps/details?id=io.github.Robert3141) | [<img alt="Web" src="https://3u26hb1g25wn1xwo8g186fnd-wpengine.netdna-ssl.com/files/2019/10/Fx-Browser-icon-fullColor.svg" style="width:100px"/>](https://robert3141.github.io/Cosmocannons/#/) |
 | :---: | :---: |
